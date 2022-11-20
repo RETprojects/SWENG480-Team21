@@ -1,7 +1,8 @@
-# Remi T, 11/17/22, 11:43 am central time
+# Remi T, 11/17/22, 11:43 am CST
 # This spider will be used to crawl all design patterns on the design pattern catalog page of Refactoring Guru.
 import scrapy
 
+# Source: https://docs.scrapy.org/en/latest/intro/tutorial.html
 
 class PatternsPortalSpider(scrapy.Spider):
     name = "portal"
