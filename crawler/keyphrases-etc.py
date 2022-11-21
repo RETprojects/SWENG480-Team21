@@ -1,7 +1,7 @@
 # Remi T, created 11/19/22 3:02 pm CST
 # This file contains some code that can be used for machine learning.
 
-#Sources: https://www.tutorialspoint.com/natural_language_toolkit/natural_language_toolkit_quick_guide.htm,
+#Sources: https://www.tutorialspoint.com/natural_language_toolkit/natural_language_toolkit_quick_guide.htm
 #         https://www.analyticsvidhya.com/blog/2022/01/four-of-the-easiest-and-most-effective-methods-of-keyword-extraction-from-a-single-text-using-python/
 #         https://www.analyticsvidhya.com/blog/2022/03/keyword-extraction-methods-from-documents-in-nlp/
 
@@ -9,6 +9,7 @@ import yake
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
 import collections
 import numpy as np
 import pandas as pd
@@ -76,13 +77,14 @@ for sent in tagged_sentences:
   print(nltk.ne_chunk(sent))
 
 # display some keywords in a word cloud using Wordcloud and Matplotlib
+word_stemmer = PorterStemmer()
 stopwords = STOPWORDS
 wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=1000).generate(text)
 rcParams['figure.figsize'] = 10, 20
 plt.imshow(wordcloud)
 plt.axis("off")
 plt.show()
-filtered_words = [word for word in text.split() if word not in stopwords]
+filtered_words = [word_stemmer.stem(word) for word in text.split() if word not in stopwords]
 counted_words = collections.Counter(filtered_words)
 words = []
 counts = []
