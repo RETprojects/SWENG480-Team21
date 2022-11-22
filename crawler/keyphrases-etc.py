@@ -69,24 +69,27 @@ print(important_words)
 kw_extractor = yake.KeywordExtractor(top=10, stopwords=None)
 keyphrases = kw_extractor.extract_keywords(important_words)
 for kw, v in keyphrases:
-  print("Keyphrase: ",kw, ": score", v)
+    print("Keyphrase: ",kw, ": score", v)
 
 # NLTK information extraction
 sentences = nltk.sent_tokenize(text)
 tokenized_sentences = [nltk.word_tokenize(sentence) for sentence in sentences]
 tagged_sentences = [nltk.pos_tag(sentence) for sentence in tokenized_sentences]
 for sent in tagged_sentences:
-  print(nltk.ne_chunk(sent))
+    print(nltk.ne_chunk(sent))
 
-# display some keywords in a word cloud using Wordcloud and Matplotlib
-word_stemmer = PorterStemmer()
-tokenizer = RegexpTokenizer(r'\w+')
+word_stemmer = PorterStemmer()  # to find the stems of words to account for plural nouns and different tenses of verbs
+tokenizer = RegexpTokenizer(r'\w+') # this tokenizer splits up the text into words and filters out punctuation
 stopwords = STOPWORDS
+
+# display a word cloud of the words in the text
 wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=1000).generate(text)
 rcParams['figure.figsize'] = 10, 20
 plt.imshow(wordcloud)
 plt.axis("off")
 plt.show()
+
+# get the individual words of the text, minus extra verb tenses, plurals, and stopwords
 filtered_words = [word_stemmer.stem(word) for word in tokenizer.tokenize(text) if word not in stopwords]
 counted_words = collections.Counter(filtered_words)
 words = []
@@ -94,6 +97,7 @@ counts = []
 for letter, count in counted_words.most_common(10):
     words.append(letter)
     counts.append(count)
+# display a graph of the 10 most common words in the text
 colors = cm.rainbow(np.linspace(0, 1, 10))
 rcParams['figure.figsize'] = 20, 10
 plt.title('Top words in the headlines vs their count')
