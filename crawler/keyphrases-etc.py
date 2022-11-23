@@ -12,6 +12,7 @@ from nltk.tokenize import word_tokenize
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
+from nltk.stem import WordNetLemmatizer
 import collections
 import numpy as np
 import pandas as pd
@@ -81,6 +82,7 @@ for sent in tagged_sentences:
 word_stemmer = PorterStemmer()  # to find the stems of words to account for plural nouns and different tenses of verbs
 tokenizer = RegexpTokenizer(r'\w+') # this tokenizer splits up the text into words and filters out punctuation
 stopwords = STOPWORDS
+lemmatizer = WordNetLemmatizer()    # lemmatization returns a valid word at all times
 
 # display a word cloud of the words in the text
 wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=1000).generate(text)
@@ -90,7 +92,8 @@ plt.axis("off")
 plt.show()
 
 # get the individual words of the text, minus extra verb tenses, plurals, and stopwords
-filtered_words = [word_stemmer.stem(word) for word in tokenizer.tokenize(text) if word not in stopwords]
+# use lemmatization instead of stemming
+filtered_words = [lemmatizer.lemmatize(word) for word in tokenizer.tokenize(text) if word not in stopwords]
 counted_words = collections.Counter(filtered_words)
 words = []
 counts = []
@@ -105,3 +108,5 @@ plt.xlabel('Count')
 plt.ylabel('Words')
 plt.barh(words, counts, color=colors)
 plt.show()
+# now print each word in counted_words for validation
+print(counted_words)
