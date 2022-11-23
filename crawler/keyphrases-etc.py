@@ -2,9 +2,10 @@
 # This file contains some code that can be used for machine learning.
 
 #Sources: https://www.tutorialspoint.com/natural_language_toolkit/natural_language_toolkit_quick_guide.htm
-#           https://www.analyticsvidhya.com/blog/2022/01/four-of-the-easiest-and-most-effective-methods-of-keyword-extraction-from-a-single-text-using-python/
-#           https://www.analyticsvidhya.com/blog/2022/03/keyword-extraction-methods-from-documents-in-nlp/
-#           https://stackoverflow.com/a/15555162
+#   https://www.analyticsvidhya.com/blog/2022/01/four-of-the-easiest-and-most-effective-methods-of-keyword-extraction-from-a-single-text-using-python/
+#   https://www.analyticsvidhya.com/blog/2022/03/keyword-extraction-methods-from-documents-in-nlp/
+#   https://stackoverflow.com/a/15555162
+#   https://stackoverflow.com/a/45384376
 
 import yake
 import nltk
@@ -57,6 +58,9 @@ text = "Imagine that you’re creating a  application. " \
        "up with  nasty code, riddled with conditionals that switch " \
        "the app’s behavior depending on the class of  objects."
 
+def most_common(lst):
+    return max(set(lst), key=lst.count)
+
 # using NLTK
 english_stops = set(stopwords.words('english'))
 words = word_tokenize(text)
@@ -93,7 +97,7 @@ plt.show()
 
 # get the individual words of the text, minus extra verb tenses, plurals, and stopwords
 # use lemmatization instead of stemming
-filtered_words = [lemmatizer.lemmatize(word) for word in tokenizer.tokenize(text) if word not in stopwords]
+filtered_words = [most_common([lemmatizer.lemmatize(word.lower(),'v'),lemmatizer.lemmatize(word.lower(),'n'),lemmatizer.lemmatize(word.lower(),'n')]) for word in tokenizer.tokenize(text) if word not in stopwords]
 counted_words = collections.Counter(filtered_words)
 words = []
 counts = []
@@ -110,3 +114,7 @@ plt.barh(words, counts, color=colors)
 plt.show()
 # now print each word in counted_words for validation
 print(counted_words)
+# another test
+for word in tokenizer.tokenize(text):
+    checkList=[lemmatizer.lemmatize(word,'v'),lemmatizer.lemmatize(word,'n'),lemmatizer.lemmatize(word,'n')]
+    print(checkList)
