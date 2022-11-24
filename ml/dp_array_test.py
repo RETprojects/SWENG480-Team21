@@ -8,7 +8,23 @@
 #       patterns,” Applied Soft Computing, vol. 75, pp. 1–20, Feb. 2019.
 
 # imports etc.
+import yake
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.tokenize import RegexpTokenizer
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+from nltk.stem import WordNetLemmatizer
+import collections
+import numpy as np
+import pandas as pd
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+from matplotlib import rcParams
+from wordcloud import WordCloud, STOPWORDS
 
+def most_common(lst):
+    return max(set(lst), key=lst.count)
 
 # the DPs (lists of design problems)
 gof = [
@@ -75,3 +91,39 @@ security = [
     " posed to its assets. How can an enterprise determine the overall value "
     "of its assets?"
 ]
+
+# choose an array to be the DP
+dp = gof
+
+word_stemmer = PorterStemmer()  # to find the stems of words to account for plural nouns and different tenses of verbs
+tokenizer = RegexpTokenizer(r'\w+') # this tokenizer splits up the text into words and filters out punctuation
+stopwords = STOPWORDS
+lemmatizer = WordNetLemmatizer()    # lemmatization returns a valid word at all times
+
+for prob in dp:
+    # display a word cloud of the words in the text
+    wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=1000).generate(prob)
+    rcParams['figure.figsize'] = 10, 20
+    plt.imshow(wordcloud)
+    plt.axis("off")
+    plt.show()
+
+    # get the individual words of the text, minus extra verb tenses, plurals, and stopwords
+    # use lemmatization instead of stemming
+    filtered_words = [most_common([lemmatizer.lemmatize(word.lower(), 'v'), lemmatizer.lemmatize(word.lower(), 'n'),
+                                   lemmatizer.lemmatize(word.lower(), 'n')]) for word in tokenizer.tokenize(prob) if
+                      word not in stopwords]
+    counted_words = collections.Counter(filtered_words)
+    words = []
+    counts = []
+    for letter, count in counted_words.most_common(10):
+        words.append(letter)
+        counts.append(count)
+    # display a graph of the 10 most common words in the text
+    colors = cm.rainbow(np.linspace(0, 1, 10))
+    rcParams['figure.figsize'] = 20, 10
+    plt.title('Top words in the headlines vs their count')
+    plt.xlabel('Count')
+    plt.ylabel('Words')
+    plt.barh(words, counts, color=colors)
+    plt.show()
