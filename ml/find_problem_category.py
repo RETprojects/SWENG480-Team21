@@ -24,3 +24,5 @@
 # assess the unsupervised learners w/ their best weighting methods (previously
 # determined) to determine the appropriate pattern class for the problem
 
+
+# repeat for the other problems
