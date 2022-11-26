@@ -6,6 +6,7 @@
 #   S. Hussain, J. Keung, M. K. Sohail, A. A. Khan, and M. Ilahi, “Automated
 #       Framework for classification and selection of software design
 #       patterns,” Applied Soft Computing, vol. 75, pp. 1–20, Feb. 2019.
+#   https://www.holisticseo.digital/python-seo/nltk/lemmatize
 
 # imports etc.
 import yake
@@ -110,9 +111,12 @@ for prob in dp:
 
     # get the individual words of the text, minus extra verb tenses, plurals, and stopwords
     # use lemmatization instead of stemming
-    filtered_words = [most_common([lemmatizer.lemmatize(word.lower(), 'v'), lemmatizer.lemmatize(word.lower(), 'n'),
-                                   lemmatizer.lemmatize(word.lower(), 'n')]) for word in tokenizer.tokenize(prob) if
-                      word not in stopwords]
+    filtered_words = [most_common([lemmatizer.lemmatize(word.lower(), 'v'),     # verb
+                                   lemmatizer.lemmatize(word.lower(), 'n'),     # noun
+                                   lemmatizer.lemmatize(word.lower(), 'r'),     # adverb
+                                   lemmatizer.lemmatize(word.lower(), 's'),     # satellite adjective
+                                   lemmatizer.lemmatize(word.lower(), 'a')])    # adjective
+                      for word in tokenizer.tokenize(prob) if word not in stopwords]
     counted_words = collections.Counter(filtered_words)
     words = []
     counts = []
