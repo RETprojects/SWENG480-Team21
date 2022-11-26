@@ -28,20 +28,21 @@ def most_common(lst):
     return max(set(lst), key=lst.count)
 
 # the DPs (lists of design problems)
+# For testing purposes, let's assume that all example-oriented language has been filtered out.
 gof = [
-    "Design a drawing editor. A design is composed of te graphics (lines, "
-    "rectangles and roses), positioned at precise positions. Each graphic "
-    "form must be modeled by a class that provides a method draw(): void. A "
-    "rose is a complex graphic designed by a black-box class component. This "
-    "component performs this drawing in memory, and provides access through a"
-    " method getRose(): int that returns the address of the drawing. It is "
-    "probable that the system evolves in order to draw circles.",
+    "Design a . A design is composed of  (, "
+    " and ),  at precise . Each  "
+    "form must be modeled by a class that provides a method (): void. A "
+    " is a complex  designed by a black-box class component. This "
+    "component performs this  in memory, and provides access through a"
+    " method get(): int that returns the address of the . It is "
+    "probable that the system evolves in order to .",
 
-    "Design a DVD market place work. The DVD marketplace provides DVD to its "
-    "clients with three categories: children, normal and new. A DVD is new "
-    "during some weeks, and after change category. The DVD price depends on "
+    "Design a . The  provides  to its "
+    "clients with  categories: ,  and . A  is  "
+    "during some weeks, and after change category. The  depends on "
     "the category. It is probable that the system evolves in order to take "
-    "into account the horror category.",
+    "into account the  category.",
 
     "Many distinct and unrelated operations need to be performed on node "
     "objects in a heterogeneous aggregate structure. You want to avoid "
