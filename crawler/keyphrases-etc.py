@@ -6,6 +6,7 @@
 #   https://www.analyticsvidhya.com/blog/2022/03/keyword-extraction-methods-from-documents-in-nlp/
 #   https://stackoverflow.com/a/15555162
 #   https://stackoverflow.com/a/45384376
+#   https://www.holisticseo.digital/python-seo/nltk/lemmatize
 
 import yake
 import nltk
@@ -97,7 +98,13 @@ plt.show()
 
 # get the individual words of the text, minus extra verb tenses, plurals, and stopwords
 # use lemmatization instead of stemming
-filtered_words = [most_common([lemmatizer.lemmatize(word.lower(),'v'),lemmatizer.lemmatize(word.lower(),'n'),lemmatizer.lemmatize(word.lower(),'n')]) for word in tokenizer.tokenize(text) if word not in stopwords]
+#filtered_words = [most_common([lemmatizer.lemmatize(word.lower(),'v'),lemmatizer.lemmatize(word.lower(),'n'),lemmatizer.lemmatize(word.lower(),'n')]) for word in tokenizer.tokenize(text) if word not in stopwords]
+filtered_words = [most_common([lemmatizer.lemmatize(word.lower(), 'a'),     # adjective
+                                lemmatizer.lemmatize(word.lower(), 's'),    # satellite adjective
+                                lemmatizer.lemmatize(word.lower(), 'r'),    # adverb
+                                lemmatizer.lemmatize(word.lower(), 'n'),    # noun
+                                lemmatizer.lemmatize(word.lower(), 'v')])   # verb
+                    for word in tokenizer.tokenize(text) if word not in stopwords]
 counted_words = collections.Counter(filtered_words)
 words = []
 counts = []
