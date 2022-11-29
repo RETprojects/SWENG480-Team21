@@ -7,6 +7,7 @@
 #   https://stackoverflow.com/a/15555162
 #   https://stackoverflow.com/a/45384376
 #   https://www.holisticseo.digital/python-seo/nltk/lemmatize
+#   https://www.nltk.org/book_1ed/ch05.html
 
 import yake
 import nltk
@@ -62,6 +63,15 @@ text = "Imagine that you’re creating a  application. " \
 def most_common(lst):
     return max(set(lst), key=lst.count)
 
+# return the most basic form a word based on part of speech
+def basicForm(word):
+    lemmatizer = WordNetLemmatizer()
+
+    if word[0][1] in ['V','VD','VG','VN']:
+        return lemmatizer.lemmatize(word, "v")
+    else:
+        return lemmatizer.lemmatize(word)
+
 # using NLTK
 english_stops = set(stopwords.words('english'))
 words = word_tokenize(text)
@@ -99,12 +109,14 @@ plt.show()
 # get the individual words of the text, minus extra verb tenses, plurals, and stopwords
 # use lemmatization instead of stemming
 #filtered_words = [most_common([lemmatizer.lemmatize(word.lower(),'v'),lemmatizer.lemmatize(word.lower(),'n'),lemmatizer.lemmatize(word.lower(),'n')]) for word in tokenizer.tokenize(text) if word not in stopwords]
-filtered_words = [most_common([lemmatizer.lemmatize(word.lower(), 'a'),     # adjective
-                                lemmatizer.lemmatize(word.lower(), 's'),    # satellite adjective
-                                lemmatizer.lemmatize(word.lower(), 'r'),    # adverb
-                                lemmatizer.lemmatize(word.lower(), 'n'),    # noun
-                                lemmatizer.lemmatize(word.lower(), 'v')])   # verb
-                    for word in tokenizer.tokenize(text) if word not in stopwords]
+#filtered_words = [most_common([lemmatizer.lemmatize(word.lower(), 'a'),     # adjective
+#                                lemmatizer.lemmatize(word.lower(), 's'),    # satellite adjective
+#                                lemmatizer.lemmatize(word.lower(), 'r'),    # adverb
+#                                lemmatizer.lemmatize(word.lower(), 'n'),    # noun
+#                                lemmatizer.lemmatize(word.lower(), 'v')])   # verb
+#                    for word in tokenizer.tokenize(text) if word not in stopwords]
+#filtered_words = [basicForm(word.lower()) for word in tokenizer.tokenize(text) if word not in stopwords]
+filtered_words = [lemmatizer.lemmatize(word[0].lower(), pos="v") for word in nltk.pos_tag(tokenizer.tokenize(text)) if word[0] not in stopwords]
 counted_words = collections.Counter(filtered_words)
 words = []
 counts = []
