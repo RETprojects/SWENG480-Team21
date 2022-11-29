@@ -97,11 +97,12 @@ for sent in tagged_sentences:
 
 word_stemmer = PorterStemmer()  # to find the stems of words to account for plural nouns and different tenses of verbs
 tokenizer = RegexpTokenizer(r'\w+') # this tokenizer splits up the text into words and filters out punctuation
-stopwords = STOPWORDS
+#stopwords = STOPWORDS
+stop_words = set(stopwords.words('english'))
 lemmatizer = WordNetLemmatizer()    # lemmatization returns a valid word at all times
 
 # display a word cloud of the words in the text
-wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=1000).generate(text)
+wordcloud = WordCloud(stopwords=stop_words, background_color="white", max_words=1000).generate(text)
 rcParams['figure.figsize'] = 10, 20
 plt.imshow(wordcloud)
 plt.axis("off")
@@ -117,7 +118,7 @@ plt.show()
 #                                lemmatizer.lemmatize(word.lower(), 'v')])   # verb
 #                    for word in tokenizer.tokenize(text) if word not in stopwords]
 #filtered_words = [basicForm(word.lower()) for word in tokenizer.tokenize(text) if word not in stopwords]
-filtered_words = [lemmatizer.lemmatize(word[0].lower(), pos="v") for word in nltk.pos_tag(tokenizer.tokenize(text)) if word[0] not in stopwords]
+filtered_words = [lemmatizer.lemmatize(word[0].lower(), pos="v") for word in nltk.pos_tag(tokenizer.tokenize(text)) if word[0] not in stop_words]
 counted_words = collections.Counter(filtered_words)
 words = []
 counts = []
