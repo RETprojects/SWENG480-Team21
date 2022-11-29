@@ -8,6 +8,7 @@
 #   https://stackoverflow.com/a/45384376
 #   https://www.holisticseo.digital/python-seo/nltk/lemmatize
 #   https://www.nltk.org/book_1ed/ch05.html
+#   https://www.geeksforgeeks.org/python-lemmatization-with-nltk/
 
 import yake
 import nltk
