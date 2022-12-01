@@ -99,12 +99,12 @@ dp = gof
 
 word_stemmer = PorterStemmer()  # to find the stems of words to account for plural nouns and different tenses of verbs
 tokenizer = RegexpTokenizer(r'\w+') # this tokenizer splits up the text into words and filters out punctuation
-stopwords = STOPWORDS
+stop_words = set(stopwords.words('english'))
 lemmatizer = WordNetLemmatizer()    # lemmatization returns a valid word at all times
 
 for prob in dp:
     # display a word cloud of the words in the text
-    wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=1000).generate(prob)
+    wordcloud = WordCloud(stopwords=stop_words, background_color="white", max_words=1000).generate(prob)
     rcParams['figure.figsize'] = 10, 20
     plt.imshow(wordcloud)
     plt.axis("off")
@@ -112,12 +112,14 @@ for prob in dp:
 
     # get the individual words of the text, minus extra verb tenses, plurals, and stopwords
     # use lemmatization instead of stemming
-    filtered_words = [most_common([lemmatizer.lemmatize(word.lower(), 'v'),     # verb
-                                   lemmatizer.lemmatize(word.lower(), 'n'),     # noun
-                                   lemmatizer.lemmatize(word.lower(), 'r'),     # adverb
-                                   lemmatizer.lemmatize(word.lower(), 's'),     # satellite adjective
-                                   lemmatizer.lemmatize(word.lower(), 'a')])    # adjective
-                      for word in tokenizer.tokenize(prob) if word not in stopwords]
+    #filtered_words = [most_common([lemmatizer.lemmatize(word.lower(), 'v'),     # verb
+    #                               lemmatizer.lemmatize(word.lower(), 'n'),     # noun
+    #                               lemmatizer.lemmatize(word.lower(), 'r'),     # adverb
+    #                               lemmatizer.lemmatize(word.lower(), 's'),     # satellite adjective
+    #                               lemmatizer.lemmatize(word.lower(), 'a')])    # adjective
+    #                  for word in tokenizer.tokenize(prob) if word not in stopwords]
+    filtered_words = [lemmatizer.lemmatize(word[0].lower(), pos="v") for word in nltk.pos_tag(tokenizer.tokenize(prob))
+                      if word[0] not in stop_words]
     counted_words = collections.Counter(filtered_words)
     words = []
     counts = []
