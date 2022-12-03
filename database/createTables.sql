@@ -25,7 +25,7 @@ CREATE TABLE pattern
   intent VARCHAR(150) NOT NULL,
   motivation VARCHAR(150) NOT NULL,
   applicability VARCHAR(150) NOT NULL,
-  structure VARCHAR(150) NOT NULL,
+  structure MEDIUMBLOB NOT NULL,
   participant_collaborations VARCHAR(150) NOT NULL,
   consequences VARCHAR(150) NOT NULL,
   implementation VARCHAR(150) NOT NULL,
