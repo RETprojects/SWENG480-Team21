@@ -25,7 +25,7 @@ CREATE TABLE pattern
   intent VARCHAR(150) NOT NULL,
   motivation VARCHAR(150) NOT NULL,
   applicability VARCHAR(150) NOT NULL,
-  structure IMAGE NOT NULL,
+  structure VARCHAR(150) NOT NULL,
   participant_collaborations VARCHAR(150) NOT NULL,
   consequences VARCHAR(150) NOT NULL,
   implementation VARCHAR(150) NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE problem_pattern_match
   id INT(200) NOT NULL AUTO_INCREMENT,
   problem_id INT(50) NOT NULL,
   pattern_id INT(20) NOT NULL,
-  similarity_score DOUBLE(23),
+  similarity_score DOUBLE(23, 20),
   PRIMARY KEY (id),
   FOREIGN KEY (problem_id) REFERENCES problem(id),
   FOREIGN KEY (pattern_id) REFERENCES pattern(id)
