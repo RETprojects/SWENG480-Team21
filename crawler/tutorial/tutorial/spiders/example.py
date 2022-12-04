@@ -1,4 +1,6 @@
 import scrapy
+import mysql.connector
+from bs4 import BeautifulSoup
 from scrapy.item import Item, Field
 
 
@@ -9,11 +11,40 @@ class CustomItem(Item):
     link = Field()
 
 
+
+
 class ExampleSpider(scrapy.Spider):
+    # HOST = "192.168.1.220"  # or "domain.com"
+    # # database name, if you want just to connect to MySQL server, leave it empty
+    # DATABASE = ""
+    # # this is the user you create
+    # USER = "remit"
+    # # user password
+    # PASSWORD = "THXfortheFi$h!"
+    # # connect to MySQL server
+    # db_connection = mysql.connector.connect(host=HOST, database=DATABASE, user=USER, password=PASSWORD)
+    # print("Connected to:", db_connection.get_server_info())
+
     name = 'example'
-    allowed_domains = ['example.com']
-    start_urls = ['http://example.com/']
+    #allowed_domains = ['example.com']
+    start_urls = ['https://sourcemaking.com/design_patterns/abstract_factory']
+
 
     def parse(self, response):
-        text = [s for s in response.css('div ::text').getall() if s.strip()]
-        return CustomItem(header=text[0], paragraph=text[1], link=text[2])
+        file = open('temp_text.txt', 'w', encoding="utf-8")
+        soup = BeautifulSoup(response.text, 'lxml')
+
+        for s in soup.select('h3'):
+            if s.text == "Example":
+                break
+
+            file.write(s.text + '\n\n')
+
+            for ns in (s.fetchNextSiblings()):
+                if ns.name == "h3":
+                    file.write('\n\n')
+                    break
+
+                file.write(ns.text + '\n')
+                print(ns)
+

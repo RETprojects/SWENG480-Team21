@@ -34,6 +34,19 @@ CREATE TABLE pattern
   FOREIGN KEY (category_id) REFERENCES pattern_category(id)
 );
 
+CREATE TABLE pattern_ML
+(
+  id INT(20) NOT NULL AUTO_INCREMENT,
+  category_id INT(10) NOT NULL,
+  name VARCHAR(150) NOT NULL,
+  intent VARCHAR(Max) NOT NULL,
+  problem VARCHAR(Max) NOT NULL,
+  discussion VARCHAR(Max) NOT NULL,
+  structure VARCHAR(Max) NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (category_id) REFERENCES pattern_category(id)
+);
+
 CREATE TABLE problem
 (
   id INT(50) NOT NULL AUTO_INCREMENT,
