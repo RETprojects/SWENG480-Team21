@@ -20,7 +20,7 @@ class ExampleSpider(scrapy.Spider):
     # # this is the user you create
     # USER = ""
     # # user password
-    # PASSWORD = "THXfortheFi$h!"
+    # PASSWORD = "THXfortheF1$h!"
     # # connect to MySQL server
     # db_connection = mysql.connector.connect(host=HOST, database=DATABASE, user=USER, password=PASSWORD)
     # print("Connected to:", db_connection.get_server_info())
