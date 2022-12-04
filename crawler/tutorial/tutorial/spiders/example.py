@@ -14,11 +14,11 @@ class CustomItem(Item):
 
 
 class ExampleSpider(scrapy.Spider):
-    # HOST = "192.168.1.220"  # or "domain.com"
+    # HOST = "root"
     # # database name, if you want just to connect to MySQL server, leave it empty
-    # DATABASE = ""
+    # DATABASE = "pattern_recommender"
     # # this is the user you create
-    # USER = "remit"
+    # USER = ""
     # # user password
     # PASSWORD = "THXfortheFi$h!"
     # # connect to MySQL server
