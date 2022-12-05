@@ -7,6 +7,7 @@
 #       Framework for classification and selection of software design
 #       patterns,” Applied Soft Computing, vol. 75, pp. 1–20, Feb. 2019.
 #   https://www.holisticseo.digital/python-seo/nltk/lemmatize
+#   https://www.geeksforgeeks.org/nlp-filtering-insignificant-words/
 
 # imports etc.
 import yake
@@ -26,6 +27,24 @@ from wordcloud import WordCloud, STOPWORDS
 
 def most_common(lst):
     return max(set(lst), key=lst.count)
+
+# filter out insignificant words like "a" and "and"
+def filter_insignificant(chunk,
+                         tag_suffixes=['DT', 'CC']):
+    good = []
+
+    for word, tag in chunk:
+        ok = True
+
+    for suffix in tag_suffixes:
+        if tag.endswith(suffix):
+            ok = False
+            break
+
+        if ok:
+            good.append((word, tag))
+
+    return good
 
 # the DPs (lists of design problems)
 # For testing purposes, let's assume that all example-oriented language has been filtered out.
