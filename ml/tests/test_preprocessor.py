@@ -1,8 +1,9 @@
 import unittest
 
-# (venv) jonathangarelick@Jonathans-MacBook-Pro SWENG480-Team21 % python -m unittest -v ml/tests/example.py
 
-class TestStringMethods(unittest.TestCase):
+# (venv) jonathangarelick@Jonathans-MacBook-Pro SWENG480-Team21 % python -m unittest -v ml/tests/test_preprocessor.py
+
+class TestPreprocessor(unittest.TestCase):
 
     def test_upper(self):
         self.assertEqual('foo'.upper(), 'FOO')
@@ -17,6 +18,7 @@ class TestStringMethods(unittest.TestCase):
         # check that s.split fails when the separator is not a string
         with self.assertRaises(TypeError):
             s.split(2)
+
 
 if __name__ == '__main__':
     unittest.main()
