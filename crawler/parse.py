@@ -14,7 +14,7 @@ class NewHTMLParser(HTMLParser):
     #         print("End tag:", tag)
 
     def handle_data(self, data):
-        self.text += data.strip()
+        self.text += data
 
 
 output = ""
@@ -23,6 +23,7 @@ d = os.getcwd() + r"\tutorial\patterns"
 for (path) in os.listdir(d):
     file = open(d + "\\" + path, "r", encoding='utf-8')
     parser.feed(file.read())
-    output += parser.text[parser.text.find("Intent"):parser.text.find("Support our free website and own the eBook!")] + '\n\n'
+    output += parser.text[parser.text.find("Intent"):parser.text.find("Support our free website and own the eBook!")]
+    parser.text = ""
     file.close()
 print(output)
