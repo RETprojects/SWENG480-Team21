@@ -1,47 +1,57 @@
 Intent
 
 
-Provide an interface for creating families of related or dependent objects without specifying their concrete classes.
-A hierarchy that encapsulates: many possible "platforms", and the construction of a suite of "products".
-The new operator considered harmful.
+Provide a way to access the elements of an aggregate object
+sequentially without exposing its underlying representation.
+The C++ and Java standard library abstraction that makes it possible
+to decouple collection classes and algorithms.
+Promote to "full object status" the traversal of a collection.
+Polymorphic traversal
 
 
 
 Problem
 
-If an application is to be portable, it needs to
-encapsulate platform dependencies.  These "platforms"
-might include: windowing system, operating system,
-database, etc.  Too often, this encapsulation is not
-engineered in advance, and lots of #ifdef case statements
-with options for all currently supported platforms begin
-to procreate like rabbits throughout the code.
+Need to "abstract" the traversal of wildly different data structures
+so that algorithms can be defined that are capable of interfacing with
+each transparently.
 
 
 Discussion
 
-Provide a level of indirection that abstracts the creation
-of families of related or dependent objects without directly
-specifying their concrete classes.  The "factory" object has
-the responsibility for providing creation services for the
-entire platform family.  Clients never create platform objects
-directly, they ask the factory to do that for them.
-This mechanism makes exchanging product families easy because
-the specific class of the factory object appears only once in
-the application - where it is instantiated.  The application
-can wholesale replace the entire family of products simply by
-instantiating a different concrete instance of the abstract
-factory.
-Because the service provided by the factory object is so
-pervasive, it is routinely implemented as a Singleton.
+"An aggregate object such as a list should give you a way to access
+its elements without exposing its internal structure.  Moreover, you
+might want to traverse the list in different ways, depending on what
+you need to accomplish.  But you probably don't want to bloat the List
+interface with operations for different traversals, even if you
+could anticipate the ones you'll require.  You might also need to have
+more than one traversal pending on the same list." And,
+providing a uniform interface for traversing many types of aggregate
+objects (i.e. polymorphic iteration) might be valuable.
+The Iterator pattern lets you do all this.  The key idea is to take the
+responsibility for access and traversal out of the aggregate object
+and put it into an Iterator object that defines a standard traversal
+protocol.
+The Iterator abstraction is fundamental to an emerging technology
+called "generic programming".  This strategy seeks to explicitly
+separate the notion of "algorithm" from that of "data structure".  The
+motivation is to: promote component-based development, boost
+productivity, and reduce configuration management.
+As an example, if you wanted to support four data structures (array,
+binary tree, linked list, and hash table) and three algorithms (sort,
+find, and merge), a traditional approach would require four times three
+permutations to develop and maintain.  Whereas, a generic programming
+approach would only require four plus three configuration items.
 
 
 Structure
 
-The Abstract Factory defines a Factory Method per product.
-Each Factory Method encapsulates the new operator
-and the concrete, platform-specific, product classes.
-Each "platform" is then modeled with a Factory derived class.
+The Client uses the Collection class' public interface directly.  But
+access to the Collection's elements is encapsulated behind the
+additional level of abstraction called Iterator.  Each Collection
+derived class knows which Iterator derived class to create and return.
+After that, the Client relies on the interface defined in the Iterator
+base class.
 
 
 

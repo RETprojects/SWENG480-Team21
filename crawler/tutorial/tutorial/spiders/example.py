@@ -103,8 +103,10 @@ class ExampleSpider(scrapy.Spider):
                     problem += ns.text
                 elif last_heading == "Discussion":
                     discussion += ns.text
-                else:# last_heading == "Structure":
+                elif last_heading == "Structure":# last_heading == "Structure":
                     structure += ns.text
+                else:
+                    break
                 file.write(ns.text + '\n')
                 print(ns)
 
@@ -112,7 +114,7 @@ class ExampleSpider(scrapy.Spider):
         add_pattern = ("INSERT INTO pattern_ML "
                        "(category_id, name, intent, problem, discussion, structure) "
                        "VALUES (%s, %s, %s, %s, %s, %s)")
-        data_pattern = (0, 'Abstract Factory', intent, problem, discussion, structure)
+        data_pattern = (0, patternName, intent, problem, discussion, structure)
         cursor.execute(add_pattern, data_pattern) # insert new pattern
         db_connection.commit() # commit the data to the DB
 
