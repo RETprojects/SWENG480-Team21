@@ -58,7 +58,7 @@ class TestPreprocessor(unittest.TestCase):
             ['natur', 'languag', 'process', '(nlp)', 'is', 'a', 'subfield', 'of', 'linguistics,', 'comput', 'science,',
              'and', 'artifici', 'intellig', 'concern', 'with', 'the', 'interact', 'between', 'comput', 'and', 'human',
              'language,', 'in', 'particular', 'how', 'to', 'program', 'comput', 'to', 'process', 'and', 'analyz',
-             'larg','amount', 'of', 'natur', 'languag', 'data.', 'the', 'goal', 'is', 'a', 'comput', 'capabl', 'of',
+             'larg', 'amount', 'of', 'natur', 'languag', 'data.', 'the', 'goal', 'is', 'a', 'comput', 'capabl', 'of',
              '"understanding"', 'the', 'content', 'of', 'documents,', 'includ', 'the', 'contextu', 'nuanc', 'of', 'the',
              'languag', 'within', 'them.', 'the', 'technolog', 'can', 'then', 'accur', 'extract', 'inform', 'and',
              'insight', 'contain', 'in', 'the', 'document', 'as', 'well', 'as', 'categor', 'and', 'organ', 'the',
