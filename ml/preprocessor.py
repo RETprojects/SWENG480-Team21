@@ -41,4 +41,6 @@ class Preprocessor:
         Keyword arguments:
         input -- an array of strings
         """
-        return [cls.wnl.lemmatize(word.strip()) for word in word_list if word]
+        # Lemmatize for nouns and verbs, and pick the shorter one.
+        return [n if len(n) < len(v) else v for word in word_list if word and
+                (n := cls.wnl.lemmatize(word.strip()), v := cls.wnl.lemmatize(word.strip(), 'v'))]
