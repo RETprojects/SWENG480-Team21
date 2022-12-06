@@ -133,6 +133,8 @@ plt.xlabel('Count')
 plt.ylabel('Words')
 plt.barh(words, counts, color=colors)
 plt.show()
+# print filtered_words for validation
+print(filtered_words)
 # now print each word in counted_words for validation
 print(counted_words)
 # another test

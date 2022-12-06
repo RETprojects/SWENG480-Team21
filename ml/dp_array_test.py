@@ -7,6 +7,7 @@
 #       Framework for classification and selection of software design
 #       patterns,” Applied Soft Computing, vol. 75, pp. 1–20, Feb. 2019.
 #   https://www.holisticseo.digital/python-seo/nltk/lemmatize
+#   https://www.geeksforgeeks.org/nlp-filtering-insignificant-words/
 
 # imports etc.
 import yake
@@ -26,6 +27,24 @@ from wordcloud import WordCloud, STOPWORDS
 
 def most_common(lst):
     return max(set(lst), key=lst.count)
+
+# filter out insignificant words like "a" and "and"
+def filter_insignificant(chunk,
+                         tag_suffixes=['DT', 'CC']):
+    good = []
+
+    for word, tag in chunk:
+        ok = True
+
+    for suffix in tag_suffixes:
+        if tag.endswith(suffix):
+            ok = False
+            break
+
+        if ok:
+            good.append((word, tag))
+
+    return good
 
 # the DPs (lists of design problems)
 # For testing purposes, let's assume that all example-oriented language has been filtered out.
@@ -99,12 +118,12 @@ dp = gof
 
 word_stemmer = PorterStemmer()  # to find the stems of words to account for plural nouns and different tenses of verbs
 tokenizer = RegexpTokenizer(r'\w+') # this tokenizer splits up the text into words and filters out punctuation
-stopwords = STOPWORDS
+stop_words = set(stopwords.words('english'))
 lemmatizer = WordNetLemmatizer()    # lemmatization returns a valid word at all times
 
 for prob in dp:
     # display a word cloud of the words in the text
-    wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=1000).generate(prob)
+    wordcloud = WordCloud(stopwords=stop_words, background_color="white", max_words=1000).generate(prob)
     rcParams['figure.figsize'] = 10, 20
     plt.imshow(wordcloud)
     plt.axis("off")
@@ -112,12 +131,14 @@ for prob in dp:
 
     # get the individual words of the text, minus extra verb tenses, plurals, and stopwords
     # use lemmatization instead of stemming
-    filtered_words = [most_common([lemmatizer.lemmatize(word.lower(), 'v'),     # verb
-                                   lemmatizer.lemmatize(word.lower(), 'n'),     # noun
-                                   lemmatizer.lemmatize(word.lower(), 'r'),     # adverb
-                                   lemmatizer.lemmatize(word.lower(), 's'),     # satellite adjective
-                                   lemmatizer.lemmatize(word.lower(), 'a')])    # adjective
-                      for word in tokenizer.tokenize(prob) if word not in stopwords]
+    #filtered_words = [most_common([lemmatizer.lemmatize(word.lower(), 'v'),     # verb
+    #                               lemmatizer.lemmatize(word.lower(), 'n'),     # noun
+    #                               lemmatizer.lemmatize(word.lower(), 'r'),     # adverb
+    #                               lemmatizer.lemmatize(word.lower(), 's'),     # satellite adjective
+    #                               lemmatizer.lemmatize(word.lower(), 'a')])    # adjective
+    #                  for word in tokenizer.tokenize(prob) if word not in stopwords]
+    filtered_words = [lemmatizer.lemmatize(word[0].lower(), pos="v") for word in nltk.pos_tag(tokenizer.tokenize(prob))
+                      if word[0] not in stop_words]
     counted_words = collections.Counter(filtered_words)
     words = []
     counts = []
