@@ -66,6 +66,25 @@ class TestPreprocessor(unittest.TestCase):
 
         )
 
+    # Lemmatization breaks if punctuation is not removed.
+    def test_lemmatize(self):
+        self.assertEqual(
+            Preprocessor.lemmatize(Preprocessor.remove_punctuation(self.str_simple).split(' ')),
+            ['Today', 'I', 'went', 'to', 'the', 'store', 'to', 'buy', 'some', 'grocery', 'I', 'bought', 'carrot',
+             'apple', 'and', 'banana']
+        )
+        self.assertEqual(
+            Preprocessor.lemmatize(Preprocessor.remove_punctuation(self.str_complex).split(' ')),
+            ['Natural', 'language', 'processing', 'NLP', 'is', 'a', 'subfield', 'of', 'linguistics', 'computer',
+             'science', 'and', 'artificial', 'intelligence', 'concerned', 'with', 'the', 'interaction', 'between',
+             'computer', 'and', 'human', 'language', 'in', 'particular', 'how', 'to', 'program', 'computer', 'to',
+             'process', 'and', 'analyze', 'large', 'amount', 'of', 'natural', 'language', 'data', 'The', 'goal', 'is',
+             'a', 'computer', 'capable', 'of', 'understanding', 'the', 'content', 'of', 'document', 'including', 'the',
+             'contextual', 'nuance', 'of', 'the', 'language', 'within', 'them', 'The', 'technology', 'can', 'then',
+             'accurately', 'extract', 'information', 'and', 'insight', 'contained', 'in', 'the', 'document', 'a',
+             'well', 'a', 'categorize', 'and', 'organize', 'the', 'document', 'themselves']
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
