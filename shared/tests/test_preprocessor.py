@@ -1,9 +1,9 @@
 import unittest
 
-from ml.preprocessor import Preprocessor
+from shared.preprocessor import Preprocessor
 
 
-# python -m unittest -v ml/tests/test_preprocessor.py
+# python -m unittest -v shared/tests/test_preprocessor.py
 
 class TestPreprocessor(unittest.TestCase):
     def setUp(self):
