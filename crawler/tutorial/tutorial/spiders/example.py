@@ -2,6 +2,8 @@ import scrapy
 import mysql.connector
 from bs4 import BeautifulSoup
 from scrapy.item import Item, Field
+import pandas as pd
+import csv
 
 
 # scrapy crawl example -O myfile.csv:csv
@@ -76,3 +78,17 @@ class ExampleSpider(scrapy.Spider):
         data_pattern = (0, 'Abstract Factory', intent, problem, discussion, structure)
         cursor.execute(add_pattern, data_pattern) # insert new pattern
         db_connection.commit() # commit the data to the DB
+
+        # now that the data is stored in the DB, export the table as a CSV file
+        # source: https://datatofish.com/export-sql-table-to-csv-python/
+        query_all = pd.read_sql_query("select * from pattern_recommender.pattern_ML", db_connection)
+
+        df = pd.DataFrame(query_all)
+        df.to_csv(r'scraped_pattern_data.csv', index=False)
+
+        # source: https://stackoverflow.com/questions/4613465/using-python-to-write-mysql-query-to-csv-need-to-show-field-names
+        #rows = cursor.fetchall()
+        #fp = open('/tmp/file.csv', 'w')
+        #myFile = csv.writer(fp)
+        #myFile.writerows(rows)
+        #fp.close()
