@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from scrapy.item import Item, Field
 import pandas as pd
 import csv
+import requests
 
 
 # scrapy crawl example -O myfile.csv:csv
@@ -58,6 +59,22 @@ class ExampleSpider(scrapy.Spider):
 
     start_urls = creational_urls + structural_urls + behavioral_urls
 
+    # Is there a way to just get all those design pattern links from one page automatically?
+    # See:
+    # https://thepythonscrapyplaybook.com/scrapy-pagination-guide/
+    # https://refactoring.guru/design-patterns/catalog (it has all the URLs we need)
+    # https://www.geeksforgeeks.org/extract-all-the-urls-from-the-webpage-using-python/
+    # https://stackoverflow.com/a/5041056
+    # Just get the links from the pattern-card elements on that catalog page and put them into an array that the spider can loop through.
+    #urls = 'https://refactoring.guru/design-patterns/catalog'
+    #grab = requests.get(urls)
+    #soup = BeautifulSoup(grab.text, 'html.parser')
+
+    #start_urls = []
+    #for link in soup.find_all("a", {"class": "pattern-card"}):
+    #    data = link.get('href')
+    #    start_urls.append(data)
+
 
     def parse(self, response):
         HOST = "localhost"
@@ -103,7 +120,7 @@ class ExampleSpider(scrapy.Spider):
                     problem += ns.text
                 elif last_heading == "Discussion":
                     discussion += ns.text
-                elif last_heading == "Structure":# last_heading == "Structure":
+                elif last_heading == "Structure":
                     structure += ns.text
                 else:
                     break
@@ -123,7 +140,7 @@ class ExampleSpider(scrapy.Spider):
         query_all = pd.read_sql_query("select * from pattern_recommender.pattern_ML", db_connection)
 
         df = pd.DataFrame(query_all)
-        df.to_csv(r'scraped_pattern_data.csv', index=False)
+        df.to_csv(r'scraped_pattern_data_test.csv', index=False)
 
         # source: https://stackoverflow.com/questions/4613465/using-python-to-write-mysql-query-to-csv-need-to-show-field-names
         #rows = cursor.fetchall()

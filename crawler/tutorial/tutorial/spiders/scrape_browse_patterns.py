@@ -58,13 +58,13 @@ class BrowseSpider(scrapy.Spider):
                 elif last_heading == "Structure":
                     structure += ns.text
 
-            # file.write(intent + '\n')
-            # file.write(problem + '\n')
-            # file.write(discussion + '\n')
-            # file.write(structure + '\n')
-            # file.write(example + '\n')
-            # file.write(checklist + '\n')
-            # file.write(rulesOfThumb + '\n')
+            file.write(intent + '\n')
+            file.write(problem + '\n')
+            file.write(discussion + '\n')
+            file.write(structure + '\n')
+            file.write(example + '\n')
+            file.write(checklist + '\n')
+            file.write(rulesOfThumb + '\n')
 
         for myp in soup.find_all("p", class_="image"):
             for img in myp.find_all("img"):
