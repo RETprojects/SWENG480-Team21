@@ -66,14 +66,14 @@ class ExampleSpider(scrapy.Spider):
     # https://www.geeksforgeeks.org/extract-all-the-urls-from-the-webpage-using-python/
     # https://stackoverflow.com/a/5041056
     # Just get the links from the pattern-card elements on that catalog page and put them into an array that the spider can loop through.
-    #urls = 'https://refactoring.guru/design-patterns/catalog'
-    #grab = requests.get(urls)
-    #soup = BeautifulSoup(grab.text, 'html.parser')
-
-    #start_urls = []
-    #for link in soup.find_all("a", {"class": "pattern-card"}):
-    #    data = link.get('href')
-    #    start_urls.append(data)
+    # url = 'https://refactoring.guru/design-patterns/catalog'
+    # grab = requests.get(url)
+    # soup = BeautifulSoup(grab.text, 'html.parser')
+    #
+    # start_urls = []
+    # for link in soup.find_all("a", {"class": "pattern-card"}):
+    #     data = link.get('href')
+    #     start_urls.append('https://refactoring.guru' + data)
 
 
     def parse(self, response):
@@ -140,7 +140,7 @@ class ExampleSpider(scrapy.Spider):
         query_all = pd.read_sql_query("select * from pattern_recommender.pattern_ML", db_connection)
 
         df = pd.DataFrame(query_all)
-        df.to_csv(r'scraped_pattern_data_test.csv', index=False)
+        df.to_csv(r'scraped_pattern_data.csv', index=False)
 
         # source: https://stackoverflow.com/questions/4613465/using-python-to-write-mysql-query-to-csv-need-to-show-field-names
         #rows = cursor.fetchall()
