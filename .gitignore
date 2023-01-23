@@ -3,3 +3,4 @@ __pycache__/
 _trial_temp/
 .DS_Store
 .ipynb_checkpoints/
+*.pkl
