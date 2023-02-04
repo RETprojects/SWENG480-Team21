@@ -1,0 +1,131 @@
+name,correct_category,overview
+Singleton,2,"Ensure a class only has one instance, and provide a global point of access to it. It’s important for some classes to have exactly one instance. Although there can be many printers in a system, there should be only one printer spooler. There should be only one file system and one window manager. A digital filter will have one A/D converter. An accounting system will be dedicated to serving one company.
+
+How do we ensure that a class has only one instance and that the instance is easily accessible? A global variable makes an object accessible, but it doesn’t keep you from instantiating multiple objects.
+
+A better solution is to make the class itself responsible for keeping track of its sole instance. The class can ensure that no other instance can be created (by intercepting requests to create new objects), and it can provide a way to access the instance. This is the Singleton pattern.
+
+Use the Singleton pattern when
+
+• there must be exactly one instance of a class, and it must be accessible to clients from a well-known access point.
+
+• when the sole instance should be extensible by subclassing, and clients should be able to use an extended instance without modifying their code."
+Factory method,2,"Define an interface for creating an object, but let subclasses decide which class to instantiate. Factory Method lets a class defer instantiation to subclasses. Frameworks use abstract classes to define and maintain relationships between objects. A framework is often responsible for creating these objects as well.
+
+Consider a framework for applications that can present multiple documents to the user. Two key abstractions in this framework are the classes Application and Document. Both classes are abstract, and clients have to subclass them to realize their application-specific implementations. To create a drawing application, for example, we define the classes DrawingApplication and DrawingDocument. The Application class is responsible for managing Documents and will create them as required—when the user selects Open or New from a menu, for example.
+
+Because the particular Document subclass to instantiate is application-specific, the Application class can’t predict the subclass of Document to instantiate—the Application class only knows when a new document should be created, not what kind of Document to create. This creates a dilemma: The framework must instantiate classes, but it only knows about abstract classes, which it cannot instantiate.
+
+The Factory Method pattern offers a solution. It encapsulates the knowledge of which Document subclass to create and moves this knowledge out of the framework.
+
+image
+
+Application subclasses redefine an abstract CreateDocument operation on Application to return the appropriate Document subclass. Once an Application subclass is instantiated, it can then instantiate application-specific Documents without knowing their class. We call CreateDocument a factory method because it’s responsible for “manufacturing” an object. Use the Factory Method pattern when
+
+• a class can’t anticipate the class of objects it must create.
+
+• a class wants its subclasses to specify the objects it creates.
+
+• classes delegate responsibility to one of several helper subclasses, and you want to localize the knowledge of which helper subclass is the delegate."
+Strategy,0,"Define a family of algorithms, encapsulate each one, and make them interchangeable. Strategy lets the algorithm vary independently from clients that use it.
+
+
+Many algorithms exist for breaking a stream of text into lines. Hard-wiring all such algorithms into the classes that require them isn’t desirable for several reasons:
+
+• Clients that need linebreaking get more complex if they include the line-breaking code. That makes clients bigger and harder to maintain, especially if they support multiple linebreaking algorithms.
+
+• Different algorithms will be appropriate at different times. We don’t want to support multiple linebreaking algorithms if we don’t use them all.
+
+• It’s difficult to add new algorithms and vary existing ones when linebreaking is an integral part of a client.
+
+We can avoid these problems by defining classes that encapsulate different line-breaking algorithms. An algorithm that’s encapsulated in this way is called a strategy.
+
+image
+
+Suppose a Composition class is responsible for maintaining and updating the linebreaks of text displayed in a text viewer. Linebreaking strategies aren’t implemented by the class Composition. Instead, they are implemented separately by subclasses of the abstract Compositor class. Compositor subclasses implement different strategies:
+
+• SimpleCompositor implements a simple strategy that determines linebreaks one at a time.
+
+• TeXCompositor implements the TEX algorithm for finding linebreaks. This strategy tries to optimize linebreaks globally, that is, one paragraph at a time.
+
+• ArrayCompositor implements a strategy that selects breaks so that each row has a fixed number of items. It’s useful for breaking a collection of icons into rows, for example.
+
+A Composition maintains a reference to a Compositor object. Whenever a Composition reformats its text, it forwards this responsibility to its Compositor object. The client of Composition specifies which Compositor should be used by installing the Compositor it desires into the Composition.
+
+Use the Strategy pattern when
+
+• many related classes differ only in their behavior. Strategies provide a way to configure a class with one of many behaviors.
+
+• you need different variants of an algorithm. For example, you might define algorithms reflecting different space/time trade-offs. Strategies can be used when these variants are implemented as a class hierarchy of algorithms [HO87].
+
+• an algorithm uses data that clients shouldn’t know about. Use the Strategy pattern to avoid exposing complex, algorithm-specific data structures.
+
+• a class defines many behaviors, and these appear as multiple conditional statements in its operations. Instead of many conditionals, move related conditional branches into their own Strategy class."
+Observer,0,"Define a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically. A common side-effect of partitioning a system into a collection of cooperating classes is the need to maintain consistency between related objects. You don’t want to achieve consistency by making the classes tightly coupled, because that reduces their reusability.
+
+For example, many graphical user interface toolkits separate the presentational aspects of the user interface from the underlying application data [KP88, LVC89, P+88, WGM88]. Classes defining application data and presentations can be reused independently. They can work together, too. Both a spreadsheet object and bar chart object can depict information in the same application data object using different presentations. The spreadsheet and the bar chart don’t know about each other, thereby letting you reuse only the one you need. But they behave as though they do. When the user changes the information in the spreadsheet, the bar chart reflects the changes immediately, and vice versa.
+
+image
+
+This behavior implies that the spreadsheet and bar chart are dependent on the data object and therefore should be notified of any change in its state. And there’s no reason to limit the number of dependent objects to two; there may be any number of different user interfaces to the same data.
+
+The Observer pattern describes how to establish these relationships. The key objects in this pattern are subject and observer. A subject may have any number of dependent observers. All observers are notified whenever the subject undergoes a change in state. In response, each observer will query the subject to synchronize its state with the subject’s state.
+
+This kind of interaction is also known as publish-subscribe. The subject is the publisher of notifications. It sends out these notifications without having to know who its observers are. Any number of observers can subscribe to receive notifications. Use the Observer pattern in any of the following situations:
+
+• When an abstraction has two aspects, one dependent on the other. Encapsulating these aspects in separate objects lets you vary and reuse them independently.
+
+• When a change to one object requires changing others, and you don’t know how many objects need to be changed.
+
+• When an object should be able to notify other objects without making assumptions about who these objects are. In other words, you don’t want these objects tightly coupled."
+Builder,2,"Separate the construction of a complex object from its representation so that the same construction process can create different representations. A reader for the RTF (Rich Text Format) document exchange format should be able to convert RTF to many text formats. The reader might convert RTF documents into plain ASCII text or into a text widget that can be edited interactively. The problem, however, is that the number of possible conversions is open-ended. So it should be easy to add a new conversion without modifying the reader.
+
+A solution is to configure the RTFReader class with a TextConverter object that converts RTF to another textual representation. As the RTFReader parses the RTF document, it uses the TextConverter to perform the conversion. Whenever the RTFReader recognizes an RTF token (either plain text or an RTF control word), it issues a request to the TextConverter to convert the token. TextConverter objects are responsible both for performing the data conversion and for representing the token in a particular format.
+
+Subclasses of TextConverter specialize in different conversions and formats. For example, an ASCIIConverter ignores requests to convert anything except plain text. A TeXConverter, on the other hand, will implement operations for all requests in order to produce a TEX representation that captures all the stylistic information in the text. A TextWidgetConverter will produce a complex user interface object that lets the user see and edit the text.
+
+image
+
+Each kind of converter class takes the mechanism for creating and assembling a complex object and puts it behind an abstract interface. The converter is separate from the reader, which is responsible for parsing an RTF document.
+
+The Builder pattern captures all these relationships. Each converter class is called a builder in the pattern, and the reader is called the director. Applied to this example, the Builder pattern separates the algorithm for interpreting a textual format (that is, the parser for RTF documents) from how a converted format gets created and represented. This lets us reuse the RTFReader’s parsing algorithm to create different text representations from RTF documents—just configure the RTFReader with different subclasses of TextConverter. Use the Builder pattern when
+
+• the algorithm for creating a complex object should be independent of the parts that make up the object and how they’re assembled.
+
+• the construction process must allow different representations for the object that’s constructed."
+Adapter,1,"Convert the interface of a class into another interface clients expect. Adapter lets classes work together that couldn’t otherwise because of incompatible interfaces. Sometimes a toolkit class that’s designed for reuse isn’t reusable only because its interface doesn’t match the domain-specific interface an application requires.
+
+Consider for example a drawing editor that lets users draw and arrange graphical elements (lines, polygons, text, etc.) into pictures and diagrams. The drawing editor’s key abstraction is the graphical object, which has an editable shape and can draw itself. The interface for graphical objects is defined by an abstract class called Shape. The editor defines a subclass of Shape for each kind of graphical object: a LineShape class for lines, a PolygonShape class for polygons, and so forth.
+
+Classes for elementary geometric shapes like LineShape and PolygonShape are rather easy to implement, because their drawing and editing capabilities are inherently limited. But a TextShape subclass that can display and edit text is considerably more difficult to implement, since even basic text editing involves complicated screen update and buffer management. Meanwhile, an off-the-shelf user interface toolkit might already provide a sophisticated TextView class for displaying and editing text. Ideally we’d like to reuse TextView to implement TextShape, but the toolkit wasn’t designed with Shape classes in mind. So we can’t use TextView and Shape objects interchangeably.
+
+How can existing and unrelated classes like TextView work in an application that expects classes with a different and incompatible interface? We could change the TextView class so that it conforms to the Shape interface, but that isn’t an option unless we have the toolkit’s source code. Even if we did, it wouldn’t make sense to change TextView; the toolkit shouldn’t have to adopt domain-specific interfaces just to make one application work.
+
+Instead, we could define TextShape so that it adapts the TextView interface to Shape’s. We can do this in one of two ways: (1) by inheriting Shape’s interface and TextView’s implementation or (2) by composing a TextView instance within a TextShape and implementing TextShape in terms of TextView’s interface. These two approaches correspond to the class and object versions of the Adapter pattern. We call TextShape an adapter.
+
+image
+
+This diagram illustrates the object adapter case. It shows how BoundingBox requests, declared in class Shape, are converted to GetExtent requests defined in TextView. Since TextShape adapts TextView to the Shape interface, the drawing editor can reuse the otherwise incompatible TextView class.
+
+Often the adapter is responsible for functionality the adapted class doesn’t provide. The diagram shows how an adapter can fulfill such responsibilities. The user should be able to “drag” every Shape object to a new location interactively, but TextView isn’t designed to do that. TextShape can add this missing functionality by implementing Shape’s CreateManipulator operation, which returns an instance of the appropriate Manipulator subclass.
+
+Manipulator is an abstract class for objects that know how to animate a Shape in response to user input, like dragging the shape to a new location. There are subclasses of Manipulator for different shapes; TextManipulator, for example, is the corresponding subclass for TextShape. By returning a TextManipulator instance, TextShape adds the functionality that TextView lacks but Shape requires. Use the Adapter pattern when
+
+• you want to use an existing class, and its interface does not match the one you need.
+
+• you want to create a reusable class that cooperates with unrelated or unforeseen classes, that is, classes that don’t necessarily have compatible interfaces.
+
+• (object adapter only) you need to use several existing subclasses, but it’s impractical to adapt their interface by subclassing every one. An object adapter can adapt the interface of its parent class."
+State,0,"Allow an object to alter its behavior when its internal state changes. The object will appear to change its class. Consider a class TCPConnection that represents a network connection. A TCP-Connection object can be in one of several different states: Established, Listening, Closed. When a TCPConnection object receives requests from other objects, it responds differently depending on its current state. For example, the effect of an Open request depends on whether the connection is in its Closed state or its Established state. The State pattern describes how TCPConnection can exhibit different behavior in each state.
+
+The key idea in this pattern is to introduce an abstract class called TCPState to represent the states of the network connection. The TCPState class declares an interface common to all classes that represent different operational states. Subclasses of TCPState implement state-specific behavior. For example, the classes TCPEstablished and TCPClosed implement behavior particular to the Established and Closed states of TCPConnection.
+
+image
+
+The class TCPConnection maintains a state object (an instance of a subclass of TCPState) that represents the current state of the TCP connection. The class TCP-Connection delegates all state-specific requests to this state object. TCPConnection uses its TCPState subclass instance to perform operations particular to the state of the connection.
+
+Whenever the connection changes state, the TCPConnection object changes the state object it uses. When the connection goes from established to closed, for example, TCPConnection will replace its TCPEstablished instance with a TCPClosed instance. Use the State pattern in either of the following cases:
+
+• An object’s behavior depends on its state, and it must change its behavior at run-time depending on that state.
+
+• Operations have large, multipart conditional statements that depend on the object’s state. This state is usually represented by one or more enumerated constants. Often, several operations will contain this same conditional structure. The State pattern puts each branch of the conditional in a separate class. This lets you treat the object’s state as an object in its own right that can vary independently from other objects."
