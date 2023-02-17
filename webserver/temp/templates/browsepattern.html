@@ -14,15 +14,23 @@
 <body style="text-align: left;background-color: #d9d9d9">
     <section style="margin-left: 50px;margin-right: 50px;">
         <p style=" font-size: 25px">Design Pattern Recommendation System: Pattern Organization</p>
-        <p style="line-height: 20px; font-size: 15px">See what design patterns are currently in our database.{{patternList}}</p>
+        <p style="line-height: 20px; font-size: 15px">See what design patterns are currently in our database.</p>
         <div style="display: flex">
             <div style="flex: 50%">
                 <label for="list1"></label><select id="list1" onchange="run()" onload="run()">
-                     <option value="1">Object Oriented</option>
-                     <option value="2">Realtime</option>
-                     <option value="3">Security</option>
+                    {% if patternCatalogList %}
+                        {% for patternCatalog in patternCatalogList %}
+                            <option value="{{patternCatalog.name}}">{{patternCatalog.name}}</option>
+                        {% endfor %}
+                    {% endif %}
                 </select>
-                <p id="output1"></p>
+                {% if patternList %}
+                    <ul>
+                    {% for pattern in patternList %}
+                        <li><a href="/temp/{{ pattern.name }}/">{{ pattern.name }}</a></li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
             </div>
             <div style="flex: 50%">
                 <p id="output2">TITLE ELEMENT</p>
@@ -31,6 +39,11 @@
                 <textarea readonly rows = 20 style="overflow: auto; resize: none; width: 99.65%;">Solution Domain&#10</textarea>
             </div>
         </div>
+        {{ patternList|json_script:"patternListJSON"}}
+        <script>
+            let jsondata = JSON.parse(document.getElementById('patternListJSON').textContent)
+            console.log(jsondata)
+        </script>
         <!--
         <script>
             function run() {
