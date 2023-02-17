@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'temp/common.css' %}">
+</head>
+<header><div class="topnav">
+    <section> Penn State Behrend</section>
+  <a class="" href="/temp/home">Home</a>
+  <a class="active" href="/temp/browsepattern">Browse Pattern</a>
+  <a class="" href="/temp/recommendpattern">Recommend a Pattern</a>
+</div></header>
+<body style="text-align: left;background-color: #d9d9d9">
+    <section style="margin-left: 50px;margin-right: 50px;">
+        <p style=" font-size: 25px">Design Pattern Recommendation System: Pattern Organization</p>
+        <p style="line-height: 20px; font-size: 15px">See what design patterns are currently in our database.</p>
+        <div style="display: flex">
+            <div style="flex: 50%">
+                <label for="list1"></label><select id="list1" onchange="run()" onload="run()">
+                    {% if patternCatalogList %}
+                        {% for patternCatalog in patternCatalogList %}
+                            <option value="{{patternCatalog.name}}">{{patternCatalog.name}}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+                {% if patternList %}
+                    <ul>
+                    {% for pattern in patternList %}
+                        <li><a href="/temp/{{ pattern.name }}/">{{ pattern.name }}</a></li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <div style="flex: 50%">
+                <p id="output2">TITLE ELEMENT</p>
+                <textarea readonly rows = 20 style="overflow: auto; resize: none; width: 99.65%;">Problem Domain&#10</textarea>
+                <p></p>
+                <textarea readonly rows = 20 style="overflow: auto; resize: none; width: 99.65%;">Solution Domain&#10</textarea>
+            </div>
+        </div>
+        {{ patternList|json_script:"patternListJSON"}}
+        <script>
+            let jsondata = JSON.parse(document.getElementById('patternListJSON').textContent)
+            console.log(jsondata)
+        </script>
+        <!--
+        <script>
+            function run() {
+                if(document.getElementById("list1").value === "1") document.getElementById("output1").innerHTML =
+                    "<a>Creational</a><br><section style='margin-left: 25px'>Factory Method<br>Abstract Factory<br>Builder<br>Prototype<br>Singleton</section>" +
+                    "Structural<br><section style='margin-left: 25px'>Adapter<br>Bridge<br>Composite<br>Decorator<br>Facade<br>Singleton<br>Flyweight<br>Private Class Data<br>Proxy</section>" +
+                    "Behavioral<br><section style='margin-left: 25px'>Chain of responsibility<br>Command<br>Interpreter<br>Iterator<br>Mediator<br>Memento<br>Null Object<br>Observer<br>State<br>Strategy<br>Template method<br>Visitor</section>"
+                else if(document.getElementById("list1").value === "2") document.getElementById("output1").innerHTML = "2"
+                else if(document.getElementById("list1").value === "3") document.getElementById("output1").innerHTML = "3"
+                else document.getElementById("output1").innerText = "ERROR"
+            }
+            window.onload = function(){
+                run()
+            }
+        </script>
+        -->
+    </section>
+
+</body>
+</html>
