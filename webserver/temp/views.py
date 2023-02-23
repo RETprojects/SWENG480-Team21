@@ -1,10 +1,8 @@
 import json
 
 from django.core import serializers
-from django.core.serializers.json import DjangoJSONEncoder
-from django.forms import model_to_dict
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.template import loader
 from .models import PatternCategory, PatternCatalog, Pattern
 
@@ -17,11 +15,23 @@ def home(request):
 
 
 def browse_pattern(request):
-    patternList = list(Pattern.objects.all())
-    patternListJSON = serializers.get_serializer("json")().serialize(Pattern.objects.all())
+    patternList = Pattern.objects.all()
+    patternListJSON = serializers.get_serializer("json")().serialize(patternList)
     patternCategoryList = PatternCategory.objects.all()
+    patternCategoryListJSON = serializers.get_serializer("json")().serialize(patternCategoryList)
     patternCatalogList = PatternCatalog.objects.all()
-    return render(request, 'browsepattern.html', {'patternList': patternList, 'patternCategoryList': patternCategoryList, 'patternCatalogList': patternCatalogList, 'patternListJSON': patternListJSON})
+    patternCatalogListJSON = serializers.get_serializer("json")().serialize(patternCatalogList)
+    return render(request, 'browsepattern.html', {'patternList': patternList, 'patternCategoryList': patternCategoryList, 'patternCatalogList': patternCatalogList, 'patternListJSON': patternListJSON, 'patternCategoryListJSON': patternCategoryListJSON, 'patternCatalogListJSON': patternCatalogListJSON})
 def recommend_pattern(request):
     template = loader.get_template('recommendpattern.html')
+    return HttpResponse(template.render())
+
+
+def submit_pattern(request):
+    template = loader.get_template('submitpattern.html')
+    return HttpResponse(template.render())
+
+
+def collect_pattern(request):
+    template = loader.get_template('collectpattern.html')
     return HttpResponse(template.render())

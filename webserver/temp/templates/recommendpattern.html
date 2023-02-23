@@ -9,26 +9,23 @@
     <section> Penn State Behrend</section>
   <a class="" href="/temp/home">Home</a>
   <a class="" href="/temp/browsepattern">Browse Pattern</a>
-  <a class="active" href="/temp/recommendpattern">Recommend a Pattern</a>
+  <a class="active" href="/temp/submitpattern">Recommend a Pattern</a>
 </div></header>
 <body style="text-align: left;background-color: #d9d9d9">
     <section style="margin-left: 50px;margin-right: 50px;">
         <p style=" font-size: 25px">Design Pattern Recommendation System: Pattern Selection</p>
-        <p style="line-height: 20px; font-size: 15px">Have a software design problem? Describe it here and submit it to receive design pattern recommendations!</p>
-        <section style="display: flex; justify-content:space-between;">
-            Describe your problem here:
-            <section>
-            Select a pattern category:
-            <label for="list1"></label>
-            <select id="list1" onchange="run()" onload="run()">
-                 <option value="1">Object Oriented</option>
-                 <option value="2">Realtime</option>
-                 <option value="3">Security</option>
-            </select>
-            </section>
-        </section>
-        <label for="text"></label><textarea style="resize: none; width: 99.65%; height: 750px" id = "text" name="text"  ></textarea>
-        <a style="align-content: center;" href="#">Submit</a>
+        <p style="line-height: 20px; font-size: 15px">Here are the design patterns recommended for your design problems, ordered by similarity score.</p>
+        <div style="display: flex">
+            <div style="flex: 25%">
+                <textarea id="textarea3" readonly style="overflow: auto; resize: none; width: 90%; height: 627px; margin-top: 47px"></textarea>
+            </div>
+            <div style="flex: 50%">
+                <p id="output1" style= "font-size: 15px; font-weight: bold">Design Pattern</p>
+                <textarea id="textarea1" readonly rows = 20 style="overflow: auto; resize: none; width: 99.65%;">Problem Domain&#10</textarea>
+                <p></p>
+                <textarea id="textarea2" readonly rows = 20 style="overflow: auto; resize: none; width: 99.65%;">Solution Domain&#10</textarea>
+            </div>
+        </div>
     </section>
 </body>
 </html>
