@@ -9,58 +9,105 @@
     <section> Penn State Behrend</section>
   <a class="" href="/temp/home">Home</a>
   <a class="active" href="/temp/browsepattern">Browse Pattern</a>
-  <a class="" href="/temp/recommendpattern">Recommend a Pattern</a>
+  <a class="" href="/temp/submitpattern">Recommend a Pattern</a>
 </div></header>
 <body style="text-align: left;background-color: #d9d9d9">
     <section style="margin-left: 50px;margin-right: 50px;">
         <p style=" font-size: 25px">Design Pattern Recommendation System: Pattern Organization</p>
-        <p style="line-height: 20px; font-size: 15px">See what design patterns are currently in our database.</p>
+        <div style="line-height: 20px; font-size: 15px">See what design patterns are currently available in our database.</div>
         <div style="display: flex">
-            <div style="flex: 50%">
-                <label for="list1"></label><select id="list1" onchange="run()" onload="run()">
+            <div style="flex: 25%">
+                <label for="list1"></label><select id="list1" onchange="run()" onload="run()" style="margin-top: 13px">
                     {% if patternCatalogList %}
                         {% for patternCatalog in patternCatalogList %}
-                            <option value="{{patternCatalog.name}}">{{patternCatalog.name}}</option>
+                            <option value="{{patternCatalog.pk}}">{{patternCatalog.name}}</option>
                         {% endfor %}
                     {% endif %}
                 </select>
-                {% if patternList %}
-                    <ul>
-                    {% for pattern in patternList %}
-                        <li><a href="/temp/{{ pattern.name }}/">{{ pattern.name }}</a></li>
-                    {% endfor %}
-                    </ul>
-                {% endif %}
+                <div id="div1"></div>
             </div>
             <div style="flex: 50%">
-                <p id="output2">TITLE ELEMENT</p>
-                <textarea readonly rows = 20 style="overflow: auto; resize: none; width: 99.65%;">Problem Domain&#10</textarea>
+                <p id="output1" style= "font-size: 15px; font-weight: bold">Design Pattern</p>
+                <textarea id="textarea1" readonly rows = 20 style="overflow: auto; resize: none; width: 99.65%;">Problem Domain&#10</textarea>
                 <p></p>
-                <textarea readonly rows = 20 style="overflow: auto; resize: none; width: 99.65%;">Solution Domain&#10</textarea>
+                <textarea id="textarea2" readonly rows = 20 style="overflow: auto; resize: none; width: 99.65%;">Solution Domain&#10</textarea>
             </div>
         </div>
-        {{ patternList|json_script:"patternListJSON"}}
+        {{ patternListJSON|json_script:"patternListJSON" }}
+        {{ patternCategoryListJSON|json_script:"patternCategoryListJSON" }}
+        {{ patternCatalogListJSON|json_script:"patternCatalogListJSON" }}
         <script>
-            let jsondata = JSON.parse(document.getElementById('patternListJSON').textContent)
-            console.log(jsondata)
-        </script>
-        <!--
-        <script>
-            function run() {
-                if(document.getElementById("list1").value === "1") document.getElementById("output1").innerHTML =
-                    "<a>Creational</a><br><section style='margin-left: 25px'>Factory Method<br>Abstract Factory<br>Builder<br>Prototype<br>Singleton</section>" +
-                    "Structural<br><section style='margin-left: 25px'>Adapter<br>Bridge<br>Composite<br>Decorator<br>Facade<br>Singleton<br>Flyweight<br>Private Class Data<br>Proxy</section>" +
-                    "Behavioral<br><section style='margin-left: 25px'>Chain of responsibility<br>Command<br>Interpreter<br>Iterator<br>Mediator<br>Memento<br>Null Object<br>Observer<br>State<br>Strategy<br>Template method<br>Visitor</section>"
-                else if(document.getElementById("list1").value === "2") document.getElementById("output1").innerHTML = "2"
-                else if(document.getElementById("list1").value === "3") document.getElementById("output1").innerHTML = "3"
-                else document.getElementById("output1").innerText = "ERROR"
+            let patternList = JSON.parse(JSON.parse(document.getElementById('patternListJSON').textContent));
+            let patternCategoryList = JSON.parse(JSON.parse(document.getElementById('patternCategoryListJSON').textContent));
+            let patternCatalogList = JSON.parse(JSON.parse(document.getElementById('patternCatalogListJSON').textContent));
+            let pList = [];
+            let ulList = [];
+            let liList = [];
+            let buttonList = [];
+            function run(){
+                clearList(pList)
+                clearList(ulList)
+                clearList(liList)
+                clearList(buttonList)
+                clearText()
+                //console.log(patternList)
+                //console.log(patternCategoryList)
+                //console.log(patternCatalogList)
+
+                generateCategories(parseInt(document.getElementById("list1").value))
+            }
+            function generateCategories(catalog){
+                for(const x in patternCategoryList){
+                    if(patternCategoryList[x].fields.catalog === catalog){
+                        const p = document.createElement('p')
+                        p.id = 'p' + patternCategoryList[x].pk
+                        p.textContent = patternCategoryList[x].fields.name
+                        pList[pList.length] = p
+                        const ul = document.createElement('ul')
+                        ul.id = 'ul' + patternCategoryList[x].pk
+                        ulList[ulList.length] = ul
+                        document.getElementById("div1").append(p)
+                        document.getElementById("div1").append(ul)
+                        generateButtons(patternCategoryList[x].pk)
+                    }
+                }
+            }
+            function generateButtons(category){
+                for (const x in patternList) {
+                    if(patternList[x].fields.category === category){
+                        const btn = document.createElement("BUTTON");
+                        btn.textContent = patternList[x].fields.name;
+                        btn.onclick = function(){
+                            autoOnClick(patternList[x]);
+                        };
+                        btn.id = 'btn' + patternList[x].pk
+                        buttonList[buttonList.length] = btn
+                        const li = document.createElement('li')
+                        liList[liList.length] = li
+                        li.append(btn)
+                        document.getElementById("ul" + patternList[x].fields.category).appendChild(li)
+                    }
+                }
+            }
+            function autoOnClick(pattern){
+                document.getElementById("output1").innerText = pattern.fields.name;
+                document.getElementById("textarea1").innerText = "Problem Domain" + pattern.fields.intent + pattern.fields.applicability + pattern.fields.motivation;
+                document.getElementById("textarea2").innerText = "Solution Domain" + pattern.fields.structure + pattern.fields.participant_collaborations + pattern.fields.consequences + pattern.fields.implementation + pattern.fields.related_patterns;
+            }
+            function clearList(list){
+                for(const x in list){
+                    list[x].remove()
+                }
+            }
+            function clearText(){
+                document.getElementById("output1").innerText = "Design Pattern";
+                document.getElementById("textarea1").innerText = "Problem Domain";
+                document.getElementById("textarea2").innerText = "Solution Domain";
             }
             window.onload = function(){
                 run()
             }
         </script>
-        -->
     </section>
-
 </body>
 </html>
