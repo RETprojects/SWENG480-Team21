@@ -1,52 +1,37 @@
-import scrapy
+from scrapy import signals
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.linkextractors import LinkExtractor
 
+class SourceMakingSpider(CrawlSpider):
+    name = 'sourcemaking'
+    allowed_domains = ['sourcemaking.com']
+    start_urls = ['https://sourcemaking.com/']
 
-class SourceMakingSpider(scrapy.Spider):
-    name = "sourcemaking"
+    rules = (
+        # https://regex101.com/r/c5EFB6/1
+        Rule(LinkExtractor(allow=('/design_patterns/[^/]+(?<!patterns)/?$')), callback='parse_item'),
+    )
 
-    creational_urls = [
-        'https://sourcemaking.com/design_patterns/abstract_factory',
-        'https://sourcemaking.com/design_patterns/builder',
-        'https://sourcemaking.com/design_patterns/factory_method',
-        'https://sourcemaking.com/design_patterns/object_pool',
-        'https://sourcemaking.com/design_patterns/prototype',
-        'https://sourcemaking.com/design_patterns/singleton'
-    ]
+    links = []
 
-    structural_urls = [
-        'https://sourcemaking.com/design_patterns/adapter',
-        'https://sourcemaking.com/design_patterns/bridge',
-        'https://sourcemaking.com/design_patterns/composite',
-        'https://sourcemaking.com/design_patterns/decorator',
-        'https://sourcemaking.com/design_patterns/facade',
-        'https://sourcemaking.com/design_patterns/flyweight',
-        'https://sourcemaking.com/design_patterns/proxy',
-        'https://sourcemaking.com/design_patterns/private_class_data',
-        'https://sourcemaking.com/design_patterns/proxy'
-    ]
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super(SourceMakingSpider, cls).from_crawler(crawler, *args, **kwargs)
+        crawler.signals.connect(spider.spider_closed, signal=signals.spider_closed)
+        return spider
 
-    behavioral_urls = [
-        'https://sourcemaking.com/design_patterns/chain_of_responsibility',
-        'https://sourcemaking.com/design_patterns/command',
-        'https://sourcemaking.com/design_patterns/interpreter',
-        'https://sourcemaking.com/design_patterns/iterator',
-        'https://sourcemaking.com/design_patterns/mediator',
-        'https://sourcemaking.com/design_patterns/memento',
-        'https://sourcemaking.com/design_patterns/null_object',
-        'https://sourcemaking.com/design_patterns/observer',
-        'https://sourcemaking.com/design_patterns/state',
-        'https://sourcemaking.com/design_patterns/state',
-        'https://sourcemaking.com/design_patterns/strategy',
-        'https://sourcemaking.com/design_patterns/template_method',
-        'https://sourcemaking.com/design_patterns/visitor'
+    def spider_closed(self, spider):
+        spider.logger.info('Spiderdsfasd closed: %s', spider.name)
+        with open('your_file.txt', 'w') as f:
+            for line in self.links:
+                f.write(f"{line}\n")
+        # spider.logger.info(self.links)
 
-    ]
-
-    start_urls = creational_urls + structural_urls + behavioral_urls
-
-    def parse(self, response):
-        page = response.url.split("/")[-1]
-        filename = f'patterns/{page}.html'
-        with open(filename, 'wb') as f:
-            f.write(response.body)
-        self.log(f'Saved file {filename}')
+    def parse_item(self, response):
+        # page = response.url.split("/")[-1]
+        # filename = f'patterns/{page}.html'
+        # with open(filename, 'wb') as f:
+        #     f.write(response.body)
+        # self.log(f'Saved file {filename}')
+        self.logger.info('A response from %s just arrived!', response.url)
+        self.links.append(response.url)
