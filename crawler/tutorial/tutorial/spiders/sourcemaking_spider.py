@@ -1,3 +1,7 @@
+# scrapy runspider crawler/tutorial/tutorial/spiders/sourcemaking_spider.py
+
+import os
+
 from scrapy import signals
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
@@ -12,7 +16,7 @@ class SourceMakingSpider(CrawlSpider):
         Rule(LinkExtractor(allow=('/design_patterns/[^/]+(?<!patterns)/?$')), callback='parse_item'),
     )
 
-    links = []
+    rows = []
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -21,17 +25,13 @@ class SourceMakingSpider(CrawlSpider):
         return spider
 
     def spider_closed(self, spider):
-        spider.logger.info('Spiderdsfasd closed: %s', spider.name)
-        with open('your_file.txt', 'w') as f:
-            for line in self.links:
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/sourcemaking.csv', 'w') as f:
+            f.write('pattern_name,text\n')
+            for line in self.rows:
                 f.write(f"{line}\n")
-        # spider.logger.info(self.links)
 
     def parse_item(self, response):
-        # page = response.url.split("/")[-1]
-        # filename = f'patterns/{page}.html'
-        # with open(filename, 'wb') as f:
-        #     f.write(response.body)
-        # self.log(f'Saved file {filename}')
-        self.logger.info('A response from %s just arrived!', response.url)
-        self.links.append(response.url)
+        text_nodes = response.xpath('//article/*[not(self::script or contains(@class,\'banner\'))]/descendant::*/text()').getall()
+        text_nodes = [x.replace('\n', ' ').replace(',','') for x in text_nodes]
+        full_text = response.url.split('/')[-1] + ',' + ' '.join(text_nodes)
+        self.rows.append(full_text)
