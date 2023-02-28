@@ -4,10 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-nltk = "*"
 scrapy = "*"
 scikit-learn-extra = "*"
 scikit-fuzzy = "*"
+nltk = "*"
+django = "*"
+mysqlclient = "*"
 
 [dev-packages]
 
