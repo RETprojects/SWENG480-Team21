@@ -80,30 +80,6 @@ class RefactoringGuruSpider(scrapy.Spider):
         print(patternName)
 
         print("=========================================================================================")
-        # for s in soup.select('h2'):
-        #     imgHit = False
-        #     for ns in s.fetchNextSiblings():
-        #         if ns.name == "figure":
-        #             imgHit = True
-        #         if ns.name == "h3":
-        #             imgHit = False
-        #             continue
-        #         if imgHit:
-        #             continue
-        #         overview += ns.text
-        #
-        # if overview == "":
-        #     for s in soup.select('h1'):
-        #         imgHit = False
-        #         for ns in s.fetchNextSiblings():
-        #             if ns.name == "figure":
-        #                 imgHit = True
-        #             if ns.name == "h3":
-        #                 imgHit = False
-        #                 continue
-        #             if imgHit:
-        #                 continue
-        #             overview += ns.text
 
         for s in soup.select('h2'):
             imgHit = False
