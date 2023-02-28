@@ -1,0 +1,1286 @@
+id,category_id,name,overview
+91,0,abstract_factory_pattern,"
+Question:What is the abstract factory pattern?
+Answer: A factory pattern in which the factory class is abstract so that its implementation can be given as per requirement. 
+This pattern provids an interface for creating families of related or dependent objects without specifying their concrete classes.
+Given a set of related abstract classes, the Abstract Factory pattern provides a way to create instances of those abstract classes from a matched set of concerte subclases. The ""Abstract Factory"" pattern provides an abstract class that determines the appropriate concrete class to instantiate to create a set of concrete products that implement a standard interface. 
+The client interacts only with the product interfaces and the Abstract Factory class. The client never knows about the concrete construction classes provided by this pattern. 
+The Abstract Factory pattern is similar to the Factory Method pattern, except it creates families of related objects.
+
+The following lists the benefits of using the Abstract Factory pattern:
+
+Isolates concrete classes.
+Makes exchanging product families easy.
+Promotes consistency among products.
+
+
+You should use the Abstract Factory pattern when:
+
+The system should be independent of how its prodcuts are created, composed, and represented.
+The system should be configured with one of multiple families of products  a) MS Windows or b) Apple Macintosh
+The family of related product objects is designed to be used together, and you must enforce this constraint. 	This is the key point of the pattern, otherwise you could use a Factory Pattern.
+
+Gang of Four Patterns
+
+A realization is a semantic relationship between classifiers, where one classifier specifies a contract that another classifier guarantees to carry out.
+Generalization relationship is an association with a small triangle next to the class being inherited from whereas an aggregation relationship is an association with a diamond next to the class representing the aggregate. 
+
+
+The abstract factory pattern is a software design pattern that provides a way to encapsulate a group of individual factories that have a common theme. In normal usage, the client software creates a concrete implementation of the abstract factory and then uses the generic interfaces to create the concrete objects that are part of the theme. The client does not know (or care) which concrete objects it gets from each of these internal factories, since it uses only the generic interfaces of their products. 
+This pattern separates the details of implementation of a set of objects from their general usage. 
+An example of this would be an abstract factory class DocumentCreator that provides interfaces to create a number of products  (e.g. createLetter() and createResume()). The system would have any number of derived concrete versions of the DocumentCreator class like FancyDocumentCreator or ModernDocumentCreator, each with a different implementation of createLetter() and createResume() that would create a corresponding object like FancyLetter or ModernResume. 
+Each of these products is derived from a simple abstract class like Letter or Resume of which the client is aware. The client code would get an appropriate instance of the DocumentCreator and call its factory methods. Each of the resulting objects would be created from the same DocumentCreator implementation and would share a common theme (they would all be fancy or modern objects). The client would need to know how to handle only the abstract Letter or Resume class, not the specific version that it got from the concrete factory.
+
+A factory is the location or a concrete class in the code at which objects are constructed. 
+The intent in employing the pattern is to insulate the creation of objects from their usage. 
+This allows for new derived types to be introduced with no change to the code that uses the base class. 
+Use of this pattern makes it possible to interchange concrete implementations without changing the code that uses them, even at runtime.
+However, employment of this pattern, as with similar design patterns, may result in unnecessary complexity and extra work in the initial writing of code. Used correctly the ""extra work"" pays off in the second implementation of the factory.
+Classic Computer Science Problems
+
+
+
+
+
+
+"
+92,0,decorator_pattern,"
+The Decorator pattern enables you to add or remove object functionality without changing the external appearance or function of  the object.  It changes the functionality of an object in a way that is transparent to its clients by using an instance of a subclass of the original class that delegates operations to the original object.
+The Decorator pattern attaches additional responsibilities to an object dynamically to provide a flexible alternative to changing object functionality without using static inheritance
+
+The following lists the benefits of using the Decorator pattern:
+
+More flexibility than static inheritance.
+Avoids feature-laden  classes high up in the hierarchy 
+Simplifies coding because you write a series of classes, each targeted at a specific part of the functionality, rather than coding all behavior into the object
+Enhances the object's extensibility because you make changes by coding new classes.
+
+
+You should use the Decorator pattern when:
+
+You want to add responsibilities to individual objects dynamically  and transparently, that is without affecting other objects 
+You want to add responsibilities to the object that you want to change in the future
+When extension by static sub-classing is impractical.
+
+September 23, 2020
+
+
+
+
+
+
+
+"
+93,0,facade_pattern,"
+The Facade pattern provides a unified interface to a group of interfaces in a subsystem.  
+The Facade pattern defines a higher-level interface that makes the subsystem easier to use because you have only one interface. 
+This unified interface enables an object to access the subsystem using the interface to communicate with the subsystem. 
+The figure below illustrates the Facade pattern.
+
+The following lists the benefits of using the facade pattern.
+
+Provides a simple interface to a complex system without reducing the options provided by the system.
+Shields clients from subsystem components.
+Promotes weak coupling between the subsystem and its clients.
+Reduces coupling between subsystems if every subsystem uses its own Facade pattern and other parts of the system use the 
+Facade pattern to communicate with the subsystem.
+Translates the client requests to the subsystems that can fulfill those requests.
+
+Facade Pattern Code
+You should use the Facade pattern when:
+
+You want to provide a simple interface to a complex subsystem.
+There are many dependencies between clients and implementation classes of an abstraction.
+You want to layer your subsystems.
+
+
+
+
+
+
+
+
+"
+94,0,composite_pattern,"
+The Composite pattern enables you to create hierarchical tree structures of varying complexity, while allowing every element in the structure to operate with a uniform interface. The Composite pattern combines objects into tree structures to represent either the whole hierarchy or a part of the hierarchy. This means the Composite pattern allows clients to treat individual objects and compositions of objects uniformly. The figure below illustrates the Composite pattern.
+
+Furthermore, the composite pattern is a partitioning design pattern. The composite pattern describes that a group of objects are to be treated in the same way as a single instance of an object. 
+The intent of a composite is to ""compose"" objects into tree structures to represent part-whole hierarchies. Implementing the composite pattern lets clients treat individual objects and compositions uniformly.
+
+When dealing with Tree-structured data, programmers often have to discriminate between a leaf-node and a branch. The solution is an interface that allows treating complex and primitive objects uniformly. 
+In object-oriented programming,  a composite is an object designed as a composition of one-or-more similar objects,  all exhibiting similar functionality. 
+
+This is known as a ""has-a"" relationship between objects. 
+The key concept is that you can manipulate a single instance of the object just as you would manipulate a group of  them. The operations you can perform on all the composite objects often have a least common denominator relationship. 
+For example, if defining a system to portray grouped shapes on a screen, it would be useful to define resizing a group of shapes  to have the same effect (in some sense) as resizing a single shape.
+
+The following lists the benefits of using the Composite pattern:
+
+Defines class hierarchies consisting of primitive objects and composite objects
+Makes it easier to add new kinds of components
+Provides flexibility of structure and a manageable interface
+
+
+You should use the Composite pattern when:
+
+You want to represent the whole hierarchy or part of the hierarchy of objects.
+You want clients to be able to ignore the difference between compositions of objects and individual objects.
+The structure can have any level of complexity, and is dynamic.
+
+
+
+
+
+
+
+
+"
+95,0,factory_method_pattern,"
+In a factory pattern, a concrete class with static methods is used to create instances of objects that implement an interface.
+
+The Factory Method pattern defines an interface for creating an object, but lets the subclasses decide which class to instantiate. The Factory method lets a class defer instantiation to subclasses, which is useful for constructing individual objects for a specific purpose without the requestor 
+knowing the specific class being instantiated.  This allows you to introduce new classes without modifying the code because the new class implements only the interface so it can be used by the client. 
+You create a new factory class to create the new class and the factory class implements the factory interface.
+
+The following lists the benefits of using the Factory Method pattern.
+
+Eliminates the need to bind application classes into your code. The code deals only with the interface, so you can work with any classes that implement that interface.
+Enables the subclasses to provide an extended version of an object,  because creating an object inside a class is more flexible than creating the object directly in the client.
+
+You should use the Factory method pattern when: 
+
+A class cannot anticipate the class of objects it must create.
+A class wants its subclasses to specify the objects it creates.
+Classes delegate responsibility to one of several helper subclasses, and you want to localize the knowledge of which helper subclass is the delegate.
+
+
+
+ The factory method pattern is an object-oriented creational design pattern to implement the concept of factories and deals with the problem of creating objects (products) without specifying the exact class of object that will be created. The essence of this pattern is to
+
+Define an interface for creating an object, but let the classes that implement the interface decide which class to instantiate. 
+The Factory method lets a class defer instantiation to subclasses.
+
+
+Creating an object often requires complex processes not appropriate to include within a composing object. 
+The object's creation may lead to a significant duplication of code, may require information not accessible to the composing object, may not provide a sufficient level of abstraction, or may otherwise not be part of the composing object's concerns. 
+The factory method design pattern handles these problems by defining a separate method for creating the objects,  which subclasses can then override to specify the derived type of product that will be created. 
+Some of the processes required in the creation of an object include determining which object to create, managing the lifetime of the object, and managing specialized build-up and tear-down concerns of the object. Outside the scope of design patterns, 
+the term factory method can also refer to a method of a factory whose main purpose is creation of objects. The factory method pattern relies on inheritance, as object creation is delegated to subclasses that implement the factory method to create objects. 
+
+The Factory Method is related to the idea on which libraries work because  library uses abstract classes for defining and maintaining relations between objects. One type of responsibility is creating such objects. The library knows when an object needs to be created, but not what kind of object it should create, this being specific to the application using the library. 
+The Factory method works the same way because it defines an interface for creating an object, but leaves the choice of its type to the subclasses.  
+A simple real life example of the Factory Method is the hotel. When staying in a hotel you first have to check in. The person working at the front desk will give you a key to your room after you have paid for the room you want.
+
+This room can be conceived as a room factory.  While staying at the hotel, you might need to make a phone call, so you call the front desk and the person there will connect you with the number you need, 
+becoming a phone-call factory, because he controls the access to calls. 
+
+
+
+
+
+
+
+"
+96,0,prototype_pattern,"
+The Prototype pattern allows an object to create customized objects without knowing their exact class or the details of how to create them.It specifies the kinds of objects to create using a prototypical instance, and creates new objects by copying this prototype.  The Prototype pattern works by giving prototypical objects to an object and then initiates the creation of objects. The creation-initiating object then creates objects by asking the prototypical objects to make copies of themselves. 
+The Prototype pattern makes creating objects dynamically easier by defining classes whose objects can duplicate themselves.
+
+The following lists the benefits of using the Prototype pattern:
+
+Adding and removing products at run time.
+Specifying new objects by varying values.
+Specifying new objects by varying structure
+Reduced subclassing
+Configuring an application with classes dynamically
+
+
+
+The classes to instantiate are specified at run time, for example, by dynamic loading.
+To avoid building a class hierarchy of factories that parallels the class hierarchy of products
+When instances of a class can have one of only a few different combinations of state
+
+
+The prototype pattern is a creational design pattern used in software development when the type of objects to create 
+is determined by a prototypical instance, which is cloned to produce new objects. This pattern is used to: 
+
+avoid subclasses of an object creator in the client application, like the abstract factory pattern does.
+avoid the inherent cost of creating a new object in the standard way (e.g., using the 'new' keyword) when it 
+    is prohibitively expensive for a given application.
+	
+
+
+To implement the pattern, declare an abstract base class that specifies a pure virtual clone() method. 
+Any class that needs a ""polymorphic constructor"" capability derives itself from the abstract base class, and implements the clone() operation.
+The client, instead of writing code that invokes the ""new"" operator on a hard-coded class name, 
+calls the clone() method on the prototype, calls a factory method with a parameter designating the particular concrete derived class desired, or invokes the clone() method through 
+some mechanism provided by another design pattern.
+
+
+
+
+
+
+
+"
+97,0,adapter_pattern,"
+The Adapter pattern acts as an intermediary between two classes, converting the interface of one class so that it can be used with the other. 
+This enables classes with incompatible interfaces to work together. 
+The Adapter pattern implements an interface known to its clients and provides access to an instance of a class not known to its clients. 
+An adapter object provides the functionality of an interface without having to know the class used to implement that interace.
+
+The following lists the benefits of using the Adapter pattern:
+
+Allows two or more incompatible objects to communicate and interact
+Improves resuability of older functionality
+
+
+You want to use an existing class, and its interface does not match the interface you need.
+You want to create a reusable class that cooperates with unrelated or unforesen classes,  that is, classes that do not necessarily have compatible interfaces.
+You want to use an object in an environment that expects an interface that is different from the object's interface.
+Interface translation among multiple sources must occur.
+
+In computer programming, the adapter pattern (often referred to as the wrapper pattern or simply a wrapper) is a design pattern that translates one interface for a class into a compatible interface. 
+An adapter allows classes to work together that normally could not because of incompatible interfaces, by providing its interface to clients while using the original interface. 
+The adapter translates calls to its interface into calls to the original interface,  and the amount of code necessary to do this is typically small. 
+The adapter is also responsible for transforming data into appropriate forms. For instance, if multiple boolean values are stored as a single integer (i.e. flags) but your client requires a 'true'/'false', 
+the adapter would be responsible for extracting the appropriate values from the integer value. 
+ Another example is transforming the format of dates (i.e. YYYYMMDD to MM/DD/YYYY or DD/MM/YYYY).
+
+
+
+
+
+
+
+"
+98,0,builder_pattern,"
+The Builder pattern separates the construction of a complex object from its representation so the same construction process can create different objects. The Builder pattern allows a client object to construct a complex object by specifying only its type and content. The client is shielded from the details of the object's construction. This simplifies the creation of complex objects by defining a class that builds instances of another class. 
+The Builder pattern produces one main product and there might be more than one class in the product, but there is always one main class. When you use the Builder pattern, you create the complex objects one step at a time.
+Other patterns build the object in a single step.
+
+The following lists the benefits of using the Builder pattern:
+
+Allows you to vary a product's internal representation. Isolates code for construction and representation.Gives you greater control over the construction process.
+
+
+You should use the Builder pattern when:
+
+The algorithm for creating a complex object should be independent of both the parts that make up the objects and how these parts are assembled.
+The construction process must allow different representations of the constructed object.
+
+
+The ""Builder"" pattern is an object creation software design pattern.  The intention is to abstract the steps of construction so that different implementations of these steps can construct different representations of objects. Often, the builder pattern is used to build products in accordance with the composite pattern.
+The intent of the Builder design pattern is to separate the construction of a complex object from its representation. By doing so, the same construction process can create different representations.
+
+The builder is an abstract interface for creating objects.
+Gang of Four Patterns
+
+
+
+
+
+
+"
+99,0,singleton_pattern,"The Singleton pattern ensures that a class has only one instance, and provides a global point of access to that class. It ensures that all objects that use an instance of this class use the same instance.
+
+The figure below discusses the Singleton pattern.
+The following lists the benefits of using the Singleton pattern:
+
+Controlled access to sole instance.
+Reduced name space.
+Permits refinement of operations and representation.
+Permits a variable number of instances.
+More flexible than class operations.
+
+You should use the Singleton pattern when: There must be exactly one instance of a class. 
+In software engineering, the Singleton Pattern is a design pattern that restricts the instantiation of a class to one object. This is useful when exactly one object is needed to coordinate actions across the system. 
+The concept is sometimes generalized to systems that operate more efficiently when only one object exists, or that restrict the instantiation to a certain number of objects. 
+
+The term comes from the mathematical concept of a singleton.
+There is criticism of the use of the singleton pattern, as some consider it an anti-pattern,  judging that it is overused, introduces unnecessary restrictions in situations where a sole instance of a class is not actually required, 
+and introduces global state into an application.  In C++ it also serves to isolate from the unpredictability of the order of dynamic initialization, returning control to the programmer. 
+Modeling Aggregation and Composition
+
+
+
+
+
+
+
+"
+100,0,bridge_pattern,"
+Divide a complex component into 2 separate but related inheritance hierarchies.
+
+Refined Abstraction 
+Implementor is an abstract class that inherits the 2 classes Concrete Implementor A,B 
+
+
+
+
+
+ Implementor is an abstract class that inherits the 2 classes Concrete Implementor A,B
+
+Bridge Pattern Code
+
+
+When To Use:
+You should use the Bridge pattern when:
+
+You want to avoid a  permanent binding between an abstraction and its implementation
+Both the abstractions and their implementations should be extensible using subclasses.
+Changes in the implementation of an abstraction should have no impact on clients; that is, you should not have to recompile their code.
+
+
+Benefits of the Bridge Pattern:
+
+Enables you to separate the interface from the implementation
+Improves extensibility
+Hides implementation details from clients
+
+
+The bridge pattern is a design pattern used in software engineering which is meant to ""decouple an abstraction from its implementation so that 
+
+a) decoupling and  
+b) abstraction can vary independently.
+
+The bridge uses encapsulation, aggregation, and can use inheritance to separate responsibilities into different classes.
+
+When a class varies often, the features of object-oriented programming become very useful because changes to a program's code can be made easily with minimal prior knowledge about the program. The bridge pattern is useful when both the class as well as what it does vary often. 
+
+The 1) class itself can be thought of as the implementation and 2) what the class can do as the abstraction. 
+The bridge pattern can also be thought of as two layers of abstraction.
+
+
+
+
+
+
+
+"
+101,0,flyweight_pattern,"
+The Flyweight pattern reduces the number of low-level,  detailed objects within a system by sharing objects.
+If instances of a class that contain the same information can be used interchangeably,  the Flyweight pattern allows a program to avoid the expense of multiple instances that contain the same information by sharing one instance. The figure below illustrates the Flyweight pattern.
+
+The Flyweight pattern defines a structure for sharing objects.  Objects are shared for at least two reasons: 1) efficiency and 2) consistency. The Flyweight pattern focuses on sharing for space efficiency.  Applications that use lots of objects must pay careful attention to the cost of each object. Substantial savings can be achieved by sharing objects instead of replicating them.  
+But objects can be shared only if they do not define context-dependent state. 
+Flyweight objects have no such state. Any additional information they need to perform their task is passed to them when needed. 
+Because they have no context-dependent state, Flyweight objects may be shared freely.
+
+The following lists the benefits of using the Flyweight pattern:
+
+Reduction in the number of objects to handle
+Reduction in memory and on storage devices, if the objects are persisted
+
+
+You should use the Flyweight pattern when all of the following are  true.
+
+The application uses a large number of objects.
+Storage costs are high because of the quantity of objects.
+The application does not depend on object identity.
+
+
+
+
+
+
+
+
+"
+102,0,proxy_pattern,"
+The Proxy pattern provides a surrogate or placeholder object to control access to the original object.
+There are several types of implementations of the Proxy pattern with the
+
+Remote proxy and
+Virtual proxy
+being the most common.
+ 
+The figure below illustrates the Proxy pattern.
+
+You are currently designing your own Desktop Publishing application, as you have not found any that do exactly what you want with existing applications. 
+As part of the design you are using a Controller to which you send all GUI requests.
+Not all objects can process the same commands. For example you cannot select the spell check tool when an image has the focus. 
+To stop any possible errors you would like to filter out some of the messages as they are passed from these objects to the Controller object. What pattern could you use?
+In this scenario what you are essentially trying to do is filter all packets that don't meet a certain set of requirements. This behavior is just like a Proxy server dropping packets from certain IP address etc.
+
+A Remote proxy can hide the fact that an object resides in a different address space
+A virtual proxy can perform optimizations, such as creating an object on demand.
+
+You should use the proxy pattern when: 
+You need a more versatile or sophisticated reference to an object than a simple pointer.
+
+
+
+
+
+
+
+"
+103,0,memento_pattern,"
+The Memento pattern[1] contains a snapshot of the state of an object, so that the object can return to its original state without having to reveal its content to the rest of the world.
+The figure below illustrates the Memento pattern. 
+
+The following lists the benefits of using the Memento pattern:
+
+Preserves encapsulation boundaries
+Simplifies the originator
+
+
+You should use the Memento pattern when:
+
+A snapshot of an object's state must be saved so that it can be restored to that state later.
+Using a direct interface to obtain the state would expose implementation details and break the object's encapsulation.
+
+[1]memento: an object kept as a reminder or souvenir of a person or event.
+
+
+
+
+
+
+
+"
+104,0,interpreter_pattern,"
+The Interpreter pattern interprets a language to define a representation for its grammar along with an interpreter that uses the representation to interpret sentences in the language. The following diagram illustrates the Interpreter pattern.
+The following lists the benefits of using the Interpreter pattern:
+
+Easy to change and extend the grammar
+Implementing the grammar is easy
+
+
+You should use the Interpreter pattern when:
+
+The grammar of the language is simple.
+Efficiency is not a critical concern.
+
+
+Interpreter Pattern: Useful when the objective is to provide a client program or a user the ability to specify operations in a simple language. Helps in interpreting operations specified using a language, using its grammar. More suitable for languages with simple grammar
+
+
+
+
+
+
+
+"
+105,0,iterator_pattern,"
+The iterator pattern provides a consistent way to sequentially access items in a collection that is independent of and separate from the underlying collection. The figure below represents the iterator pattern.
+
+
+Supports variations in the traversal of a collection
+Simplifies the interface of the collection.
+
+
+You should use the Interpreter pattern when you want to:
+
+Access a collection object’s contents without exposing its internal representation.
+Support multiple traversals of objects in a collection.
+Provide a uniform interface for traversing different structures in a collection.
+
+
+In object-oriented programming, the iterator pattern is a design pattern in which an iterator is used to traverse a container and access the container's elements.  The iterator pattern decouples algorithms from containers; in some cases, algorithms are necessarily container-specific and cannot be decoupled. For example, the hypothetical algorithm SearchForElement can be implemented generally using a specified type of iterator rather than implementing it as a container-specific algorithm. 
+This allows SearchForElement to be used on any container that supports the required type of iterator.
+
+
+
+
+
+
+
+"
+106,0,observer_pattern,"
+The Observer pattern provides a way for a component to flexibly broadcast messages to interested receivers. 
+It defines a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically. The Figure below illustrates the Observer pattern.
+The following lists the benefits of using the Observer pattern:
+
+Abstract coupling between subject and observer
+Support for broadcast communication
+
+
+You should use the Observer pattern when:
+
+A change to one object requires changing the other object and you do not know how many objects need to change.
+ An object should be able to notify other objects without making assumptions about the identity of those objects.
+
+
+
+
+
+
+
+
+"
+107,0,command_pattern,"
+The Command pattern encapsulates a request in an object, which enables you to store the command, pass the command to a method, and return the command like any other object.  The figure below illustrates the Command Pattern.
+
+The following lists the benefits of using the Command Pattern:
+
+Separates the object that invokes the operation from the one that knows how to perform it.
+ It's easy to add new commands, because you don't have to change existing classes.
+
+
+You should use the Command pattern when:
+
+You want to parameterize objects by an action to perform.
+You specify, queue, and execute requests at different times. 
+You must support undo, logging, or transactions
+
+
+
+
+
+
+
+
+"
+108,0,mediator_pattern,"
+The Mediator pattern simplifies communication among objects in a system by introducing a single object that manages message distribution among other objects. The Mediator pattern promotes loose coupling by keeping objects from referring to each other explicitly, and it lets you vary their interaction independently. The diagram below illustrates the Mediator pattern.
+
+The following lists the benefits of using the Mediator pattern:
+
+Decouples colleagues
+Simplifies object protocols
+Centralizes Control
+The individual components become simpler and easier to deal with, because they no longer need to directly pass messages to each other
+Components are more generic, because they no longer need to contain logic to deal with their communication with other components.
+
+
+You should use the Mediator pattern when:
+
+A set of objects communicate in well-defined but complex ways.
+You want to customize a behavior that's distributed between several objects without using subclasses.
+
+"
+109,0,chain_of_responsibility,"
+The Chain of Responsibility pattern establishes a chain within a system, so that a message can either be handled at the level where it is first received, or be directed to an object that can handle it.
+
+The following lists the benefits of using the Chain of Responsibility pattern:
+
+Reduced coupling
+Added flexibility in assigning responsibilites to objects
+Allows a set of classes to behave as a whole, because events produced in one class can be sent on to other handler classes within the composite. 
+
+
+You should use the Chain of Responsibility Pattern when:
+
+More  than one object can handle a request, and the handler is not known.
+You want to issue a request to one of several objects without specifying the receiver completely.
+The set of objects that can handle a request should be specified dynamically.
+
+
+In Object Oriented Design, the chain-of-responsibility pattern is a design pattern consisting of a source of command objects and a series of processing objects. Each processing object contains logic that defines the types of command objects that it can handle; the rest are passed to the next processing object in the chain. 
+A mechanism also exists for adding new processing objects to the end of this chain. In a variation of the standard chain-of-responsibility model, some handlers may act as dispatchers, capable of sending commands out in a variety of directions, forming a tree of responsibility. 
+In some cases, this can occur recursively, with processing objects calling higher-up processing objects with commands that attempt to solve some smaller part of the problem; in this case recursion continues until the command is processed, or the entire tree has been explored. An XML interpreter might work in this manner. 
+
+This pattern promotes the idea of loose coupling, which is considered a programming best practice.
+"
+110,0,state_pattern,"
+The State pattern allows an object to alter its behavior when its internal state changes. The object appears to change its class. The Figure illustrates the State Pattern. 
+The following lists the benefits of using the State pattern:
+
+Localizes state-specific behavior and partitions behavior for different states .
+Make state transitions explicit.
+
+
+You should use the State pattern when:
+
+An object's behavior depends on its state and it must change its behavior at run-time depending on that state.
+Operations have large conditional statements that consist of multiple states and depend on the object's state.
+
+"
+111,0,externalize_stack_pattern,"Rewrite a recursive program/algorithm/function into an iterative one which uses an external stack.
+
+All computer scientists are familiar with recursion and many consider it an alternative way of implementing iteration.
+Algorithms that use iteration must repeat some computation.  
+However, recursive algorithms, when written with the consideration of performance, can consume a valuable resource, namely theStack.
+
+In languages which use stacks to maintain activation records, which include
+
+C ,
+C++, and 
+Java
+
+not including Smalltalk.
+Some recursive algorithms exhibit TailRecursion and can be rewritten in an iterative way that uses bounded space 
+(and some compilers, especially of functional languages, will perform this transformation as an optimization). 
+However, many recursive algorithms are not tail-recursive. 
+The most natural way to express recursive algorithms is with recursive function calls; 
+each instance of the function gets its own activation record to maintain its particular state, while TheStack holds the complete set.
+
+The challenges with a Stack in many languages (or the stacks in multithreaded programs) are as follows:
+
+In addition to holding the state which must be kept recursively, all other states (local variables) as well as tracking information for repeated function calls is held on the stack.  
+Wastes memory 
+Would not be too much of a problem, except for the following fact.
+Program stacks often must occupy contiguous address space. 
+The remaining contiguous address space above the top of the stack is far less than the the total remaining system memory (physical and virtual).  On many systems, the stack grows downward from the top of your address space. 
+Thus, the stack and the heap have exactly the same remaining memory available.
+
+Figure out what state must be maintained between successive invocations of the function. 
+Define a structure to hold that (and only that) state.  Declare a stack (or a linked list, or whatever you have available) (a linked list is one possible implementation of the abstract data type stack,  not something to be seen as an alternative to a stack) 
+of that structure.  Use it to hold the stacked copies of the recursive state.  
+Then rewrite the remainder of the function to be iterative. 
+In the case of Java serialization, and many other graph tree traversal algorithms, the only thing that needs to be maintained in recursive fashion is a BackPointer, which is a pointer to the previous node.
+
+
+
+
+
+
+
+"
+112,0,template_pattern,"
+The Template Method pattern provides a method that allows subclasses to override parts of the method without rewriting it.  Define the skeleton of an algorithm in an operation, deferring some steps to subclasses. Template method lets subclasses redefine certain steps of an algorithm without changing the structure of the algorithm. 
+The figure below illustrates the Template pattern.
+
+The following lists the benefits of using the Template pattern:
+Fundamental technique for reusing code 
+
+You should use the Template pattern when:
+
+ You want to implement the invariant parts of an algorithm once and use subclasses to implement the behavior that can vary.
+When common behavior among subclasses should be factored and localized in a common class to avoid code duplication. 
+
+"
+113,0,hierarchical_visitor_pattern,"
+Provide a way to visit every node in a hierarchical data structure such as a tree.
+Represent an operation to be performed on the nodes of a hierarchical object structure. 
+Hierarchical Visitor lets one define new operations without changing the classes of the nodes on which it operates.  
+Hierarchical Visitor overcomes the limitations of the traditional VisitorPattern by allowing a programmer to track traversal depth and short-circuit branch traversal.
+
+Consider a file system represented using a hierarchical structure, such as that provided by the CompositePattern. 
+The file objects are leaf nodes and the directories are the composite nodes. Now consider two operations on a file system: 
+
+fully qualifying a file name and 
+searching for a specific  file.
+
+
+To fully qualify a file name, we must traverse each of its parent composites. To do this, we start with a string representing the root composite, and concatenate each child composite until we reach the actual file object.
+We need to determine what composites (directories) are children of the root and which are its siblings. 
+This requires we track when we are entering a composite and leaving a composite. If we enter the composite bar before we have left the composite foo, we know we have ""foo/bar"". However, if we leave foo before entering bar then foo and bar are siblings. 
+This is quite impossible if equipped only with the traditional VisitorPattern as it only tells us when we are entering a composite node.
+
+To search a file system optimally, we need to take advantage of fully qualified names. If we are searching for root/foo2/bar3/file.dat, we do not need to search through the branches 
+
+root/foo1/*,  
+""root/foo2/bar1/*"", or even 
+""root/foo2/bar2/*"".
+
+Unfortunately, because the traditional VisitorPattern does not have the ability to conditionally traverse a hierarchical structure, we are left with only two choices. 
+(a) use an alternative means of traversal or (b) search even those branches that have no possibility of a match. 
+These two examples summarize the advantages of the HierarchicalVisitorPattern. 
+One no longer needs to rely on multiple traversal techniques when the limitations of the traditional visitor pattern must be exceeded. 
+We can generalize these limitations as:
+
+hierarchical navigation: the traditional VisitorPattern has no concept of depth. As a result, visitor cannot determine if one composite is within another composite or beside it.
+conditional navigation: the traditional VisitorPattern does not allow branches to be skipped. As a result, visitor cannot stop, filter, or optimize  traversal based on some condition. 
+
+
+
+
+
+
+
+"
+114,0,strategy_pattern,"
+The intent of the Strategy Pattern is to define a family of algorithms, encapsulate each algorithm, and make them interchangeable. 
+The Strategy Pattern lets the algorithm vary independently from clients that use it.
+In addition the pattern, defines a group of classes that represent a set of possible behaviors. 
+These behaviors can then be used in an application to change its functionality.
+The figure below illustrates the Strategy pattern.
+The following lists the benefits of using the Strategy pattern:
+
+An alternative to subclassing
+Defines each behavior in its own class, which eliminates conditional statements
+Easier to extend a model to incorporate new behaviors without recoding the application 
+
+You should use the Strategy pattern when:
+
+Many related classes differ only in their behavior.
+You need different variants of an algorithm.
+An algorithm uses data unknown to clients.
+
+
+
+
+
+
+
+
+"
+115,0,abstract_factory,"
+
+A family of related products, say: Chair + Sofa + CoffeeTable.
+
+
+Several variants of this family. For example, products Chair + Sofa + CoffeeTable are available in these variants: Modern, Victorian, ArtDeco.
+
+
+
+
+
+
+Abstract Products declare interfaces for a set of distinct but related products which make up a product family.
+
+
+Concrete Products are various implementations of abstract products, grouped by variants. Each abstract product (chair/sofa) must be implemented in all given variants (Victorian/Modern).
+
+
+The Abstract Factory interface declares a set of methods for creating each of the abstract products.
+
+
+Concrete Factories implement creation methods of the abstract factory. Each concrete factory corresponds to a specific variant of products and creates only those product variants.
+
+
+Although concrete factories instantiate concrete products, signatures of their creation methods must return corresponding abstract products. This way the client code that uses a factory doesn’t get coupled to the specific variant of the product it gets from a factory. The Client can work with any concrete factory/product variant, as long as it communicates with their objects via abstract interfaces.
+
+
+
+
+ Use the Abstract Factory when your code needs to work with various families of related products, but you don’t want it to depend on the concrete classes of those products—they might be unknown beforehand or you simply want to allow for future extensibility.
+
+ The Abstract Factory provides you with an interface for creating objects from each class of the product family. As long as your code creates objects via this interface, you don’t have to worry about creating the wrong variant of a product which doesn’t match the products already created by your app.
+
+
+ Consider implementing the Abstract Factory when you have a class with a set of Factory Methods that blur its primary responsibility.
+
+ In a well-designed program each class is responsible only for one thing. When a class deals with multiple product types, it may be worth extracting its factory methods into a stand-alone factory class or a full-blown Abstract Factory implementation.
+
+
+
+Map out a matrix of distinct product types versus variants of these products.
+
+
+Declare abstract product interfaces for all product types. Then make all concrete product classes implement these interfaces.
+
+
+Declare the abstract factory interface with a set of creation methods for all abstract products.
+
+
+Implement a set of concrete factory classes, one for each product variant.
+
+
+Create factory initialization code somewhere in the app. It should instantiate one of the concrete factory classes, depending on the application configuration or the current environment. Pass this factory object to all classes that construct products.
+
+
+Scan through the code and find all direct calls to product constructors. Replace them with calls to the appropriate creation method on the factory object.
+
+
+
+
+ You can be sure that the products you’re getting from a factory are compatible with each other.
+
+ You avoid tight coupling between concrete products and client code.
+
+ Single Responsibility Principle. You can extract the product creation code into one place, making the code easier to support.
+
+ Open/Closed Principle. You can introduce new variants of products without breaking existing client code.
+
+
+
+
+ The code may become more complicated than it should be, since a lot of new interfaces and classes are introduced along with the pattern.
+
+
+
+Many designs start by using Factory Method (less complicated and more customizable via subclasses) and evolve toward Abstract Factory, Prototype, or Builder (more flexible, but more complicated).
+
+
+Builder focuses on constructing complex objects step by step. Abstract Factory specializes in creating families of related objects. Abstract Factory returns the product immediately, whereas Builder lets you run some additional construction steps before fetching the product.
+
+
+Abstract Factory classes are often based on a set of Factory Methods, but you can also use Prototype to compose the methods on these classes.
+
+
+Abstract Factory can serve as an alternative to Facade when you only want to hide the way the subsystem objects are created from the client code.
+
+
+You can use Abstract Factory along with Bridge. This pairing is useful when some abstractions defined by Bridge can only work with specific implementations. In this case, Abstract Factory can encapsulate these relations and hide the complexity from the client code.
+
+
+Abstract Factories, Builders and Prototypes can all be implemented as Singletons.
+
+
+Read our Factory Comparison to learn more about the differences between various factory patterns and concepts.
+"
+116,0,singleton,"
+
+Ensure that a class has just a single instance. Why would anyone want to control how many instances a class has? The most common reason for this is to control access to some shared resource—for example, a database or a file.
+Here’s how it works: imagine that you created an object, but after a while decided to create a new one. Instead of receiving a fresh object, you’ll get the one you already created.
+Note that this behavior is impossible to implement with a regular constructor since a constructor call must always return a new object by design.
+
+
+Make the default constructor private, to prevent other objects from using the new operator with the Singleton class.
+Create a static creation method that acts as a constructor. Under the hood, this method calls the private constructor to create an object and saves it in a static field. All following calls to this method return the cached object.
+
+
+
+
+
+The Singleton class declares the static method getInstance that returns the same instance of its own class.
+The Singleton’s constructor should be hidden from the client code. Calling the getInstance method should be the only way of getting the Singleton object.
+
+
+
+
+ Use the Singleton pattern when a class in your program should have just a single instance available to all clients; for example, a single database object shared by different parts of the program.
+
+ The Singleton pattern disables all other means of creating objects of a class except for the special creation method. This method either creates a new object or returns an existing one if it has already been created.
+
+
+ Use the Singleton pattern when you need stricter control over global variables.
+
+ Unlike global variables, the Singleton pattern guarantees that there’s just one instance of a class. Nothing, except for the Singleton class itself, can replace the cached instance.
+Note that you can always adjust this limitation and allow creating any number of Singleton instances. The only piece of code that needs changing is the body of the getInstance method.
+
+
+
+Add a private static field to the class for storing the singleton instance.
+
+
+Declare a public static creation method for getting the singleton instance.
+
+
+Implement “lazy initialization” inside the static method. It should create a new object on its first call and put it into the static field. The method should always return that instance on all subsequent calls.
+
+
+Make the constructor of the class private. The static method of the class will still be able to call the constructor, but not the other objects.
+
+
+Go over the client code and replace all direct calls to the singleton’s constructor with calls to its static creation method.
+
+
+
+
+ You can be sure that a class has only a single instance.
+
+ You gain a global access point to that instance.
+
+ The singleton object is initialized only when it’s requested for the first time.
+
+
+
+
+ Violates the Single Responsibility Principle. The pattern solves two problems at the time.
+
+ The Singleton pattern can mask bad design, for instance, when the components of the program know too much about each other.
+
+ The pattern requires special treatment in a multithreaded environment so that multiple threads won’t create a singleton object several times.
+
+ It may be difficult to unit test the client code of the Singleton because many test frameworks rely on inheritance when producing mock objects. Since the constructor of the singleton class is private and overriding static methods is impossible in most languages, you will need to think of a creative way to mock the singleton. Or just don’t write the tests. Or don’t use the Singleton pattern.
+
+
+
+A Facade class can often be transformed into a Singleton since a single facade object is sufficient in most cases.
+
+
+Flyweight would resemble Singleton if you somehow managed to reduce all shared states of the objects to just one flyweight object. But there are two fundamental differences between these patterns:
+
+There should be only one Singleton instance, whereas a Flyweight class can have multiple instances with different intrinsic states.
+The Singleton object can be mutable. Flyweight objects are immutable.
+
+
+
+Abstract Factories, Builders and Prototypes can all be implemented as Singletons.
+
+"
+117,0,composite,"
+
+
+
+
+The Component interface describes operations that are common to both simple and complex elements of the tree.
+
+
+The Leaf is a basic element of a tree that doesn’t have sub-elements.
+Usually, leaf components end up doing most of the real work, since they don’t have anyone to delegate the work to.
+
+
+The Container (aka composite) is an element that has sub-elements: leaves or other containers. A container doesn’t know the concrete classes of its children. It works with all sub-elements only via the component interface.
+Upon receiving a request, a container delegates the work to its sub-elements, processes intermediate results and then returns the final result to the client.
+
+
+The Client works with all elements through the component interface. As a result, the client can work in the same way with both simple or complex elements of the tree.
+
+
+
+
+ Use the Composite pattern when you have to implement a tree-like object structure.
+
+ The Composite pattern provides you with two basic element types that share a common interface: simple leaves and complex containers. A container can be composed of both leaves and other containers. This lets you construct a nested recursive object structure that resembles a tree.
+
+
+ Use the pattern when you want the client code to treat both simple and complex elements uniformly.
+
+ All elements defined by the Composite pattern share a common interface. Using this interface, the client doesn’t have to worry about the concrete class of the objects it works with.
+
+
+
+Make sure that the core model of your app can be represented as a tree structure. Try to break it down into simple elements and containers. Remember that containers must be able to contain both simple elements and other containers.
+
+
+Declare the component interface with a list of methods that make sense for both simple and complex components.
+
+
+Create a leaf class to represent simple elements. A program may have multiple different leaf classes.
+
+
+Create a container class to represent complex elements. In this class, provide an array field for storing references to sub-elements. The array must be able to store both leaves and containers, so make sure it’s declared with the component interface type.
+While implementing the methods of the component interface, remember that a container is supposed to be delegating most of the work to sub-elements.
+
+
+Finally, define the methods for adding and removal of child elements in the container.
+Keep in mind that these operations can be declared in the component interface. This would violate the Interface Segregation Principle because the methods will be empty in the leaf class. However, the client will be able to treat all the elements equally, even when composing the tree.
+
+
+
+
+ You can work with complex tree structures more conveniently: use polymorphism and recursion to your advantage.
+
+ Open/Closed Principle. You can introduce new element types into the app without breaking the existing code, which now works with the object tree.
+
+
+
+
+ It might be difficult to provide a common interface for classes whose functionality differs too much. In certain scenarios, you’d need to overgeneralize the component interface, making it harder to comprehend.
+
+
+
+You can use Builder when creating complex Composite trees because you can program its construction steps to work recursively.
+
+
+Chain of Responsibility is often used in conjunction with Composite. In this case, when a leaf component gets a request, it may pass it through the chain of all of the parent components down to the root of the object tree.
+
+
+You can use Iterators to traverse Composite trees.
+
+
+You can use Visitor to execute an operation over an entire Composite tree.
+
+
+You can implement shared leaf nodes of the Composite tree as Flyweights to save some RAM.
+
+
+Composite and Decorator have similar structure diagrams since both rely on recursive composition to organize an open-ended number of objects.
+A Decorator is like a Composite but only has one child component. There’s another significant difference: Decorator adds additional responsibilities to the wrapped object, while Composite just “sums up” its children’s results.
+However, the patterns can also cooperate: you can use Decorator to extend the behavior of a specific object in the Composite tree.
+
+
+Designs that make heavy use of Composite and Decorator can often benefit from using Prototype. Applying the pattern lets you clone complex structures instead of re-constructing them from scratch.
+
+"
+118,0,facade,"
+
+
+
+
+The Facade provides convenient access to a particular part of the subsystem’s functionality. It knows where to direct the client’s request and how to operate all the moving parts.
+
+
+An Additional Facade class can be created to prevent polluting a single facade with unrelated features that might make it yet another complex structure. Additional facades can be used by both clients and other facades.
+
+
+The Complex Subsystem consists of dozens of various objects. To make them all do something meaningful, you have to dive deep into the subsystem’s implementation details, such as initializing objects in the correct order and supplying them with data in the proper format.
+Subsystem classes aren’t aware of the facade’s existence. They operate within the system and work with each other directly.
+
+
+The Client uses the facade instead of calling the subsystem objects directly.
+
+
+
+
+ Use the Facade pattern when you need to have a limited but straightforward interface to a complex subsystem.
+
+ Often, subsystems get more complex over time. Even applying design patterns typically leads to creating more classes. A subsystem may become more flexible and easier to reuse in various contexts, but the amount of configuration and boilerplate code it demands from a client grows ever larger. The Facade attempts to fix this problem by providing a shortcut to the most-used features of the subsystem which fit most client requirements.
+
+
+ Use the Facade when you want to structure a subsystem into layers.
+
+ Create facades to define entry points to each level of a subsystem. You can reduce coupling between multiple subsystems by requiring them to communicate only through facades.
+For example, let’s return to our video conversion framework. It can be broken down into two layers: video- and audio-related. For each layer, you can create a facade and then make the classes of each layer communicate with each other via those facades. This approach looks very similar to the Mediator pattern.
+
+
+
+Check whether it’s possible to provide a simpler interface than what an existing subsystem already provides. You’re on the right track if this interface makes the client code independent from many of the subsystem’s classes.
+
+
+Declare and implement this interface in a new facade class. The facade should redirect the calls from the client code to appropriate objects of the subsystem. The facade should be responsible for initializing the subsystem and managing its further life cycle unless the client code already does this.
+
+
+To get the full benefit from the pattern, make all the client code communicate with the subsystem only via the facade. Now the client code is protected from any changes in the subsystem code. For example, when a subsystem gets upgraded to a new version, you will only need to modify the code in the facade.
+
+
+If the facade becomes too big, consider extracting part of its behavior to a new, refined facade class.
+
+
+
+
+ You can isolate your code from the complexity of a subsystem.
+
+
+
+
+ A facade can become a god object coupled to all classes of an app.
+
+
+
+Facade defines a new interface for existing objects, whereas Adapter tries to make the existing interface usable. Adapter usually wraps just one object, while Facade works with an entire subsystem of objects.
+
+
+Abstract Factory can serve as an alternative to Facade when you only want to hide the way the subsystem objects are created from the client code.
+
+
+Flyweight shows how to make lots of little objects, whereas Facade shows how to make a single object that represents an entire subsystem.
+
+
+Facade and Mediator have similar jobs: they try to organize collaboration between lots of tightly coupled classes.
+
+
+Facade defines a simplified interface to a subsystem of objects, but it doesn’t introduce any new functionality. The subsystem itself is unaware of the facade. Objects within the subsystem can communicate directly.
+
+Mediator centralizes communication between components of the system. The components only know about the mediator object and don’t communicate directly.
+
+
+
+A Facade class can often be transformed into a Singleton since a single facade object is sufficient in most cases.
+
+
+Facade is similar to Proxy in that both buffer a complex entity and initialize it on its own. Unlike Facade, Proxy has the same interface as its service object, which makes them interchangeable.
+
+"
+119,0,flyweight,"Extrinsic state storageFlyweight and immutabilityFlyweight factory
+
+
+
+
+The Flyweight pattern is merely an optimization. Before applying it, make sure your program does have the RAM consumption problem related to having a massive number of similar objects in memory at the same time. Make sure that this problem can’t be solved in any other meaningful way.
+
+
+The Flyweight class contains the portion of the original object’s state that can be shared between multiple objects. The same flyweight object can be used in many different contexts. The state stored inside a flyweight is called intrinsic. The state passed to the flyweight’s methods is called extrinsic.
+
+
+The Context class contains the extrinsic state, unique across all original objects. When a context is paired with one of the flyweight objects, it represents the full state of the original object.
+
+
+Usually, the behavior of the original object remains in the flyweight class. In this case, whoever calls a flyweight’s method must also pass appropriate bits of the extrinsic state into the method’s parameters. On the other hand, the behavior can be moved to the context class, which would use the linked flyweight merely as a data object.
+
+
+The Client calculates or stores the extrinsic state of flyweights. From the client’s perspective, a flyweight is a template object which can be configured at runtime by passing some contextual data into parameters of its methods.
+
+
+The Flyweight Factory manages a pool of existing flyweights. With the factory, clients don’t create flyweights directly. Instead, they call the factory, passing it bits of the intrinsic state of the desired flyweight. The factory looks over previously created flyweights and either returns an existing one that matches search criteria or creates a new one if nothing is found.
+
+
+
+
+ Use the Flyweight pattern only when your program must support a huge number of objects which barely fit into available RAM.
+
+ The benefit of applying the pattern depends heavily on how and where it’s used. It’s most useful when:
+
+an application needs to spawn a huge number of similar objects
+this drains all available RAM on a target device
+the objects contain duplicate states which can be extracted and shared between multiple objects
+
+
+
+
+Divide fields of a class that will become a flyweight into two parts:
+
+the intrinsic state: the fields that contain unchanging data duplicated across many objects
+the extrinsic state: the fields that contain contextual data unique to each object
+
+
+
+Leave the fields that represent the intrinsic state in the class, but make sure they’re immutable. They should take their initial values only inside the constructor.
+
+
+Go over methods that use fields of the extrinsic state. For each field used in the method, introduce a new parameter and use it instead of the field.
+
+
+Optionally, create a factory class to manage the pool of flyweights. It should check for an existing flyweight before creating a new one. Once the factory is in place, clients must only request flyweights through it. They should describe the desired flyweight by passing its intrinsic state to the factory.
+
+
+The client must store or calculate values of the extrinsic state (context) to be able to call methods of flyweight objects. For the sake of convenience, the extrinsic state along with the flyweight-referencing field may be moved to a separate context class.
+
+
+
+
+ You can save lots of RAM, assuming your program has tons of similar objects.
+
+
+
+
+ You might be trading RAM over CPU cycles when some of the context data needs to be recalculated each time somebody calls a flyweight method.
+
+ The code becomes much more complicated. New team members will always be wondering why the state of an entity was separated in such a way.
+
+
+
+You can implement shared leaf nodes of the Composite tree as Flyweights to save some RAM.
+
+
+Flyweight shows how to make lots of little objects, whereas Facade shows how to make a single object that represents an entire subsystem.
+
+
+Flyweight would resemble Singleton if you somehow managed to reduce all shared states of the objects to just one flyweight object. But there are two fundamental differences between these patterns:
+
+There should be only one Singleton instance, whereas a Flyweight class can have multiple instances with different intrinsic states.
+The Singleton object can be mutable. Flyweight objects are immutable.
+
+
+"
+120,0,template_method,"
+
+abstract steps must be implemented by every subclass
+
+optional steps already have some default implementation, but still can be overridden if needed
+
+
+
+
+
+The Abstract Class declares methods that act as steps of an algorithm, as well as the actual template method which calls these methods in a specific order. The steps may either be declared abstract or have some default implementation.
+
+
+Concrete Classes can override all of the steps, but not the template method itself.
+
+
+
+
+ Use the Template Method pattern when you want to let clients extend only particular steps of an algorithm, but not the whole algorithm or its structure.
+
+ The Template Method lets you turn a monolithic algorithm into a series of individual steps which can be easily extended by subclasses while keeping intact the structure defined in a superclass.
+
+
+ Use the pattern when you have several classes that contain almost identical algorithms with some minor differences. As a result, you might need to modify all classes when the algorithm changes.
+
+ When you turn such an algorithm into a template method, you can also pull up the steps with similar implementations into a superclass, eliminating code duplication. Code that varies between subclasses can remain in subclasses.
+
+
+
+Analyze the target algorithm to see whether you can break it into steps. Consider which steps are common to all subclasses and which ones will always be unique.
+
+
+Create the abstract base class and declare the template method and a set of abstract methods representing the algorithm’s steps. Outline the algorithm’s structure in the template method by executing corresponding steps. Consider making the template method final to prevent subclasses from overriding it.
+
+
+It’s okay if all the steps end up being abstract. However, some steps might benefit from having a default implementation. Subclasses don’t have to implement those methods.
+
+
+Think of adding hooks between the crucial steps of the algorithm.
+
+
+For each variation of the algorithm, create a new concrete subclass. It must implement all of the abstract steps, but may also override some of the optional ones.
+
+
+
+
+ You can let clients override only certain parts of a large algorithm, making them less affected by changes that happen to other parts of the algorithm.
+
+ You can pull the duplicate code into a superclass.
+
+
+
+
+ Some clients may be limited by the provided skeleton of an algorithm.
+
+ You might violate the Liskov Substitution Principle by suppressing a default step implementation via a subclass.
+
+ Template methods tend to be harder to maintain the more steps they have.
+
+
+
+Factory Method is a specialization of Template Method. At the same time, a Factory Method may serve as a step in a large Template Method.
+
+
+Template Method is based on inheritance: it lets you alter parts of an algorithm by extending those parts in subclasses. Strategy is based on composition: you can alter parts of the object’s behavior by supplying it with different strategies that correspond to that behavior. Template Method works at the class level, so it’s static. Strategy works on the object level, letting you switch behaviors at runtime.
+
+"
+121,0,visitor,"
+If it’s a residential building, he sells medical insurance.
+If it’s a bank, he sells theft insurance.
+If it’s a coffee shop, he sells fire and flood insurance.
+
+
+
+
+
+The Visitor interface declares a set of visiting methods that can take concrete elements of an object structure as arguments. These methods may have the same names if the program is written in a language that supports overloading, but the type of their parameters must be different.
+
+
+Each Concrete Visitor implements several versions of the same behaviors, tailored for different concrete element classes.
+
+
+The Element interface declares a method for “accepting” visitors. This method should have one parameter declared with the type of the visitor interface.
+
+
+Each Concrete Element must implement the acceptance method. The purpose of this method is to redirect the call to the proper visitor’s method corresponding to the current element class. Be aware that even if a base element class implements this method, all subclasses must still override this method in their own classes and call the appropriate method on the visitor object.
+
+
+The Client usually represents a collection or some other complex object (for example, a Composite tree). Usually, clients aren’t aware of all the concrete element classes because they work with objects from that collection via some abstract interface.
+
+
+
+
+ Use the Visitor when you need to perform an operation on all elements of a complex object structure (for example, an object tree).
+
+ The Visitor pattern lets you execute an operation over a set of objects with different classes by having a visitor object implement several variants of the same operation, which correspond to all target classes.
+
+
+ Use the Visitor to clean up the business logic of auxiliary behaviors.
+
+ The pattern lets you make the primary classes of your app more focused on their main jobs by extracting all other behaviors into a set of visitor classes.
+
+
+ Use the pattern when a behavior makes sense only in some classes of a class hierarchy, but not in others.
+
+ You can extract this behavior into a separate visitor class and implement only those visiting methods that accept objects of relevant classes, leaving the rest empty.
+
+
+
+Declare the visitor interface with a set of “visiting” methods, one per each concrete element class that exists in the program.
+
+
+Declare the element interface. If you’re working with an existing element class hierarchy, add the abstract “acceptance” method to the base class of the hierarchy. This method should accept a visitor object as an argument.
+
+
+Implement the acceptance methods in all concrete element classes. These methods must simply redirect the call to a visiting method on the incoming visitor object which matches the class of the current element.
+
+
+The element classes should only work with visitors via the visitor interface. Visitors, however, must be aware of all concrete element classes, referenced as parameter types of the visiting methods.
+
+
+For each behavior that can’t be implemented inside the element hierarchy, create a new concrete visitor class and implement all of the visiting methods.
+You might encounter a situation where the visitor will need access to some private members of the element class. In this case, you can either make these fields or methods public, violating the element’s encapsulation, or nest the visitor class in the element class. The latter is only possible if you’re lucky to work with a programming language that supports nested classes.
+
+
+The client must create visitor objects and pass them into elements via “acceptance” methods.
+
+
+
+
+ Open/Closed Principle. You can introduce a new behavior that can work with objects of different classes without changing these classes.
+
+ Single Responsibility Principle. You can move multiple versions of the same behavior into the same class.
+
+ A visitor object can accumulate some useful information while working with various objects. This might be handy when you want to traverse some complex object structure, such as an object tree, and apply the visitor to each object of this structure.
+
+
+
+
+ You need to update all visitors each time a class gets added to or removed from the element hierarchy.
+
+ Visitors might lack the necessary access to the private fields and methods of the elements that they’re supposed to work with.
+
+
+
+You can treat Visitor as a powerful version of the Command pattern. Its objects can execute operations over various objects of different classes.
+
+
+You can use Visitor to execute an operation over an entire Composite tree.
+
+
+You can use Visitor along with Iterator to traverse a complex data structure and execute some operation over its elements, even if they all have different classes.
+
+
+Puzzled why we can’t simply replace the Visitor pattern with method overloading? Read my article Visitor and Double Dispatch to learn about the nasty details.
+"
