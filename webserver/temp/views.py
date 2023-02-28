@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
 from .models import PatternCategory, PatternCatalog, Pattern
+from .forms import SubmitPatternForm
 
 
 # Create your views here.
@@ -28,8 +29,10 @@ def recommend_pattern(request):
 
 
 def submit_pattern(request):
-    template = loader.get_template('submitpattern.html')
-    return HttpResponse(template.render())
+    context = {
+        "form": SubmitPatternForm
+    }
+    return render(request, 'submitpattern.html', context=context)
 
 
 def collect_pattern(request):
