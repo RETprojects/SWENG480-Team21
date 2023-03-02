@@ -12,6 +12,8 @@ django = "*"
 mysqlclient = "*"
 
 [dev-packages]
+pandas = "*"
+numpy = "*"
 
 [requires]
 python_version = "3.10"
