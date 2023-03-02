@@ -10,6 +10,7 @@ scikit-fuzzy = "*"
 nltk = "*"
 django = "*"
 mysqlclient = "*"
+natsort = "*"
 
 [dev-packages]
 pandas = "*"
