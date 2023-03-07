@@ -1,47 +1,28 @@
+"""
+Missing some NLTK data? Make sure you download 'punkt' and 'stopwords'.
+`python -m nltk.downloader punkt stopwords`
+"""
+
+import re
 import sys
 
-from fcmeans                          import FCM
-
-# Data Structures
-import numpy  as np
-import pandas as pd
-import json
-# Corpus Processing
-import re
 import nltk
 import nltk.corpus
-from nltk.tokenize                    import word_tokenize
-from nltk.stem                        import WordNetLemmatizer
-from nltk                             import SnowballStemmer, PorterStemmer
-nltk.download('punkt')
+import numpy as np
+import pandas as pd
+from fcmeans import FCM
+from nltk import PorterStemmer, SnowballStemmer
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
+from sklearn import cluster
+from sklearn.cluster import AgglomerativeClustering, BisectingKMeans, KMeans
+from sklearn.decomposition import PCA, TruncatedSVD
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import Normalizer, normalize
+from sklearn_extra.cluster import KMedoids
 
-from sklearn.feature_extraction.text  import TfidfVectorizer, CountVectorizer
-from sklearn.preprocessing            import normalize, Normalizer
-from sklearn.decomposition            import PCA, TruncatedSVD
-from sklearn.cluster                  import KMeans, BisectingKMeans, AgglomerativeClustering
-from sklearn_extra.cluster            import KMedoids
-from sklearn.pipeline                 import make_pipeline
-
-from unidecode                        import unidecode
-
-# K-Means
-from sklearn                          import cluster
-
-# Visualization and Analysis
-import matplotlib.pyplot  as plt
-import matplotlib.cm      as cm
-import seaborn            as sns
-from sklearn.metrics                  import silhouette_samples, silhouette_score, confusion_matrix, ConfusionMatrixDisplay, f1_score
-from wordcloud                        import WordCloud
-
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics.pairwise import linear_kernel
-from sklearn.metrics.pairwise import cosine_similarity
-
-np.random.seed(9)
-
-
-# some more functions
 
 def getTrainData(fileName):
   df = pd.read_csv(fileName)
@@ -64,10 +45,6 @@ def twoLetters(listOfTokens):
         if len(token) <= 2 or len(token) >= 21:
             twoLetterWord.append(token)
     return twoLetterWord
-
-
-nltk.download('stopwords')
-
 
 def processCorpus(corpus, language, stemmer):
     stopwords = nltk.corpus.stopwords.words(language)
@@ -98,7 +75,6 @@ def processCorpus(corpus, language, stemmer):
         listOfTokens = applyStemming(listOfTokens, param_stemmer)
 
         corpus[index] = " ".join(listOfTokens)
-        corpus[index] = unidecode(corpus[index])
 
     return corpus
 
@@ -164,6 +140,8 @@ def validateInput(designProblem):
     return True
 
 def main():
+    np.random.seed(9)
+
     print("Running program")
     dp_1 = sys.argv[1]
 
