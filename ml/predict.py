@@ -103,7 +103,9 @@ def processCorpus(corpus, language, stemmer):
     return corpus
 
 
-# TODO: use k-means before this chunk of code to classify the problem with a pattern class, then perform cosine similarity with the problem and the list of candidate patterns from that class.
+# TODO: use k-means before this chunk of code to classify the problem with a
+#  pattern class, then perform cosine similarity with the problem and the list
+#  of candidate patterns from that class.
 # Source: https://danielcaraway.github.io/html/sklearn_cosine_similarity.html
 
 def cosine_sim(df, df_col, class_no, pos_to_last):
@@ -115,15 +117,6 @@ def cosine_sim(df, df_col, class_no, pos_to_last):
     vecs = unigram_count.fit_transform(txts)
 
     cos_sim = cosine_similarity(vecs[-pos_to_last], vecs)
-    # sim_sorted_doc_idx = cos_sim.argsort()
-    # print the most similar pattern to the problem; it's actually the problem itself
-    # print("Design Problem: \n" + txts.iloc[sim_sorted_doc_idx[-1][len(txts)-1]] + "\n")
-
-    # bestFittingPatternDesc = txts.iloc[sim_sorted_doc_idx[-1][len(txts)-2]]
-
-    # print the second most similar pattern; it's likely the best-fitting design pattern for the design problem
-    # print(txts[sim_sorted_doc_idx[-1][len(txts)-2]])
-    # print("\nCorrect Pattern: " + (df['name'][(df['overview'] == bestFittingPatternDesc)]).to_string(index=False) + "\n")
 
     return cos_sim, txts
 
@@ -198,9 +191,9 @@ def main():
     vectorizer = TfidfVectorizer(sublinear_tf=True)
     df = getTrainData("GOF Patterns (2.0).csv")
 
-    # if (not validateInput(dp_1)):
-    #     print("Invalid input size! please try again. \n")
-    #     continue
+    if (not validateInput(dp_1)):
+        print("Invalid input size! please try again. \n")
+        return
 
     problemRow = {'name': "design problem", 'correct_category': 4, 'overview': dp_1}
     df = df.append(problemRow, ignore_index=True)
@@ -216,7 +209,7 @@ def main():
     cos_sim, txts = cosine_sim(df, df['overview'], df['Kmeans'].iloc[df.index[-1]], 1)
     displayPredictions(cos_sim, txts, df)
 
-    # calculate and store the RCD
+    # calculate the RCD
     # RCD = number of right design patterns / total suggested design patterns
     # This is a fraction of the suggested patterns that were in the correct cluster.
     rcd = (len(txts.loc[df['Kmeans'] == df['correct_category']])) / (len(txts))
