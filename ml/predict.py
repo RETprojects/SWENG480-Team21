@@ -214,7 +214,9 @@ def main():
     # calculate the RCD
     # RCD = number of right design patterns / total suggested design patterns
     # This is a fraction of the suggested patterns that were in the correct cluster.
-    rcd = (len(txts.loc[df["Kmeans"] == df["correct_category"]])) / (len(txts))
+    rcd = 0
+    if len(txts.loc[df["Kmeans"] == df["correct_category"]]) > 1:
+        rcd = (len(txts.loc[df["Kmeans"] == df["correct_category"]]) - 1) / (len(txts) - 1)
     print("RCD = ", rcd)
 
 
