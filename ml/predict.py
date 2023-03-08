@@ -3,6 +3,7 @@ Missing some NLTK data? Make sure you download 'punkt' and 'stopwords'.
 `python -m nltk.downloader punkt stopwords`
 """
 
+import os
 import re
 import sys
 
@@ -22,13 +23,6 @@ from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import Normalizer, normalize
 from sklearn_extra.cluster import KMedoids
-
-
-def getTrainData(fileName):
-    df = pd.read_csv(fileName)
-    df = df.drop_duplicates(subset=["name"])
-
-    return df
 
 
 # removes a list of words (ie. stopwords) from a tokenized list.
@@ -162,6 +156,7 @@ def validateInput(designProblem):
 
 
 def main():
+    FILENAME = "GOF Patterns (2.0).csv"
     np.random.seed(9)
 
     print("Running program")
@@ -189,7 +184,9 @@ def main():
     language = "english"
     stemmer = PorterStemmer()
     vectorizer = TfidfVectorizer(sublinear_tf=True)
-    df = getTrainData("data/GOF Patterns (2.0).csv")
+
+    # Load the data we are working with
+    df = pd.read_csv(os.path.join(os.path.dirname(__file__), f"data/{FILENAME}"))
 
     if not validateInput(dp_1):
         print("Invalid input size! please try again. \n")
