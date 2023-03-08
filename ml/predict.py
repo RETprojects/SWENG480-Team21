@@ -12,16 +12,12 @@ import nltk.corpus
 import numpy as np
 import pandas as pd
 from fcmeans import FCM
-from nltk import PorterStemmer, SnowballStemmer
-from nltk.stem import WordNetLemmatizer
+from nltk import PorterStemmer
 from nltk.tokenize import word_tokenize
 from sklearn import cluster
-from sklearn.cluster import AgglomerativeClustering, BisectingKMeans, KMeans
-from sklearn.decomposition import PCA, TruncatedSVD
+from sklearn.cluster import AgglomerativeClustering, BisectingKMeans
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import Normalizer, normalize
+from sklearn.metrics.pairwise import cosine_similarity
 from sklearn_extra.cluster import KMedoids
 
 
