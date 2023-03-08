@@ -127,7 +127,7 @@ def runAlgorithms(final_df, df):
     Fuzzy_Means.fit(final_df_array)
     kmed = KMedoids(n_clusters=3)
     kmed_manhattan = KMedoids(n_clusters=3, metric="manhattan")
-    Kmeans = cluster.KMeans(n_clusters=3)
+    Kmeans = cluster.KMeans(n_clusters=3, n_init=10)
 
     Kmeans_labels = Kmeans.fit_predict(final_df)
     fuzzy_labels = Fuzzy_Means.predict(final_df_array)
@@ -146,53 +146,25 @@ def runAlgorithms(final_df, df):
     df["PAM-MANHATTAN"] = kmed_man_labels
 
 
-def validateInput(designProblem):
-    numOfWords = len(designProblem.split())
-    return numOfWords >= 30 and numOfWords <= 120
-
-
 def main():
-    FILENAME = "GOF Patterns (2.0).csv"
     np.random.seed(9)
 
-    print("Running program")
-    dp_1 = sys.argv[1]
-
-    # df = pd.read_csv('sourcemaking.csv')
-    #
-    # corpus_with_dp = pd.concat([df['text'],pd.Series(dp_1)],ignore_index=True)
-    #
-    # # display(corpus_with_dp.iloc[-1])
-    #
-    # vect = TfidfVectorizer(min_df=1, stop_words="english")
-    # tfidf = vect.fit_transform(corpus_with_dp)
-    # pairwise_similarity = tfidf * tfidf.T
-    #
-    # cos_sim_dp1 = pairwise_similarity.toarray()[-1].tolist()
-    #
-    # df1 = pd.DataFrame(data={'pattern':df['pattern_name'],'cos_sim':cos_sim_dp1[:-1],'sorted_indices':np.argsort(np.argsort(cos_sim_dp1))[:-1]})
-    #
-    # # print(df1)
-    # from natsort import index_natsorted
-    #
-    # print(df1.sort_values(by='cos_sim',ascending=False)[:10].iloc[:,:2])
-
-    language = "english"
-    stemmer = PorterStemmer()
-    vectorizer = TfidfVectorizer(sublinear_tf=True)
-
     # Load the data we are working with
+    FILENAME = "GOF Patterns (2.0).csv"
     df = pd.read_csv(os.path.join(os.path.dirname(__file__), f"data/{FILENAME}"))
 
-    if not validateInput(dp_1):
-        print("Invalid input size! please try again. \n")
-        return
+    dp_1 = sys.argv[1]
 
-    problemRow = {"name": "design problem", "correct_category": 4, "overview": dp_1}
-    df = df.append(problemRow, ignore_index=True)
+    vectorizer = TfidfVectorizer()
+
+    problemRow = pd.DataFrame(
+        [pd.Series({"name": "design problem", "correct_category": 4, "overview": dp_1})]
+    )
+
+    df = pd.concat([df, problemRow], ignore_index=True)
 
     corpus = df["overview"].tolist()
-    corpus = processCorpus(corpus, language, stemmer)
+    corpus = processCorpus(corpus, "english", PorterStemmer())
 
     X = vectorizer.fit_transform(corpus)
     tf_idf = pd.DataFrame(data=X.toarray(), columns=vectorizer.get_feature_names_out())
@@ -215,3 +187,23 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# df = pd.read_csv('sourcemaking.csv')
+#
+# corpus_with_dp = pd.concat([df['text'],pd.Series(dp_1)],ignore_index=True)
+#
+# # display(corpus_with_dp.iloc[-1])
+#
+# vect = TfidfVectorizer(min_df=1, stop_words="english")
+# tfidf = vect.fit_transform(corpus_with_dp)
+# pairwise_similarity = tfidf * tfidf.T
+#
+# cos_sim_dp1 = pairwise_similarity.toarray()[-1].tolist()
+#
+# df1 = pd.DataFrame(data={'pattern':df['pattern_name'],'cos_sim':cos_sim_dp1[:-1],'sorted_indices':np.argsort(np.argsort(cos_sim_dp1))[:-1]})
+#
+# # print(df1)
+# from natsort import index_natsorted
+#
+# print(df1.sort_values(by='cos_sim',ascending=False)[:10].iloc[:,:2])
