@@ -158,9 +158,7 @@ def runAlgorithms(final_df, df):
 
 def validateInput(designProblem):
     numOfWords = len(designProblem.split())
-    if numOfWords < 30 or numOfWords > 120:
-        return False
-    return True
+    return numOfWords >= 30 and numOfWords <= 120
 
 
 def main():
