@@ -189,7 +189,7 @@ def main():
     language = "english"
     stemmer = PorterStemmer()
     vectorizer = TfidfVectorizer(sublinear_tf=True)
-    df = getTrainData("GOF Patterns (2.0).csv")
+    df = getTrainData("data/GOF Patterns (2.0).csv")
 
     if not validateInput(dp_1):
         print("Invalid input size! please try again. \n")
@@ -214,7 +214,9 @@ def main():
     # This is a fraction of the suggested patterns that were in the correct cluster.
     rcd = 0
     if len(txts.loc[df["Kmeans"] == df["correct_category"]]) > 1:
-        rcd = (len(txts.loc[df["Kmeans"] == df["correct_category"]]) - 1) / (len(txts) - 1)
+        rcd = (len(txts.loc[df["Kmeans"] == df["correct_category"]]) - 1) / (
+            len(txts) - 1
+        )
     print("RCD = ", rcd)
 
 
