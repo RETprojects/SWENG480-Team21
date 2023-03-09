@@ -1,5 +1,5 @@
 """
-Command line usage: `python predict.py "Insert design problem here."``
+Command line usage: `python predict.py "Insert design problem here."`
 
 Missing some NLTK data? Make sure you download 'punkt' and 'stopwords'.
 `python -m nltk.downloader punkt stopwords`
@@ -9,13 +9,10 @@ import os
 import re
 import sys
 
-import nltk
-import nltk.corpus
-import numpy as np
 import pandas as pd
 from fcmeans import FCM
 from nltk import PorterStemmer
-from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 from sklearn import cluster
 from sklearn.cluster import AgglomerativeClustering, BisectingKMeans
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
@@ -23,61 +20,27 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn_extra.cluster import KMedoids
 
 
-# removes a list of words (ie. stopwords) from a tokenized list.
-def remove_words(listOfTokens, listOfWords):
-    return [token for token in listOfTokens if token not in listOfWords]
+def process_corpus(corpus):
+    # We use a set for better lookup performance
+    stop_words = set(stopwords.words("english"))
 
+    stemmer = PorterStemmer()
 
-# applies stemming to a list of tokenized words
-def apply_stemming(listOfTokens, stemmer):
-    return [stemmer.stem(token) for token in listOfTokens]
+    for index, document in enumerate(corpus):
+        # Lowercase the string
+        document = document.lower()
 
+        # Replace all non-alphabetical characters with whitespace, then compress duplicate whitespace
+        document = re.sub("[^A-Za-z]", " ", document)
+        document = re.sub("\s{2,}", " ", document)
 
-# removes any words composed of less than 2 or more than 21 letters
-def two_letters(listOfTokens):
-    twoLetterWord = []
-    for token in listOfTokens:
-        if len(token) <= 2 or len(token) >= 21:
-            twoLetterWord.append(token)
-    return twoLetterWord
+        # Remove stop words, stem, and remove leading and trailing whitespace
+        document = " ".join(
+            [stemmer.stem(word) for word in document.split() if word not in stop_words]
+        ).strip()
 
-
-def process_corpus(corpus, language, stemmer):
-    stopwords = nltk.corpus.stopwords.words(language)
-    param_stemmer = stemmer
-
-    for document in corpus:
-        index = corpus.index(document)
-        corpus[index] = str(corpus[index]).replace(
-            "\ufffd", "8"
-        )  # Replaces the ASCII '�' symbol with '8'
-        corpus[index] = corpus[index].replace('"', "")  # Removes double quotation marks
-        corpus[index] = corpus[index].replace("'", "")  # Removes single quotation marks
-        corpus[index] = corpus[index].replace(",", "")  # Removes commas
-        corpus[index] = corpus[index].rstrip("\n")  # Removes line breaks
-        corpus[index] = corpus[index].casefold()  # Makes all letters lowercase
-
-        corpus[index] = re.sub(
-            "\W_", " ", corpus[index]
-        )  # removes specials characters and leaves only words
-        corpus[index] = re.sub(
-            "\S*\d\S*", " ", corpus[index]
-        )  # removes numbers and words concatenated with numbers IE h4ck3r. Removes road names such as BR-381.
-        corpus[index] = re.sub(
-            "\S*@\S*\s?", " ", corpus[index]
-        )  # removes emails and mentions (words with @)
-        corpus[index] = re.sub(r"http\S+", "", corpus[index])  # removes URLs with http
-        corpus[index] = re.sub(r"www\S+", "", corpus[index])  # removes URLs with www
-
-        listOfTokens = word_tokenize(corpus[index])
-        twoLetterWord = two_letters(listOfTokens)
-
-        listOfTokens = remove_words(listOfTokens, stopwords)
-        listOfTokens = remove_words(listOfTokens, twoLetterWord)
-
-        listOfTokens = apply_stemming(listOfTokens, param_stemmer)
-
-        corpus[index] = " ".join(listOfTokens)
+        # Replace the original string
+        corpus[index] = document
 
     return corpus
 
@@ -179,7 +142,7 @@ def main():
     df = pd.concat([df, new_row], ignore_index=True)
 
     corpus = df["overview"].tolist()
-    corpus = process_corpus(corpus, "english", PorterStemmer())
+    corpus = process_corpus(corpus)
 
     vectorizer = TfidfVectorizer()
     X = vectorizer.fit_transform(corpus)
