@@ -1,4 +1,6 @@
 """
+Command line usage: `python predict.py "Insert design problem here."``
+
 Missing some NLTK data? Make sure you download 'punkt' and 'stopwords'.
 `python -m nltk.downloader punkt stopwords`
 """
@@ -22,17 +24,17 @@ from sklearn_extra.cluster import KMedoids
 
 
 # removes a list of words (ie. stopwords) from a tokenized list.
-def removeWords(listOfTokens, listOfWords):
+def remove_words(listOfTokens, listOfWords):
     return [token for token in listOfTokens if token not in listOfWords]
 
 
 # applies stemming to a list of tokenized words
-def applyStemming(listOfTokens, stemmer):
+def apply_stemming(listOfTokens, stemmer):
     return [stemmer.stem(token) for token in listOfTokens]
 
 
 # removes any words composed of less than 2 or more than 21 letters
-def twoLetters(listOfTokens):
+def two_letters(listOfTokens):
     twoLetterWord = []
     for token in listOfTokens:
         if len(token) <= 2 or len(token) >= 21:
@@ -40,7 +42,7 @@ def twoLetters(listOfTokens):
     return twoLetterWord
 
 
-def processCorpus(corpus, language, stemmer):
+def process_corpus(corpus, language, stemmer):
     stopwords = nltk.corpus.stopwords.words(language)
     param_stemmer = stemmer
 
@@ -68,12 +70,12 @@ def processCorpus(corpus, language, stemmer):
         corpus[index] = re.sub(r"www\S+", "", corpus[index])  # removes URLs with www
 
         listOfTokens = word_tokenize(corpus[index])
-        twoLetterWord = twoLetters(listOfTokens)
+        twoLetterWord = two_letters(listOfTokens)
 
-        listOfTokens = removeWords(listOfTokens, stopwords)
-        listOfTokens = removeWords(listOfTokens, twoLetterWord)
+        listOfTokens = remove_words(listOfTokens, stopwords)
+        listOfTokens = remove_words(listOfTokens, twoLetterWord)
 
-        listOfTokens = applyStemming(listOfTokens, param_stemmer)
+        listOfTokens = apply_stemming(listOfTokens, param_stemmer)
 
         corpus[index] = " ".join(listOfTokens)
 
@@ -101,7 +103,7 @@ def cosine_sim(df, df_col, class_no, pos_to_last):
     return cos_sim, txts
 
 
-def displayPredictions(cos_sim, txts, df):
+def display_predictions(cos_sim, txts, df):
     sim_sorted_doc_idx = cos_sim.argsort()
     for i in range(len(txts) - 1):
         patternDesc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]
@@ -116,7 +118,7 @@ def displayPredictions(cos_sim, txts, df):
         )
 
 
-def runAlgorithms(final_df, df):
+def run_algorithms(final_df, df):
     # bisecting_strategy{“biggest_inertia”, “largest_cluster”}, default=”biggest_inertia”
     final_df_array = final_df.to_numpy()
 
@@ -159,26 +161,34 @@ def main():
         print("Unknown file extension. Ending program.")
         return
 
-    dp_1 = sys.argv[1]
+    design_problem = sys.argv[1]
 
-    vectorizer = TfidfVectorizer()
-
-    problemRow = pd.DataFrame(
-        [pd.Series({"name": "design problem", "correct_category": 4, "overview": dp_1})]
+    # Final example demonstrates how to append a Series as a row
+    # https://pandas.pydata.org/docs/reference/api/pandas.concat.html
+    new_row = (
+        pd.Series(
+            {
+                "name": "design problem",
+                "correct_category": 4,
+                "overview": design_problem,
+            }
+        )
+        .to_frame()
+        .T
     )
-
-    df = pd.concat([df, problemRow], ignore_index=True)
+    df = pd.concat([df, new_row], ignore_index=True)
 
     corpus = df["overview"].tolist()
-    corpus = processCorpus(corpus, "english", PorterStemmer())
+    corpus = process_corpus(corpus, "english", PorterStemmer())
 
+    vectorizer = TfidfVectorizer()
     X = vectorizer.fit_transform(corpus)
     tf_idf = pd.DataFrame(data=X.toarray(), columns=vectorizer.get_feature_names_out())
 
-    runAlgorithms(tf_idf, df)
+    run_algorithms(tf_idf, df)
 
     cos_sim, txts = cosine_sim(df, df["overview"], df["Kmeans"].iloc[df.index[-1]], 1)
-    displayPredictions(cos_sim, txts, df)
+    display_predictions(cos_sim, txts, df)
 
     # calculate the RCD
     # RCD = number of right design patterns / total suggested design patterns
