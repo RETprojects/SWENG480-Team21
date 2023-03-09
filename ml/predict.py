@@ -127,7 +127,7 @@ def runAlgorithms(final_df, df):
     Fuzzy_Means.fit(final_df_array)
     kmed = KMedoids(n_clusters=3)
     kmed_manhattan = KMedoids(n_clusters=3, metric="manhattan")
-    Kmeans = cluster.KMeans(n_clusters=3, n_init=10)
+    Kmeans = cluster.KMeans(n_clusters=3, n_init=10, random_state=9)
 
     Kmeans_labels = Kmeans.fit_predict(final_df)
     fuzzy_labels = Fuzzy_Means.predict(final_df_array)
@@ -147,11 +147,17 @@ def runAlgorithms(final_df, df):
 
 
 def main():
-    np.random.seed(9)
-
     # Load the data we are working with
     FILENAME = "GOF Patterns (2.0).csv"
-    df = pd.read_csv(os.path.join(os.path.dirname(__file__), f"data/{FILENAME}"))
+    file_path = os.path.join(os.path.dirname(__file__), f"data/{FILENAME}")
+
+    if FILENAME.endswith(".csv"):
+        df = pd.read_csv(file_path)
+    elif FILENAME.endswith(".xls") or FILENAME.endswith(".xlsx"):
+        df = pd.read_excel(file_path)
+    else:
+        print("Unknown file extension. Ending program.")
+        return
 
     dp_1 = sys.argv[1]
 
