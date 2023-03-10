@@ -33,7 +33,7 @@ def browse_pattern(request):
                    'patternCatalogList': patternCatalogList, 'patternListJSON': patternListJSON,
                    'patternCategoryListJSON': patternCategoryListJSON,
                    'patternCatalogListJSON': patternCatalogListJSON})
-
+  
 
 def recommend_pattern(request):
     template = loader.get_template('recommendpattern.html')

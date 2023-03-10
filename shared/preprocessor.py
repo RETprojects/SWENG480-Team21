@@ -4,6 +4,7 @@ import string
 
 
 class Preprocessor:
+    stop_words = set(stopwords.words('english'))
     stemmer = PorterStemmer()
     wnl = WordNetLemmatizer()
 
@@ -16,23 +17,23 @@ class Preprocessor:
         """
         return input_str.translate(str.maketrans('', '', string.punctuation))
 
-    @staticmethod
-    def remove_stop_words(input_str):
-        """Remove stop words from a string.
+    @classmethod
+    def remove_stop_words(cls, input_str):
+        """Remove stop words from a string. Side-effect: output will be lowercase.
 
         Keyword arguments:
         input -- a string of any length
         """
-        return [word.strip() for word in input_str.split(' ') if word and word not in stopwords.words('english')]
+        return [word for word in input_str.lower().split() if word not in cls.stop_words]
 
     @classmethod
     def do_stem(cls, word_list):
-        """Perform Porter stemming on an array of words.
+        """Perform Porter stemming on an array of words. Side-effect: output will be lowercase.
 
         Keyword arguments:
         input -- an array of strings
         """
-        return [cls.stemmer.stem(word.strip()) for word in word_list if word]
+        return [cls.stemmer.stem(word.lower()) for word in word_list]
 
     @classmethod
     def lemmatize(cls, word_list):

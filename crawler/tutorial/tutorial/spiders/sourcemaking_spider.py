@@ -1,52 +1,37 @@
-import scrapy
+# scrapy runspider crawler/tutorial/tutorial/spiders/sourcemaking_spider.py
 
+import os
 
-class SourceMakingSpider(scrapy.Spider):
-    name = "sourcemaking"
+from scrapy import signals
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.linkextractors import LinkExtractor
 
-    creational_urls = [
-        'https://sourcemaking.com/design_patterns/abstract_factory',
-        'https://sourcemaking.com/design_patterns/builder',
-        'https://sourcemaking.com/design_patterns/factory_method',
-        'https://sourcemaking.com/design_patterns/object_pool',
-        'https://sourcemaking.com/design_patterns/prototype',
-        'https://sourcemaking.com/design_patterns/singleton'
-    ]
+class SourceMakingSpider(CrawlSpider):
+    name = 'sourcemaking'
+    allowed_domains = ['sourcemaking.com']
+    start_urls = ['https://sourcemaking.com/']
 
-    structural_urls = [
-        'https://sourcemaking.com/design_patterns/adapter',
-        'https://sourcemaking.com/design_patterns/bridge',
-        'https://sourcemaking.com/design_patterns/composite',
-        'https://sourcemaking.com/design_patterns/decorator',
-        'https://sourcemaking.com/design_patterns/facade',
-        'https://sourcemaking.com/design_patterns/flyweight',
-        'https://sourcemaking.com/design_patterns/proxy',
-        'https://sourcemaking.com/design_patterns/private_class_data',
-        'https://sourcemaking.com/design_patterns/proxy'
-    ]
+    rules = (
+        # https://regex101.com/r/c5EFB6/1
+        Rule(LinkExtractor(allow=('/design_patterns/[^/]+(?<!patterns)/?$')), callback='parse_item'),
+    )
 
-    behavioral_urls = [
-        'https://sourcemaking.com/design_patterns/chain_of_responsibility',
-        'https://sourcemaking.com/design_patterns/command',
-        'https://sourcemaking.com/design_patterns/interpreter',
-        'https://sourcemaking.com/design_patterns/iterator',
-        'https://sourcemaking.com/design_patterns/mediator',
-        'https://sourcemaking.com/design_patterns/memento',
-        'https://sourcemaking.com/design_patterns/null_object',
-        'https://sourcemaking.com/design_patterns/observer',
-        'https://sourcemaking.com/design_patterns/state',
-        'https://sourcemaking.com/design_patterns/state',
-        'https://sourcemaking.com/design_patterns/strategy',
-        'https://sourcemaking.com/design_patterns/template_method',
-        'https://sourcemaking.com/design_patterns/visitor'
+    rows = []
 
-    ]
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super(SourceMakingSpider, cls).from_crawler(crawler, *args, **kwargs)
+        crawler.signals.connect(spider.spider_closed, signal=signals.spider_closed)
+        return spider
 
-    start_urls = creational_urls + structural_urls + behavioral_urls
+    def spider_closed(self, spider):
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/sourcemaking.csv', 'w') as f:
+            f.write('pattern_name,text\n')
+            for line in self.rows:
+                f.write(f"{line}\n")
 
-    def parse(self, response):
-        page = response.url.split("/")[-1]
-        filename = f'patterns/{page}.html'
-        with open(filename, 'wb') as f:
-            f.write(response.body)
-        self.log(f'Saved file {filename}')
+    def parse_item(self, response):
+        text_nodes = response.xpath('//article/*[not(self::script or contains(@class,\'banner\'))]/descendant::*/text()').getall()
+        text_nodes = [x.replace('\n', ' ').replace(',','') for x in text_nodes]
+        full_text = response.url.split('/')[-1] + ',' + ' '.join(text_nodes)
+        self.rows.append(full_text)

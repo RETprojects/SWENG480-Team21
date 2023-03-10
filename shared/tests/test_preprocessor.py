@@ -37,34 +37,35 @@ class TestPreprocessor(unittest.TestCase):
     def test_remove_stop_words(self):
         self.assertEqual(
             Preprocessor.remove_stop_words(self.str_simple_nopunc),
-            ['Today', 'I', 'went', 'store', 'buy', 'groceries', 'I', 'bought', 'carrots', 'apples', 'bananas']
+            ['today', 'went', 'store', 'buy', 'groceries', 'bought', 'carrots', 'apples', 'bananas']
         )
         self.assertEqual(
             Preprocessor.remove_stop_words(self.str_complex_nopunc),
-            ['Natural', 'language', 'processing', 'NLP', 'subfield', 'linguistics', 'computer', 'science', 'artificial',
-             'intelligence', 'concerned', 'interactions', 'computers', 'human', 'language', 'particular', 'program',
-             'computers', 'process', 'analyze', 'large', 'amounts', 'natural', 'language', 'data', 'The', 'goal',
-             'computer', 'capable', 'understanding', 'contents', 'documents', 'including', 'contextual', 'nuances',
-             'language', 'within', 'The', 'technology', 'accurately', 'extract', 'information', 'insights',
-             'contained', 'documents', 'well', 'categorize', 'organize', 'documents', 'themselves']
+            ['natural', 'language', 'processing', 'nlp', 'subfield', 'linguistics', 'computer', 'science',
+             'artificial', 'intelligence', 'concerned', 'interactions', 'computers', 'human', 'language',
+             'particular', 'program', 'computers', 'process', 'analyze', 'large', 'amounts', 'natural',
+             'language', 'data', 'goal', 'computer', 'capable', 'understanding', 'contents', 'documents',
+             'including', 'contextual', 'nuances', 'language', 'within', 'technology', 'accurately', 'extract',
+             'information', 'insights', 'contained', 'documents', 'well', 'categorize', 'organize', 'documents']
         )
 
     def test_do_stem(self):
         self.assertEqual(
-            Preprocessor.do_stem(self.str_simple_nopunc.split(' ')),
+            Preprocessor.do_stem(self.str_simple_nopunc.split()),
             ['today', 'i', 'went', 'to', 'the', 'store', 'to', 'buy', 'some', 'groceri', 'i', 'bought', 'carrot',
              'appl', 'and', 'banana']
         )
         self.assertEqual(
-            Preprocessor.do_stem(self.str_complex_nopunc.split(' ')),
-            ['natur', 'languag', 'process', 'nlp', 'is', 'a', 'subfield', 'of', 'linguist', 'comput', 'scienc', 'and',
-             'artifici', 'intellig', 'concern', 'with', 'the', 'interact', 'between', 'comput', 'and', 'human',
-             'languag', 'in', 'particular', 'how', 'to', 'program', 'comput', 'to', 'process', 'and', 'analyz', 'larg',
-             'amount', 'of', 'natur', 'languag', 'data', 'the', 'goal', 'is', 'a', 'comput', 'capabl', 'of',
-             'understand', 'the', 'content', 'of', 'document', 'includ', 'the', 'contextu', 'nuanc', 'of', 'the',
-             'languag', 'within', 'them', 'the', 'technolog', 'can', 'then', 'accur', 'extract', 'inform', 'and',
-             'insight', 'contain', 'in', 'the', 'document', 'as', 'well', 'as', 'categor', 'and', 'organ', 'the',
+            Preprocessor.do_stem(self.str_complex_nopunc.split()),
+            ['natur', 'languag', 'process', 'nlp', 'is', 'a', 'subfield', 'of', 'linguist', 'comput', 'scienc',
+             'and', 'artifici', 'intellig', 'concern', 'with', 'the', 'interact', 'between', 'comput', 'and',
+             'human', 'languag', 'in', 'particular', 'how', 'to', 'program', 'comput', 'to', 'process', 'and',
+             'analyz', 'larg', 'amount', 'of', 'natur', 'languag', 'data', 'the', 'goal', 'is', 'a', 'comput',
+             'capabl', 'of', 'understand', 'the', 'content', 'of', 'document', 'includ', 'the', 'contextu', 'nuanc',
+             'of', 'the', 'languag', 'within', 'them', 'the', 'technolog', 'can', 'then', 'accur', 'extract', 'inform',
+             'and', 'insight', 'contain', 'in', 'the', 'document', 'as', 'well', 'as', 'categor', 'and', 'organ', 'the',
              'document', 'themselv']
+
         )
 
     def test_lemmatize(self):
@@ -84,6 +85,29 @@ class TestPreprocessor(unittest.TestCase):
              'extract', 'information', 'and', 'insight', 'contain', 'in', 'the', 'document', 'a', 'well', 'a',
              'categorize', 'and', 'organize', 'the', 'document', 'themselves']
 
+        )
+
+    def test_integration(self):
+        self.assertEqual(
+            Preprocessor.do_stem(
+                Preprocessor.remove_stop_words(
+                    Preprocessor.remove_punctuation(self.str_simple)
+                )
+            ),
+            ['today', 'went', 'store', 'buy', 'groceri', 'bought', 'carrot', 'appl', 'banana']
+        )
+        self.assertEqual(
+            Preprocessor.do_stem(
+                Preprocessor.remove_stop_words(
+                    Preprocessor.remove_punctuation(self.str_complex)
+                )
+            ),
+            ['natur', 'languag', 'process', 'nlp', 'subfield', 'linguist', 'comput', 'scienc',
+             'artifici', 'intellig', 'concern', 'interact', 'comput', 'human', 'languag', 'particular',
+             'program', 'comput', 'process', 'analyz', 'larg', 'amount', 'natur', 'languag', 'data', 'goal',
+             'comput', 'capabl', 'understand', 'content', 'document', 'includ', 'contextu', 'nuanc', 'languag',
+             'within', 'technolog', 'accur', 'extract', 'inform', 'insight', 'contain', 'document', 'well',
+             'categor', 'organ', 'document']
         )
 
 

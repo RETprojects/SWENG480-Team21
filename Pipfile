@@ -4,12 +4,18 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-nltk = "*"
 scrapy = "*"
 scikit-learn-extra = "*"
 scikit-fuzzy = "*"
+nltk = "*"
+django = "*"
+mysqlclient = "*"
+natsort = "*"
 
 [dev-packages]
+pandas = "*"
+numpy = "*"
+'black[d]' = "*"
 
 [requires]
 python_version = "3.10"
