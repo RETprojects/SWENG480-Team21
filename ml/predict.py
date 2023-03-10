@@ -44,13 +44,9 @@ def process_corpus(corpus):
 
     return corpus
 
-
-# TODO: use k-means before this chunk of code to classify the problem with a
-#  pattern class, then perform cosine similarity with the problem and the list
-#  of candidate patterns from that class.
+# TODO: calculate cosine similarity measures for all clustering algorithms,
+#       not just k-means
 # Source: https://danielcaraway.github.io/html/sklearn_cosine_similarity.html
-
-
 def cosine_sim(df, df_col, class_no, pos_to_last):
     unigram_count = CountVectorizer(encoding="latin-1", binary=False)
     unigram_count_stop_remove = CountVectorizer(
@@ -82,7 +78,6 @@ def display_predictions(cos_sim, txts, df):
 
 
 def run_algorithms(final_df, df):
-    # bisecting_strategy{“biggest_inertia”, “largest_cluster”}, default=”biggest_inertia”
     final_df_array = final_df.to_numpy()
 
     Bi_Bisect = BisectingKMeans(n_clusters=3, bisecting_strategy="biggest_inertia")
@@ -166,23 +161,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# df = pd.read_csv('sourcemaking.csv')
-#
-# corpus_with_dp = pd.concat([df['text'],pd.Series(dp_1)],ignore_index=True)
-#
-# # display(corpus_with_dp.iloc[-1])
-#
-# vect = TfidfVectorizer(min_df=1, stop_words="english")
-# tfidf = vect.fit_transform(corpus_with_dp)
-# pairwise_similarity = tfidf * tfidf.T
-#
-# cos_sim_dp1 = pairwise_similarity.toarray()[-1].tolist()
-#
-# df1 = pd.DataFrame(data={'pattern':df['pattern_name'],'cos_sim':cos_sim_dp1[:-1],'sorted_indices':np.argsort(np.argsort(cos_sim_dp1))[:-1]})
-#
-# # print(df1)
-# from natsort import index_natsorted
-#
-# print(df1.sort_values(by='cos_sim',ascending=False)[:10].iloc[:,:2])
