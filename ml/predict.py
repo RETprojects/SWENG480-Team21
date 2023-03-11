@@ -21,13 +21,13 @@ from sklearn_extra.cluster import KMedoids
 
 # global variables
 algos = [
-    "Kmeans",
-    "fuzzy",
-    "hierarchy",
-    "Bi_Bisect",
-    "Lc_Bisect",
-    "PAM-EUCLIDEAN",
-    "PAM-MANHATTAN",
+    "kmeans",
+    "fuzzy_cmeans",
+    "agglomerative",
+    "bi_kmeans_inertia",
+    "bi_kmeans_lg_cluster",
+    "pam_euclidean",
+    "pam_manhattan",
 ]
 
 
@@ -104,31 +104,31 @@ def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
 
     # Agglomerative (hierarchical)
     agg = AgglomerativeClustering(n_clusters=3)
-    df["hierarchy"] = agg.fit_predict(df_weighted)
+    df["agglomerative"] = agg.fit_predict(df_weighted)
 
     # Bisecting k-means
-    bisect = BisectingKMeans(n_clusters=3)
+    bisect_inertia = BisectingKMeans(n_clusters=3)
     bisect_lg_cluster = BisectingKMeans(
         n_clusters=3, bisecting_strategy="largest_cluster"
     )
-    df["Bi_Bisect"] = bisect.fit_predict(df_weighted)
-    df["Lc_Bisect"] = bisect_lg_cluster.fit_predict(df_weighted)
+    df["bi_kmeans_inertia"] = bisect_inertia.fit_predict(df_weighted)
+    df["bi_kmeans_lg_cluster"] = bisect_lg_cluster.fit_predict(df_weighted)
 
     # Fuzzy c-means
     final_df_np = df_weighted.to_numpy()
     fcm = FCM(n_clusters=3)
     fcm.fit(final_df_np)
-    df["fuzzy"] = fcm.predict(final_df_np)
+    df["fuzzy_cmeans"] = fcm.predict(final_df_np)
 
     # K-means
     km = cluster.KMeans(n_clusters=3, n_init=10, random_state=9)
-    df["Kmeans"] = km.fit_predict(df_weighted)
+    df["kmeans"] = km.fit_predict(df_weighted)
 
     # K-medoids
-    kmed = KMedoids(n_clusters=3)
+    kmed_euclidean = KMedoids(n_clusters=3)
     kmed_manhattan = KMedoids(n_clusters=3, metric="manhattan")
-    df["PAM-EUCLIDEAN"] = kmed.fit_predict(df_weighted)
-    df["PAM-MANHATTAN"] = kmed_manhattan.fit_predict(df_weighted)
+    df["pam_euclidean"] = kmed_euclidean.fit_predict(df_weighted)
+    df["pam_manhattan"] = kmed_manhattan.fit_predict(df_weighted)
 
     return df
 
@@ -195,7 +195,7 @@ def main():
     for a_name in algos:
         print("---------", a_name, "------------")
 
-        # cos_sim, txts = cosine_sim(df, df["overview"], df["Kmeans"].iloc[df.index[-1]], 1)
+        # cos_sim, txts = cosine_sim(df, df["overview"], df["kmeans"].iloc[df.index[-1]], 1)
         CosSimDict, TxtsDict = cosine_sim(
             df, df["overview"], df[a_name].iloc[df.index[-1]], 1
         )
