@@ -31,7 +31,7 @@ algos = [
 ]
 
 
-def process_corpus(corpus):
+def preprocess(corpus):
     # We use a set for better lookup performance
     stop_words = set(stopwords.words("english"))
 
@@ -98,34 +98,39 @@ def display_predictions(cos_sim, txts, df):
         )
 
 
-def run_algorithms(final_df: pd.DataFrame, df: pd.DataFrame) -> None:
+def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
+    # This is the DataFrame we will return that contains all the labels.
+    df = pd.DataFrame()
+
     # Agglomerative (hierarchical)
     agg = AgglomerativeClustering(n_clusters=3)
-    df["hierarchy"] = agg.fit_predict(final_df)
+    df["hierarchy"] = agg.fit_predict(df_weighted)
 
     # Bisecting k-means
     bisect = BisectingKMeans(n_clusters=3)
     bisect_lg_cluster = BisectingKMeans(
         n_clusters=3, bisecting_strategy="largest_cluster"
     )
-    df["Bi_Bisect"] = bisect.fit_predict(final_df)
-    df["Lc_Bisect"] = bisect_lg_cluster.fit_predict(final_df)
+    df["Bi_Bisect"] = bisect.fit_predict(df_weighted)
+    df["Lc_Bisect"] = bisect_lg_cluster.fit_predict(df_weighted)
 
     # Fuzzy c-means
-    final_df_np = final_df.to_numpy()
+    final_df_np = df_weighted.to_numpy()
     fcm = FCM(n_clusters=3)
     fcm.fit(final_df_np)
     df["fuzzy"] = fcm.predict(final_df_np)
 
     # K-means
     km = cluster.KMeans(n_clusters=3, n_init=10, random_state=9)
-    df["Kmeans"] = km.fit_predict(final_df)
+    df["Kmeans"] = km.fit_predict(df_weighted)
 
     # K-medoids
     kmed = KMedoids(n_clusters=3)
     kmed_manhattan = KMedoids(n_clusters=3, metric="manhattan")
-    df["PAM-EUCLIDEAN"] = kmed.fit_predict(final_df)
-    df["PAM-MANHATTAN"] = kmed_manhattan.fit_predict(final_df)
+    df["PAM-EUCLIDEAN"] = kmed.fit_predict(df_weighted)
+    df["PAM-MANHATTAN"] = kmed_manhattan.fit_predict(df_weighted)
+
+    return df
 
 
 # Better for this to be an enum, but the syntax is a bit tricky.
@@ -181,9 +186,11 @@ def main():
     df = pd.concat([df, new_row], ignore_index=True)
 
     corpus = df["overview"].tolist()
-    corpus = process_corpus(corpus)
+    corpus = preprocess(corpus)
 
-    run_algorithms(do_weighting("Tfidf", corpus), df)
+    # Add the predicted labels to the DataFrame (concat horizontally)
+    df_labels = do_cluster(do_weighting("Tfidf", corpus))
+    df = pd.concat([df, df_labels], axis=1)
 
     for a_name in algos:
         print("---------", a_name, "------------")
