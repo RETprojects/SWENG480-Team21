@@ -20,7 +20,16 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn_extra.cluster import KMedoids
 
 # global variables
-algos = ["Kmeans", "fuzzy", "hierarchy", "Bi_Bisect", "Lc_Bisect", "PAM-EUCLIDEAN", "PAM-MANHATTAN"]
+algos = [
+    "Kmeans",
+    "fuzzy",
+    "hierarchy",
+    "Bi_Bisect",
+    "Lc_Bisect",
+    "PAM-EUCLIDEAN",
+    "PAM-MANHATTAN",
+]
+
 
 def process_corpus(corpus):
     # We use a set for better lookup performance
@@ -46,6 +55,7 @@ def process_corpus(corpus):
 
     return corpus
 
+
 # TODO: calculate cosine similarity measures for all clustering algorithms,
 #       not just k-means
 # Source: https://danielcaraway.github.io/html/sklearn_cosine_similarity.html
@@ -69,7 +79,7 @@ def cosine_sim(df, df_col, class_no, pos_to_last):
         CosSimDict[algo_name] = cos_sim
         TxtsDict[algo_name] = txts
 
-    #return cos_sim, txts
+    # return cos_sim, txts
     return CosSimDict, TxtsDict
 
 
@@ -117,6 +127,28 @@ def run_algorithms(final_df, df):
     df["PAM-MANHATTAN"] = kmed_man_labels
 
 
+# Better for this to be an enum, but the syntax is a bit tricky.
+weighting_methods = {"Binary", "Count", "Tfidf"}
+
+
+# Output: DataFrame with dense values
+def do_weighting(method: str, series: pd.Series):
+    if method == "Binary":
+        vectorizer = CountVectorizer()
+    elif method == "Count":
+        vectorizer = CountVectorizer(binary=True)
+    elif method == "Tfidf":
+        vectorizer = TfidfVectorizer()
+    else:
+        print("Error. Did not pass valid weighting method")
+        return
+
+    matrix = vectorizer.fit_transform(series)
+    return pd.DataFrame.sparse.from_spmatrix(
+        matrix, columns=vectorizer.get_feature_names_out()
+    ).sparse.to_dense()
+
+
 def main():
     # Load the data we are working with
     FILENAME = "GOF Patterns (2.0).csv"
@@ -150,17 +182,15 @@ def main():
     corpus = df["overview"].tolist()
     corpus = process_corpus(corpus)
 
-    vectorizer = TfidfVectorizer()
-    X = vectorizer.fit_transform(corpus)
-    tf_idf = pd.DataFrame(data=X.toarray(), columns=vectorizer.get_feature_names_out())
-
-    run_algorithms(tf_idf, df)
+    run_algorithms(do_weighting("Tfidf", corpus), df)
 
     for a_name in algos:
         print("---------", a_name, "------------")
 
-        #cos_sim, txts = cosine_sim(df, df["overview"], df["Kmeans"].iloc[df.index[-1]], 1)
-        CosSimDict, TxtsDict = cosine_sim(df, df["overview"], df[a_name].iloc[df.index[-1]], 1)
+        # cos_sim, txts = cosine_sim(df, df["overview"], df["Kmeans"].iloc[df.index[-1]], 1)
+        CosSimDict, TxtsDict = cosine_sim(
+            df, df["overview"], df[a_name].iloc[df.index[-1]], 1
+        )
         cos_sim = CosSimDict[a_name]
         txts = TxtsDict[a_name]
         display_predictions(cos_sim, txts, df)
