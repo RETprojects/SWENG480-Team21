@@ -132,11 +132,11 @@ weighting_methods = {"Binary", "Count", "Tfidf"}
 
 
 # Output: DataFrame with dense values
-def do_weighting(method: str, series: pd.Series):
+def do_weighting(method: str, series: pd.Series) -> pd.DataFrame:
     if method == "Binary":
-        vectorizer = CountVectorizer()
-    elif method == "Count":
         vectorizer = CountVectorizer(binary=True)
+    elif method == "Count":
+        vectorizer = CountVectorizer()
     elif method == "Tfidf":
         vectorizer = TfidfVectorizer()
     else:
