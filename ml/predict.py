@@ -19,6 +19,8 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn_extra.cluster import KMedoids
 
+# global variables
+algos = ["Kmeans", "fuzzy", "hierarchy", "Bi_Bisect", "Lc_Bisect", "PAM-EUCLIDEAN", "PAM-MANHATTAN"]
 
 def process_corpus(corpus):
     # We use a set for better lookup performance
@@ -53,13 +55,22 @@ def cosine_sim(df, df_col, class_no, pos_to_last):
         encoding="latin-1", binary=False, stop_words="english"
     )
 
-    # get the list of candidate patterns
-    txts = df_col.loc[df["Kmeans"] == class_no]  # where label == class_no
-    vecs = unigram_count.fit_transform(txts)
+    # Loop through the clustering algorithms and calculate the cosine similarity measures based on each algorithm.
+    CosSimDict = {}
+    TxtsDict = {}
+    for algo_name in algos:
+        # get the list of candidate patterns
+        txts = df_col.loc[df[algo_name] == class_no]  # where label == class_no
+        vecs = unigram_count.fit_transform(txts)
 
-    cos_sim = cosine_similarity(vecs[-pos_to_last], vecs)
+        cos_sim = cosine_similarity(vecs[-pos_to_last], vecs)
 
-    return cos_sim, txts
+        # add cos_sim and txts to the dictionaries with the algorithm name as the key
+        CosSimDict[algo_name] = cos_sim
+        TxtsDict[algo_name] = txts
+
+    #return cos_sim, txts
+    return CosSimDict, TxtsDict
 
 
 def display_predictions(cos_sim, txts, df):
@@ -145,18 +156,24 @@ def main():
 
     run_algorithms(tf_idf, df)
 
-    cos_sim, txts = cosine_sim(df, df["overview"], df["Kmeans"].iloc[df.index[-1]], 1)
-    display_predictions(cos_sim, txts, df)
+    for a_name in algos:
+        print("---------", a_name, "------------")
 
-    # calculate the RCD
-    # RCD = number of right design patterns / total suggested design patterns
-    # This is a fraction of the suggested patterns that were in the correct cluster.
-    rcd = 0
-    if len(txts.loc[df["Kmeans"] == df["correct_category"]]) > 1:
-        rcd = (len(txts.loc[df["Kmeans"] == df["correct_category"]]) - 1) / (
-            len(txts) - 1
-        )
-    print("RCD = ", rcd)
+        #cos_sim, txts = cosine_sim(df, df["overview"], df["Kmeans"].iloc[df.index[-1]], 1)
+        CosSimDict, TxtsDict = cosine_sim(df, df["overview"], df[a_name].iloc[df.index[-1]], 1)
+        cos_sim = CosSimDict[a_name]
+        txts = TxtsDict[a_name]
+        display_predictions(cos_sim, txts, df)
+
+        # calculate the RCD
+        # RCD = number of right design patterns / total suggested design patterns
+        # This is a fraction of the suggested patterns that were in the correct cluster.
+        rcd = 0
+        if len(txts.loc[df[a_name] == df["correct_category"]]) > 1:
+            rcd = (len(txts.loc[df[a_name] == df["correct_category"]]) - 1) / (
+                len(txts) - 1
+            )
+        print("RCD = ", rcd)
 
 
 if __name__ == "__main__":
