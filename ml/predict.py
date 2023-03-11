@@ -5,7 +5,6 @@ Missing some NLTK data? Make sure you download 'punkt' and 'stopwords'.
 `python -m nltk.downloader punkt stopwords`
 """
 
-from enum import Enum
 import os
 import re
 import sys
