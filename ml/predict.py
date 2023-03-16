@@ -195,7 +195,6 @@ def main():
     for a_name in algos:
         print("---------", a_name, "------------")
 
-        # cos_sim, txts = cosine_sim(df, df["overview"], df["kmeans"].iloc[df.index[-1]], 1)
         CosSimDict, TxtsDict = cosine_sim(
             df, df["overview"], df[a_name].iloc[df.index[-1]], 1
         )
@@ -203,9 +202,12 @@ def main():
         txts = TxtsDict[a_name]
         display_predictions(cos_sim, txts, df)
 
-        # calculate the RCD
+        # Calculate the RCD
         # RCD = number of right design patterns / total suggested design patterns
         # This is a fraction of the suggested patterns that were in the correct cluster.
+        # TODO: We probably need to account for the fact that cluster labels
+        #       may not be the same every run (0 isn't always behavioral,
+        #       for example).
         rcd = 0
         if len(txts.loc[df[a_name] == df["correct_category"]]) > 1:
             rcd = (len(txts.loc[df[a_name] == df["correct_category"]]) - 1) / (
