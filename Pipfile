@@ -3,19 +3,18 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
-[packages]
-scrapy = "*"
-scikit-learn-extra = "*"
-scikit-fuzzy = "*"
-nltk = "*"
-django = "*"
-mysqlclient = "*"
-natsort = "*"
-
-[dev-packages]
-pandas = "*"
-numpy = "*"
-'black[d]' = "*"
-
 [requires]
 python_version = "3.10"
+
+[packages]
+django = "*"
+fuzzy-c-means = "*"
+nltk = "*"
+numpy = "*"
+pandas = "*"
+scikit-learn = "*"
+scikit-learn-extra = "*"
+
+[dev-packages]
+'black[d]' = "*"
+scrapy = "*"
