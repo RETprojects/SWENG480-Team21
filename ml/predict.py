@@ -13,6 +13,8 @@ import pandas as pd
 from fcmeans import FCM
 from nltk import PorterStemmer
 from nltk.corpus import stopwords
+from nltk.tag import pos_tag
+from nltk.tokenize import word_tokenize
 from sklearn import cluster
 from sklearn.cluster import AgglomerativeClustering, BisectingKMeans
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
@@ -47,7 +49,14 @@ def preprocess(corpus):
 
         # Remove stop words, stem, and remove leading and trailing whitespace
         document = " ".join(
-            [stemmer.stem(word) for word in document.split() if word not in stop_words]
+            [
+                stemmer.stem(word)
+                for word in document.split()
+                if (
+                    word not in stop_words
+                    and pos_tag(word_tokenize(word), tagset="universal")[0][1] == "VERB"
+                )
+            ]
         ).strip()
 
         # Replace the original string
