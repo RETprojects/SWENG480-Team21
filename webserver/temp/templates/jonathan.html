@@ -1,0 +1,9 @@
+<form action="/temp/jonathan/" method="post">
+    {% csrf_token %}
+    Please enter a design problem.
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>
+{% for t in test %}
+<p>{{t}}</p>
+{% endfor %}

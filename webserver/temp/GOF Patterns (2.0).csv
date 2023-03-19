@@ -1,0 +1,779 @@
+,name,correct_category,overview
+0,abstract factory,2,"Provide an interface for creating families of related or dependent objects without specifying their concrete classes. Consider a user interface toolkit that supports multiple look-and-feel standards. Different look-and-feels define different appearances and behaviors for user interface â€œwidgetsâ€ like scroll bars, windows, and buttons. To be portable across look-and-feel standards, an application should not hard-code its widgets for a particular look and feel. Instantiating look-and-feel-specific classes of widgets throughout the application makes it hard to change the look and feel later.
+
+We can solve this problem by defining an abstract WidgetFactory class that declares an interface for creating each basic kind of widget. Thereâ€™s also an abstract class for each kind of widget, and concrete subclasses implement widgets for specific look-and-feel standards. WidgetFactoryâ€™s interface has an operation that returns a new widget object for each abstract widget class. Clients call these operations to obtain widget instances, but clients arenâ€™t aware of the concrete classes theyâ€™re using. Thus clients stay independent of the prevailing look and feel. independent of how its products are created, composed, and represented. configured with one of multiple families of products. 
+
+used to create families of objects, where the objects of a family are designed to work together. In the abstract factory pattern you provide an interface to create families of related or dependent objects, but you do not specify the concrete classes of the objects to create. From the client point of view, it means that a client can create a family of related objects without knowing about the object definitions and their concrete class names. abstract how the objects are created. Both design patterns help in creating client code that is loosely-coupled with object creation code.
+
+Abstract Factory is a creational design pattern that lets you produce families of related objects without specifying their concrete classes.
+Imagine that youâ€™re creating a furniture shop simulatorYou need a way to create individual furniture objects so that they match other objects of the same family. Also, you donâ€™t want to change existing code when adding new products or families of products to the program. 
+Provide a level of indirection that abstracts the creation of families of related or dependent objects without directly specifying their concrete classes. The ""factory"" object has the responsibility for providing creation services for the entire platform family. Clients never create platform objects directly, they ask the factory to do that for them.
+This mechanism makes exchanging product families easy because the specific class of the factory object appears only once in the application - where it is instantiated. The application can wholesale replace the entire family of products simply by instantiating a different concrete instance of the abstract factory."
+1,builder,2,"The Builder pattern captures all these relationships. Each converter class is called a builder in the pattern, and the reader is called the director. creating a complex object should be independent of the parts that make up the object and how they're assembled. construction process must allow different representations for the object that's constructed.
+
+Builder is a creational design pattern that lets you construct complex objects step by step. The pattern allows you to produce different types and representations of an object using the same construction code. Imagine a complex object that requires laborious, step-by-step initialization of many fields and nested objects. Separate the construction of a complex object from its representation so that the same construction process can create different representations.Parse a complex representation, create one of several targets.
+
+The builder creates part of the complex object each time it is called and maintains all intermediate state. When the product is finished, the client retrieves the result. Separate the construction of a complex object from its representation so that the same construction process can create different representations
+
+Separate the construction of a complex object from its representation so that the same construction process can create different representations.
+Parse a complex representation, create one of several targets.
+
+An application needs to create the elements of a complex aggregate. The specification for the aggregate exists on secondary storage and one of many representations needs to be built in primary storage.
+
+Builder is a creational design pattern that lets you construct complex objects step by step. The pattern allows you to produce different types and representations of an object using the same construction code.
+
+Imagine a complex object that requires laborious, step-by-step initialization of many fields and nested objects. Such initialization code is usually buried inside a monstrous constructor with lots of parameters. Or even worse: scattered all over the client code.
+
+Lots of subclasses create another problem
+You might make the program too complex by creating a subclass for every possible configuration of an object.
+For example, let’s think about how to create a House object. To build a simple house, you need to construct four walls and a floor, install a door, fit a pair of windows, and build a roof. But what if you want a bigger, brighter house, with a backyard and other goodies (like a heating system, plumbing, and electrical wiring)?
+
+The simplest solution is to extend the base House class and create a set of subclasses to cover all combinations of the parameters. But eventually you’ll end up with a considerable number of subclasses. Any new parameter, such as the porch style, will require growing this hierarchy even more.
+
+There’s another approach that doesn’t involve breeding subclasses. You can create a giant constructor right in the base House class with all possible parameters that control the house object. While this approach indeed eliminates the need for subclasses, it creates another problem.
+
+The telescoping constructor
+The constructor with lots of parameters has its downside: not all the parameters are needed at all times.
+In most cases most of the parameters will be unused, making the constructor calls pretty ugly. For instance, only a fraction of houses have swimming pools, so the parameters related to swimming pools will be useless nine times out of ten."
+2,factory method,2,"Define an interface for creating an object, but let subclasses decide which class to instantiate. Factory Method lets a class defer instantiation to subclasses. Frameworks use abstract classes to define and maintain relationships between objects. A framework is often responsible for creating these objects as well. present multiple documents to the user. Two key abstractions in this framework are the classes Application and Document. Both classes are abstract, and clients have to subclass them to realize their application-specific implementations. It encapsulates the knowledge of which Document subclass to create and moves this knowledge out of the framework. class canâ€™t anticipate the class of objects it must create. subclasses to specify the objects it creates. classes delegate responsibility to one of several helper subclasses, and you want to localize the knowledge of which helper subclass is the delegate. Factory Method is a creational design pattern that provides an interface for creating objects in a superclass, but allows subclasses to alter the type of objects that will be created.
+
+A superclass specifies all standard and generic behavior and then delegates the creation details to subclasses that are supplied by the client. makes a design more customizable.
+standard way to create objects; but it isn't necessary if: the class that's instantiated never changes, or instantiation takes place in an operation that subclasses can easily override it can return the same instance multiple times, or can return a subclass rather than an object of that exact type.
+Some Factory Method advocates recommend that as a matter of language design (or failing that, as a matter of style) absolutely all constructors should be private or protected. It's no one else's business whether a class manufactures a new object or recycles an old one."
+3,prototype,2,"Specify the kinds of objects to create using a prototypical instance, and create new objects by copying this prototype. reduce the number of classes even further. We have separate classes  This can reduce the number of classes in the system dramatically. instantiate are specified at run-time, by dynamic loading
+when instances of a class can have one of only a few different combinations of state. It may be more convenient to install a corresponding number and clone them rather than instantiating the class manually, each time with the appropriate state.
+
+lets you copy existing objects without making your code dependent on their classes.
+prototype is also concerned with object creation, but with a difference. you do not create a new object for each client requesting the object. Instead, you start by creating a single object, make copies of it for each client requesting the object. In Java, this is achieved through object cloning, a way to make a copy of an object with the same state as the original object.  create copies if we can create new objects through constructor calls,  move into enterprise application development where application performance is critical, you will encounter situations where construction of an object involves time consuming operations, such as network communication, database reads, and disk I/O. If a large number of such objects needs to be created, you can avoid repeating those steps for each object by initially and then making copies of it.
+
+Declare an abstract base class that specifies a pure virtual ""clone"" method, and, maintains a dictionary of all ""cloneable"" concrete derived classes. Any class that needs a ""polymorphic constructor"" capability: derives itself from the abstract base class, The client then, instead of writing code that invokes the ""new"" operator on a hard-wired class name, calls a ""clone"" operation on the abstract base class, supplying a string or enumerated data type that designates the particular concrete derived class desired.
+
+"
+4,singleton,2,"Ensure a class only has one instance, and provide a global point of access to it.
+
+ Itâ€™s important for some classes to have exactly one instance.
+How do we ensure that a class has only one instance and that the instance is easily accessible? A global variable makes an object accessible, but it doesnâ€™t keep you from instantiating multiple objects.
+
+responsible for keeping track of its sole instance. The class can ensure that no other instance can be created (by intercepting requests to create new objects), and it can provide a way to access the instance. exactly one instance of a class, and it must be accessible to clients from a well-known access point. sole instance should be extensible by subclassing, and clients should be able to use an extended instance without modifying their code.
+
+ lets you ensure that a class has only one instance, while providing a global access point to this instance. created an object, but after a while decided to create a new one. Instead of receiving a fresh object, youâ€™ll get the one you already created.
+Provide a global access point to that instance
+Just like a global variable, the Singleton pattern lets you access some object from anywhere in the program
+every class should have responsibility over a single part of the functionality provided by the software, and that responsibility should be entirely encapsulated by the classâ€. Singletons can also make testing more difficult. Some consider it to be a non-desirable coding practice since they introduce a global state to the program.
+These are very valid arguments. However, are useful in situations like the ones weâ€™ve discussed in the previous paragraphs, when one class needs to manage resources for other classes and when having more instances than one would truly be a design flaw. With prudent, moderate usage and implementations which can be optimized for thread-safety, serialization or faster performance, the singleton pattern can improve the overall readability and elegance of your code.
+
+Make the class of the single instance object responsible for creation, initialization, access, and enforcement. Declare the instance as a private static data member. Provide a public static member function that encapsulates all initialization code, and provides access to the instance.
+
+The client calls the accessor function (using the class name and scope resolution operator) whenever a reference to the single instance is required.
+
+    Ownership of the single instance cannot be reasonably assigned
+    Lazy initialization is desirable
+    Global access is not otherwise provided for
+
+If ownership of the single instance, when and how initialization occurs, and global access are not issues, Singleton is not sufficiently interesting.
+
+The Singleton pattern can be extended to support access to an application-specific number of instances."
+5,adapter,1,"Convert the interface of a class into another interface clients expect. Adapter lets classes work together that couldn't otherwise because of incompatible interfaces. Sometimes a toolkit class that's designed for reuse isn't reusable only because its interface doesn't match the domain-specific interface an application requires.
+
+existing class create a reusable class that cooperates with unrelated or unforeseen classes, that is, that don't necessarily have compatible interfaces. you need to use several existing subclasses, but it's impractical to adapt their interface by subclassing every one. An object adapter can adapt the interface of its parent class.
+ Wrap an existing class with a new interface.Impedance match an old component to a new system
+
+Adapter provides a different interface to its subject. Proxy provides the same interface. is meant to change the interface of an existing object. a different interface to its subject. Proxy provides the same interface
+
+Adapter is a structural design pattern that allows objects with incompatible interfaces to collaborate.
+
+Imagine that you’re creating a stock market monitoring app. The app downloads the stock data from multiple sources in XML format and then displays nice-looking charts and diagrams for the user.
+
+At some point, you decide to improve the app by integrating a smart 3rd-party analytics library. But there’s a catch: the analytics library only works with data in JSON format.
+
+The structure of the app before integration with the analytics library
+You can’t use the analytics library “as is” because it expects the data in a format that’s incompatible with your app.
+You could change the library to work with XML. However, this might break some existing code that relies on the library. And worse, you might not have access to the library’s source code in the first place, making this approach impossible.
+
+Convert the interface of a class into another interface clients expect. Adapter lets classes work together that couldn't otherwise because of incompatible interfaces.
+Wrap an existing class with a new interface.
+Impedance match an old component to a new system
+
+An ""off the shelf"" component offers compelling functionality that you would like to reuse, but its ""view of the world"" is not compatible with the philosophy and architecture of the system currently being developed."
+6,bridge,1,"Decouple an abstraction from its implementation so that the two can vary independently. When an abstraction can have one of several possible implementations, the usual way to accommodate them is to use inheritance. An abstract class defines the interface to the abstraction, and concrete subclasses implement it in different ways. But this approach isnâ€™t always flexible enough. Inheritance binds an implementation to the abstraction permanently, which makes it difficult to modify, extend, and reuse abstractions and implementations independently. Using inheritance, we could define an abstract class and subclasses that implement the interface for the different platforms. But this approach has two drawbacks Whenever a client creates a, it instantiates a concrete class that has a specific implementation. For example, creating an object binds the abstraction to the implementation, which makes the client code dependent on the implementation. This, in turn, makes it harder to port the client code to other platforms.
+Clients should be able to create a without committing to a concrete implementation. Only the implementation should depend on the platform on which the application runs. Therefore client code should instantiate without mentioning specific platforms. The Bridge pattern addresses these problems by putting the abstraction and its implementation in separate class hierarchies. There is one class hierarchy for interfaces and a separate hierarchy for platform-specific implementations, with as its root. The subclass, for example, provides an implementation split a large class or a set of closely related classes into two separate Beyond encapsulation, to insulation
+
+The interface object is the ""handle"" known and used by the client; while the implementation object, or ""body"", is safely encapsulated to ensure that it may continue to evolve, or be entirely replaced (or shared at run-time.
+    you want run-time binding of the implementation,
+    you have a proliferation of classes resulting from a coupled interface and numerous implementations,
+    you want to share an implementation among multiple objects,
+    you need to map orthogonal class hierarchies.
+his is a design mechanism that encapsulates an implementation class inside of an interface class. The former is the body, and the latter is the handle. The handle is viewed by the user as the actual class, but the work is done in the body. platform-oriented interface that is minimal, necessary, and sufficient flexible and less fragile to changes.
+
+Bridge is a structural design pattern that lets you split a large class or a set of closely related classes into two separate hierarchies—abstraction and implementation—which can be developed independently of each other.
+
+Abstraction? Implementation? Sound scary? Stay calm and let’s consider a simple example.
+
+Say you have a geometric Shape class with a pair of subclasses: Circle and Square. You want to extend this class hierarchy to incorporate colors, so you plan to create Red and Blue shape subclasses. However, since you already have two subclasses, you’ll need to create four class combinations such as BlueCircle and RedSquare.
+
+Bridge pattern problem
+Number of class combinations grows in geometric progression.
+Adding new shape types and colors to the hierarchy will grow it exponentially. For example, to add a triangle shape you’d need to introduce two subclasses, one for each color. And after that, adding a new color would require creating three subclasses, one for each shape type. The further we go, the worse it becomes.
+
+Decouple an abstraction from its implementation so that the two can vary independently.
+Publish interface in an inheritance hierarchy, and bury implementation in its own inheritance hierarchy.
+Beyond encapsulation, to insulation
+
+""Hardening of the software arteries"" has occurred by using subclassing of an abstract base class to provide alternative implementations. This locks in compile-time binding between interface and implementation. The abstraction and implementation cannot be independently extended or composed.
+
+Consider the domain of ""thread scheduling"".
+
+Bridge scheme
+
+There are two types of thread schedulers, and two types of operating systems or ""platforms"". Given this approach to specialization, we have to define a class for each permutation of these two dimensions. If we add a new platform (say ... Java's Virtual Machine), what would our hierarchy look like?
+
+Bridge scheme
+
+What if we had three kinds of thread schedulers, and four kinds of platforms? What if we had five kinds of thread schedulers, and ten kinds of platforms? The number of classes we would have to define is the product of the number of scheduling schemes and the number of platforms.
+
+The Bridge design pattern proposes refactoring this exponentially explosive inheritance hierarchy into two orthogonal hierarchies – one for platform-independent abstractions, and the other for platform-dependent implementations.
+
+Bridge scheme"
+7,composite,1,"Compose objects into tree structures to represent part-whole hierarchies. Composite lets clients treat individual objects and compositions of objects uniformly. applications like and let users build complex out of simple components. The user can group components to form larger components, which in turn can be grouped to form still larger components. A simple implementation could define classes for primitives such as and plus other classes that act as containers for these primitives.  describes how to use recursive composition so that clients donâ€™t have to make this distinction. abstract class that represents both primitives and their containers. this class is. declares operations like that are specific to objects. It also declares operations that all composite objects share, such as operations for accessing and managing its children. The subclasses (see preceding class diagram) define primitive objects. These classes implement. Since primitive have no child, none of these subclasses implements child-related operations.
+aggregate of objects. Picture implements to call on its children, and it implements child-related operations accordingly. Because the interface conforms to the interface, Picture objects can compose other recursively. represent part-whole hierarchies of objects. Clients will treat all objects in the composite structure uniformly.
+
+lets you compose objects into tree structures and then work with these structures as if they were individual objects.when the core model of your app can be represented as a tree. system that uses these classes An might comprise various, packaged in, which are packaged in bigger and so on. The whole structure looks like an upside down tree.
+hierarchical trees of objects at some point or other. Hierarchical tree structures can come in different flavors, and one can be a tree of components (think as objects) that can be either leaf or node. A leaf is an object that doesnâ€™t have children, while a node does. A node can have one or more leaves or other nodes. This is called recursive composition and can be best illustrated through a file system directory structure. provide clients a uniform way to access and manipulate objects of the tree. Clients should remain unaware whether any operation is being done on a leaf or a node, and this is where the composite design pattern comes in. As an example, composite design pattern can ensure that the process to add or delete a directory (node) and a file (leaf) remains the same for a user. create hierarchical object trees in a uniform manner without going through complexities, such as object casting, type evaluations, and conditional checks to see if one object is independent or contains other objects. A part-whole hierarchy is composed of smaller individual objects called Parts and larger objects called Wholes that are aggregation of Parts. What the pattern says is- for part-whole hierarchies, create tree structures to represent relationships between the Parts and Wholes.
+â€œComposite lets clients treat individual objects and compositions of objects uniformlyâ€: This means that a client should be able to apply the same operations over both aggregation of objects (Wholes) and individual objects (Parts).
+
+Composite is a structural design pattern that lets you compose objects into tree structures and then work with these structures as if they were individual objects.
+
+Using the Composite pattern makes sense only when the core model of your app can be represented as a tree.
+
+For example, imagine that you have two types of objects: Products and Boxes. A Box can contain several Products as well as a number of smaller Boxes. These little Boxes can also hold some Products or even smaller Boxes, and so on.
+
+Say you decide to create an ordering system that uses these classes. Orders could contain simple products without any wrapping, as well as boxes stuffed with products...and other boxes. How would you determine the total price of such an order?
+
+Structure of a complex order
+An order might comprise various products, packaged in boxes, which are packaged in bigger boxes and so on. The whole structure looks like an upside down tree.
+You could try the direct approach: unwrap all the boxes, go over all the products and then calculate the total. That would be doable in the real world; but in a program, it’s not as simple as running a loop. You have to know the classes of Products and Boxes you’re going through, the nesting level of the boxes and other nasty details beforehand. All of this makes the direct approach either too awkward or even impossible.
+
+Compose objects into tree structures to represent whole-part hierarchies. Composite lets clients treat individual objects and compositions of objects uniformly.
+Recursive composition
+""Directories contain entries, each of which could be a directory.""
+1-to-many ""has a"" up the ""is a"" hierarchy
+
+Application needs to manipulate a hierarchical collection of ""primitive"" and ""composite"" objects. Processing of a primitive object is handled one way, and processing of a composite object is handled differently. Having to query the ""type"" of each object before attempting to process it is not desirable."
+8,decorator,1,"Attach additional responsibilities to an object dynamically. Decorators provide a flexible alternative to subclassing for extending functionality. Sometimes we want to add responsibilities to individual objects, not to an entire class. A, for example, should let you add properties like or behaviors like to any component. One way to add responsibilities is with inheritance. Inheriting a from another class puts a every subclass instance. This is inflexible, however, because the choice of is made statically. A client canâ€™t control how and when to decorate the component with a. A more flexible approach is to enclose the component in another conforms to the interface of the component it decorates so that its presence is transparent to the componentâ€™s clients. The forwards requests to the component and may perform additional actions before or after forwarding. Transparency lets you nest recursively, thereby allowing an unlimited number of added responsibilities.
+
+For example, suppose we have a objec. has no by default, because we might not always need them. When we do, we can use a to add them. Suppose we also want to add a around the. We can use a to add this as well. We simply compose the with the to produce the desired result. Component is the abstract class for objects. It defines their and event handling interface subclasses are free to add operations for specific functionality.  operation lets other objects the interface if they know there happens to be a Decorator object in the interface. The important aspect of this pattern is that it lets decorators appear anywhere a Component can. add responsibilities to individual objects dynamically and transparently, that is, without affecting other objects. responsibilities that can be withdrawn. when extension by subclassing is impractical. Sometimes a large number of independent extensions are possible and would produce an explosion of subclasses to support every combination. Or a class definition may be hidden or otherwise unavailable for subclassing. new behaviors to objects by placing these objects inside special wrapper objects that contain the behaviors.
+Imagine that youâ€™re working on a which lets other programs.
+
+Client-specified embellishment of a core object by recursively wrapping it.
+Wrapping a gift, putting it in a box, and wrapping the box. You want to add behavior or state to individual objects at run-time. Inheritance is not feasible because it is static and applies to an entire class. The solution to this class of problems involves encapsulating the original object inside an abstract wrapper interface. Both the decorator objects and the core object inherit from this abstract interface. The interface uses recursive composition to allow an unlimited number of decorator ""layers"" to be added to each core object.
+
+Note that this pattern allows responsibilities to be added to an object, not methods to an object's interface. The interface presented to the client must remain constant as successive layers are specified.
+
+Also note that the core object's identity has now been ""hidden"" inside of a decorator object. Trying to access the core object directly is now a problem.Ensure the context is: a single core (or non-optional) component, several optional embellishments or wrappers, and an interface that is common to all.
+Create a ""Lowest Common Denominator"" interface that makes all classes interchangeable. transaction, cache synchronization, and security-related tasks to cleaner and more maintainable code.
+
+Decorator is a structural design pattern that lets you attach new behaviors to objects by placing these objects inside special wrapper objects that contain the behaviors.
+
+Imagine that you’re working on a notification library which lets other programs notify their users about important events.
+
+The initial version of the library was based on the Notifier class that had only a few fields, a constructor and a single send method. The method could accept a message argument from a client and send the message to a list of emails that were passed to the notifier via its constructor. A third-party app which acted as a client was supposed to create and configure the notifier object once, and then use it each time something important happened.
+
+Structure of the library before applying the Decorator pattern
+A program could use the notifier class to send notifications about important events to a predefined set of emails.
+At some point, you realize that users of the library expect more than just email notifications. Many of them would like to receive an SMS about critical issues. Others would like to be notified on Facebook and, of course, the corporate users would love to get Slack notifications.
+
+Structure of the library after implementing other notification types
+Each notification type is implemented as a notifier’s subclass.
+How hard can that be? You extended the Notifier class and put the additional notification methods into new subclasses. Now the client was supposed to instantiate the desired notification class and use it for all further notifications.
+
+But then someone reasonably asked you, “Why can’t you use several notification types at once? If your house is on fire, you’d probably want to be informed through every channel.”
+
+You tried to address that problem by creating special subclasses which combined several notification methods within one class. However, it quickly became apparent that this approach would bloat the code immensely, not only the library code but the client code as well.
+
+Structure of the library after creating class combinations
+Combinatorial explosion of subclasses.
+You have to find some other way to structure notifications classes so that their number won’t accidentally break some Guinness record.
+
+Attach additional responsibilities to an object dynamically. Decorators provide a flexible alternative to subclassing for extending functionality.
+Client-specified embellishment of a core object by recursively wrapping it.
+Wrapping a gift, putting it in a box, and wrapping the box.
+
+You want to add behavior or state to individual objects at run-time. Inheritance is not feasible because it is static and applies to an entire class."
+9,facade,1,"Provide a unified interface to a set of interfaces in a subsystem. Facade defines a higher-level interface that makes the subsystem easier to use. Structuring a system into subsystems helps reduce complexity. A common design goal is to minimize the communication and dependencies between subsystems. One way to achieve this goal is to introduce a facade object that provides a single, simplified interface to the more general facilities of a subsystem. Consider for example a that gives applications access to its subsystem. This subsystem contains classes that implement the. Some specialized applications might need to access these classes directly. But most clients of a generally donâ€™t care about details like; they merely want to. For them, the powerful but low-level interfaces in the subsystem only complicate their task. To provide a higher-level interface that can shield clients from these classes, the subsystem also includes a class. This class defines a unified interface to the subsystem's functionality. The class acts as a facade: It offers clients a single, simple interface to the subsystem simple interface to a complex subsystem. Subsystems often get more complex as they evolve. simple default view of the subsystem that is good enough for most clients. Only clients needing more customizability will need to look beyond the facade.
+
+decouple the subsystem from clients and other subsystems, thereby promoting subsystem independence and portability. layer subsystems. Use a facade to define an entry point to each subsystem level. If subsystems are dependent, then you can simplify the dependencies between them by making them communicate with each other solely through their facades. only access point for the subsystem, it will limit the features and flexibility that ""power users"" may need.
+Identify a simpler, unified interface for the subsystem or component.
+Design a 'wrapper' class that encapsulates the subsystem.
+The facade/wrapper captures the complexity and collaborations of the component, and delegates to the appropriate methods. simplified interface to a single class with a very complex interface
+
+Facade is a structural design pattern that provides a simplified interface to a library, a framework, or any other complex set of classes.
+
+Imagine that you must make your code work with a broad set of objects that belong to a sophisticated library or framework. Ordinarily, you’d need to initialize all of those objects, keep track of dependencies, execute methods in the correct order, and so on.
+
+As a result, the business logic of your classes would become tightly coupled to the implementation details of 3rd-party classes, making it hard to comprehend and maintain.
+
+Provide a unified interface to a set of interfaces in a subsystem. Facade defines a higher-level interface that makes the subsystem easier to use.
+Wrap a complicated subsystem with a simpler interface.
+
+A segment of the client community needs a simplified interface to the overall functionality of a complex subsystem."
+10,flyweight,1,"A flyweight is a shared object that can be used in multiple contexts simultaneously. acts as an independent object in each contextâ€”itâ€™s indistinguishable from an instance of the object thatâ€™s not shared. cannot make assumptions about the context in which they operate. The key concept here is the distinction between intrinsic and extrinsic state. Intrinsic state is stored in the flyweight; it consists of information thatâ€™s independent of the context, thereby making it sharable. Extrinsic state depends on and varies with the context and therefore canâ€™t be shared. Client objects are responsible for passing extrinsic state to the when it needs it. concepts or entities that are normally too plentiful to represent with objects. for each. stores a, but its style can be determined from the algorithms and formatting commands in effect wherever the appears. The is intrinsic state, while the other information is extrinsic. one shared flyweight object per, and it appears in different contexts in the structure. Each occurrence of a particular object refers to the same instance in the shared pool of flyweight objects
+
+ abstract class for objects,  Operations that may depend on extrinsic state have it passed to them as a parameter. For example, must know which context the is in before they can do their job. Clients supply the context-dependent information that the needs to itself  pass each child its in the request. Because the number of different objects is far less than the number of in the, the total number of objects is substantially less than what a naive implementation would use. A in which all appear in the same will allocate on the order of 100 objects regardless of the length. And since most use no more than 10 different combinations, this number wonâ€™t grow appreciably in practice. An object abstraction thus becomes practical for individual. reduces repeated data, thus reduces memory consumption when dealing with large numbers of objects.
+
+application uses a large number of objects. Storage costs are high because of the sheer quantity of objects. Most object state can be made extrinsic.
+Many groups of objects may be replaced by relatively few shared objects once extrinsic state is removed. The application doesnâ€™t depend on object identity. Since objects may be shared, identity tests will return true for conceptually distinct objects. fit more objects into the available amount of RAM by sharing common parts of state between multiple objects instead of keeping all of the data in each object.
+you decided to create a simple. You chose to implement a system and make it a feature of the. Vast quantities of should all over the.
+Upon its completion, built the and for a test. Although the was running flawlessly on your machine, wasnâ€™t able to for long. On, the kept crashing after a few minutes of. After spending digging through, you discovered that the crashed because of an insufficient amount of RAM. It turned out that was much less powerful than your own, and thatâ€™s why the problem emerged so quickly on his machine.
+The actual problem was related to your system. Each particle, such as was represented by a separate object containing plenty of data. At some point, when, newly created no longer fit into the remaining RAM, so the program crashed. 
+    Use sharing to support large numbers of fine-grained objects efficiently.
+    The Motif GUI strategy of replacing heavy-weight widgets with light-weight gadgets.
+object sharing. What this pattern says is that if an application requires a large number of fine-grained objects, share them instead of repeated instantiation. The object you share is referred as a flyweight. Thereâ€™s a lot of buzz about â€˜Big Dataâ€™ in the industry. What happens when youâ€™re processing big data 
+Create a Factory that can cache and reuse existing class instances.
+The client must use the Factory instead of the new operator to request objects.
+The client (or a third party) must look-up or compute the non-shareable state, and supply that state to class methods.
+
+Flyweight is a structural design pattern that lets you fit more objects into the available amount of RAM by sharing common parts of state between multiple objects instead of keeping all of the data in each object.
+
+To have some fun after long working hours, you decided to create a simple video game: players would be moving around a map and shooting each other. You chose to implement a realistic particle system and make it a distinctive feature of the game. Vast quantities of bullets, missiles, and shrapnel from explosions should fly all over the map and deliver a thrilling experience to the player.
+
+Upon its completion, you pushed the last commit, built the game and sent it to your friend for a test drive. Although the game was running flawlessly on your machine, your friend wasn’t able to play for long. On his computer, the game kept crashing after a few minutes of gameplay. After spending several hours digging through debug logs, you discovered that the game crashed because of an insufficient amount of RAM. It turned out that your friend’s rig was much less powerful than your own computer, and that’s why the problem emerged so quickly on his machine.
+
+The actual problem was related to your particle system. Each particle, such as a bullet, a missile or a piece of shrapnel was represented by a separate object containing plenty of data. At some point, when the carnage on a player’s screen reached its climax, newly created particles no longer fit into the remaining RAM, so the program crashed.
+
+Flyweight pattern problem
+
+Use sharing to support large numbers of fine-grained objects efficiently.
+The Motif GUI strategy of replacing heavy-weight widgets with light-weight gadgets.
+
+Designing objects down to the lowest levels of system ""granularity"" provides optimal flexibility, but can be unacceptably expensive in terms of performance and memory usage."
+11,proxy,1,"Provide a surrogate or placeholder for another object to control access to it. One reason for controlling access to an object is to defer the full cost of its creation and initialization until we actually need to use it. Consider a that can embed objects in a. Some objects, like large, can be expensive to create. But opening a should be fast, so we should avoid creating all the expensive objects at once when the is opened. This isnâ€™t necessary anyway, because not all of these objects will be visible in the at the same time.
+
+These constraints would suggest creating each expensive object on demand, which in this case occurs when an becomes visible. But what do we put in the in place of the? And how can we hide the fact that the is created on demand so that we donâ€™t complicate the implementation? This optimization shouldnâ€™t impact the code, for example.
+
+The solution is to use another object, an , that acts as a stand-in for the real. The acts just like the and takes care of instantiating it when itâ€™s required.
+
+The proxy creates the real only when the asks it to itself by invoking its operation. The forwards subsequent requests directly to the. It must therefore keep a reference to the after creating it.
+
+Letâ€™s assume that are stored in separate files. In this case we can use the file name as the reference to the real object. The proxy also stores its extent, that is, its. The extent lets the proxy respond to requests for its size from the formatter without actually instantiating the.
+
+The accesses embedded through the interface defined by the abstract class. is a class for that are created on demand. maintains the file name as a reference to the on disk. The file name is passed as an argument to the constructor. also stores the of the and a reference to the real instance. This reference wonâ€™t be valid until the proxy instantiates the real. The operation makes sure the is instantiated before forwarding it the request. forwards the request to the only if itâ€™s instantiated; otherwise returns the extent it stores. is applicable whenever there is a need for a more versatile or sophisticated reference to an object than a simple pointer. Here are several common situations in which the is applicable: remote provides a local representative for an object in a different address space. uses the class for this purpose. calls this kind of proxy an â€œAmbassador.â€
+
+A virtual creates expensive objects on demand. The ImageProxy described in the Motivation is an example of such a . protection controls access to the original object. Protection are useful when objects should have different access rights. For example, Proxies in the provide protected access to operating system objects. A smart reference is a replacement for a bare pointer that performs additional actions when an object is accessed. Typical uses include counting the number of references to the real object so that it can be freed automatically when there are no more references (also called smart pointers). loading a persistent object into memory when itâ€™s first referenced.
+ checking that the real object is locked before itâ€™s accessed to ensure that no other object can change it. substitute or placeholder for another object. A controls access to the original object, allowing you to perform something either before or after the request gets through to the original object.
+Why would you want to control access to an object? Here is an example: you have a massive object that consumes a vast amount of system resources. You need it from time to time, but not always.
+Database queries can be really slow.
+You could implement lazy initialization: create this object only when itâ€™s actually needed. All of the objectâ€™s clients would need to execute some deferred initialization code. Unfortunately, this would probably cause a lot of code duplication.
+In an ideal world, weâ€™d want to put this code directly into our objectâ€™s class, but that isnâ€™t always possible. For instance, the class may be part of a closed 3rd-party library.
+
+Use an extra level of indirection to support distributed, controlled, or intelligent access.
+Add a wrapper and delegation to protect the real component from undue complexity. resource-hungry objects, and you do not want to instantiate such objects unless and until they are actually requested by the client. same interface as the real object. So if you are working on a system and feel the need to introduce a either to instantiate a real object on demand, or hide the fact that the object is running on a remote location, or control access to the object, you can easily do so. You donâ€™t need to worry about the client being aware about any changes from the introduction of the . The client will keep using the same interface thinking it is interacting with the real object, while the proxy will be mediating in between. wrapping
+
+
+Proxy is a structural design pattern that lets you provide a substitute or placeholder for another object. A proxy controls access to the original object, allowing you to perform something either before or after the request gets through to the original object.
+
+Why would you want to control access to an object? Here is an example: you have a massive object that consumes a vast amount of system resources. You need it from time to time, but not always.
+
+Problem solved by Proxy pattern
+Database queries can be really slow.
+You could implement lazy initialization: create this object only when it’s actually needed. All of the object’s clients would need to execute some deferred initialization code. Unfortunately, this would probably cause a lot of code duplication.
+
+In an ideal world, we’d want to put this code directly into our object’s class, but that isn’t always possible. For instance, the class may be part of a closed 3rd-party library.
+
+Provide a surrogate or placeholder for another object to control access to it.
+Use an extra level of indirection to support distributed, controlled, or intelligent access.
+Add a wrapper and delegation to protect the real component from undue complexity.
+
+You need to support resource-hungry objects, and you do not want to instantiate such objects unless and until they are actually requested by the client."
+12,chain of responsibility,0,"Avoid coupling the sender of a request to its receiver by giving more than one object a chance to handle the request. Chain the receiving objects and pass the request along the chain until an object handles it. Consider a context-sensitive help facility for a graphical user interface. The user can obtain help information on any part of the interface just by clicking on it. The help thatâ€™s provided depends on the part of the interface thatâ€™s selected and its context; for example, a button widget in a dialog box might have different help information than a similar button in the main window. If no specific help information exists for that part of the interface, then the help system should display a more general help message about the immediate contextâ€”the dialog box as a whole, for example.
+
+Hence itâ€™s natural to organize help information according to its generalityâ€”from the most specific to the most general. Furthermore, itâ€™s clear that a help request is handled by one of several user interface objects; which one depends on the context and how specific the available help is.
+
+The problem here is that the object that ultimately provides the help isnâ€™t known explicitly to the object (e.g., the button) that initiates the help request. What we need is a way to decouple the button that initiates the help request from the objects that might provide help information. The Chain of Responsibility pattern defines how that happens.
+
+The idea of this pattern is to decouple senders and receivers by giving multiple objects a chance to handle a request. The request gets passed along The first object in the chain receives the request and either handles it or forwards it to the next candidate on the chain, which does likewise. The object that made the request has no explicit knowledge of who will handle itâ€”we say the request has an implicit receiver. handle it or ignore it. The client that issued the request has no direct reference to the object that ultimately fulfills it.
+
+To forward the request along the chain, and to ensure receivers remain implicit, each object on the chain shares a common interface for handling requests and for accessing its successor on the chain. 
+
+The classes use operations to handle requests. operation forwards the request to the successor by default. Subclasses can override this operation to provide under the right circumstances more than one object may handle a request, and the handler isnâ€™t known a priori. The handler should be ascertained automatically. you want to issue a request to one of several objects without specifying the receiver explicitly. the set of objects that can handle a request should be specified dynamically.
+
+lets you pass requests along a chain of handlers. Upon receiving a request, each handler decides either to process the request or to pass it to the next handler in the chain. Imagine that youâ€™re working on an system. You want to restrict access to the system so only authenticated users can create. Also, users who have administrative permissions must have full access to all. After a bit of planning, you realized that these checks must be performed sequentially. The application can attempt to authenticate a user to the system whenever it receives a request that contains the userâ€™s credentials. However, if those credentials arenâ€™t correct and authentication fails, thereâ€™s no reason to proceed with any other checks.
+The request must pass a series of checks before the system itself can handle it.
+During the next few months, you implemented several more of those sequential checks.
+One of your colleagues suggested that itâ€™s unsafe to pass raw data straight to the system. So you added an extra validation step to sanitize the data in a request.
+Later, somebody noticed that the system is vulnerable to. To negate this, you promptly added a check that filters repeated failed requests coming from the same.
+Someone else suggested that you could speed up the system by returning cached results on repeated requests containing the same data. Hence, you added another check which lets the request pass through to the system only if thereâ€™s no suitable cached response.
+With each new check the code became bigger, messier, and uglier The bigger the code grew, The base class maintains a ""next"" pointer.
+Each derived class implements its contribution for handling the request.
+If the request needs to be ""passed on"", then the derived class ""calls back"" to the base class, which delegates to the ""next"" pointer.
+The client (or some third party) creates and links the chain (which may include a link from the last node to the root node). easy to understand and apply. In applications there is always a client that initiates a request and an application object that handles it.
+decouple the client who sends the request to the object that handles it. The solution is a list of handler objects, also known as responding objects each capable to deal with a specific nature of request. If one handler object canâ€™t handle a request, it passes it to the next object in the chain. At the end of the chain, there will be one or more generic handler objects implementing default behavior for the request.
+
+Chain of Responsibility is a behavioral design pattern that lets you pass requests along a chain of handlers. Upon receiving a request, each handler decides either to process the request or to pass it to the next handler in the chain.
+
+Imagine that you’re working on an online ordering system. You want to restrict access to the system so only authenticated users can create orders. Also, users who have administrative permissions must have full access to all orders.
+
+After a bit of planning, you realized that these checks must be performed sequentially. The application can attempt to authenticate a user to the system whenever it receives a request that contains the user’s credentials. However, if those credentials aren’t correct and authentication fails, there’s no reason to proceed with any other checks.
+
+Problem, solved by Chain of Responsibility
+The request must pass a series of checks before the ordering system itself can handle it.
+During the next few months, you implemented several more of those sequential checks.
+
+One of your colleagues suggested that it’s unsafe to pass raw data straight to the ordering system. So you added an extra validation step to sanitize the data in a request.
+
+Later, somebody noticed that the system is vulnerable to brute force password cracking. To negate this, you promptly added a check that filters repeated failed requests coming from the same IP address.
+
+Someone else suggested that you could speed up the system by returning cached results on repeated requests containing the same data. Hence, you added another check which lets the request pass through to the system only if there’s no suitable cached response.
+With each new check the code became bigger, messier, and uglier
+The bigger the code grew, the messier it became.
+The code of the checks, which had already looked like a mess, became more and more bloated as you added each new feature. Changing one check sometimes affected the others. Worst of all, when you tried to reuse the checks to protect other components of the system, you had to duplicate some of the code since those components required some of the checks, but not all of them.
+
+The system became very hard to comprehend and expensive to maintain. You struggled with the code for a while, until one day you decided to refactor the whole thing.
+
+Avoid coupling the sender of a request to its receiver by giving more than one object a chance to handle the request. Chain the receiving objects and pass the request along the chain until an object handles it.
+Launch-and-leave requests with a single processing pipeline that contains many possible handlers.
+An object-oriented linked list with recursive traversal.
+
+There is a potentially variable number of ""handler"" or ""processing element"" or ""node"" objects, and a stream of requests that must be handled. Need to efficiently process the requests without hard-wiring handler relationships and precedence, or request-to-handler mappings.
+
+Chain of responsibility example"
+13,command,0,"Encapsulate a request as an object, thereby letting you parameterize clients with different requests, queue or log requests, and support undoable operations. Sometimes itâ€™s necessary to issue requests to objects without knowing anything about the operation being requested or the receiver of the request. For example, include objects like that carry out a request in response to user input. But the canâ€™t implement the request explicitly in the, because only applications that use the know what should be done on which object. we have no way of knowing the receiver of the request or the operations that will carry it out. objects make requests of unspecified application objects by turning the request itself into an object. This object can be stored and passed around like other objects. The key to this pattern is an abstract Command class, which declares an interface for executing operations. In the simplest form this interface includes an abstract Execute operation. Concrete subclasses specify a receiver-action pair by storing the receiver as an instance variable and by implementing Execute to invoke the request. The receiver has the knowledge required to carry out the request.
+
+can be implemented easily with Command objects. Each in a is an instance of a class. An class creates these and their along with the rest of the. The class also keeps track of objects that a user has opened.
+
+Execute operation is different: it prompts the user for a, creates a corresponding object, adds the to the receiving application, and opens the. Sometimes a needs to execute a sequence of . For example, a for could be constructed from a object and a object. Because itâ€™s common to string commands together in this way, we can define a Command class to allow a to execute an open-ended number of . subclass that simply executes a sequence of  has no explicit receiver, because the commands it sequences define their own receiver. decouples the object that invokes the operation from the one having the knowledge to perform it. This gives us a lot of flexibility in designing our. An application can provide both a and a interface to a feature just by making the and the share an instance of the same concrete subclass. We can replace commands dynamically, which would be useful for implementing context-sensitive. We can also support command scripting by composing into larger ones. parameterize objects by an action to perform, as objects did. You can express such parameterization in a procedural language with a callback function, that is, a function thatâ€™s registered somewhere to be called at a later point. are an object-oriented replacement for callbacks.
+
+specify, queue, and execute requests at different times. A object can have a lifetime independent of the original request. If the receiver of a request can be represented in an address space-independent way, then you can transfer a command object for the request to a different process and fulfill the request there. support undo. The Commandâ€™s Execute operation can store state for reversing its effects in the command itself. The interface must have an added Unexecute operation that reverses the effects of a previous call to Execute. Executed commands are stored in a history list. Unlimited-level undo and redo is achieved by traversing this list backwards and forwards calling Unexecute and Execute, respectively. support logging changes so that they can be reapplied in case of a system crash. By augmenting the Command interface with load and store operations, you can keep a persistent log of changes. Recovering from a crash involves reloading logged commands from disk and reexecuting them with the Execute operation.
+
+structure a system around high-level operations built on primitives operations. Such a structure is common in information systems that support transactions. A transaction encapsulates a set of changes to data. The Command pattern offers a way to model transactions. have a common interface, letting you invoke all transactions the same way. The pattern also makes it easy to extend the system with new transactions. turns a request into a stand-alone object that contains all information about the request. This transformation lets you pass requests as a method arguments, delay or queue a requestâ€™s execution, and support undoable operations.
+Imagine that youâ€™re working on a. Your current task is to create a with a bunch of for various operations of the. You created a class that can be used for on the, as well as for generic in various.
+All of the are derived from the same class.
+While all of these look similar, theyâ€™re all supposed to do different things. Where would you put the code for the various handlers of these? The simplest solution is to create tons of subclasses for each place where the is used. These subclasses would contain the code that would have to be executed on a.
+Lots of subclasses
+Lots of subclasses.
+Before long, you realize that this approach is deeply flawed. First, you have an enormous number of subclasses, and that would be okay if you werenâ€™t risking breaking the code in these subclasses each time you modify the base class. Put simply, your code has become awkwardly dependent on the volatile code of the logic.
+Several classes implement the same functionality
+Several classes implement the same functionality.
+And hereâ€™s the ugliest part. Some operations, such as, would need to be invoked from multiple places. For example, a user could on the, or something via the, or just.
+Initially, when our only had the, it was okay to place the implementation of various operations into the subclasses. In other words, having the code for inside the subclass was fine. But then, when you implement other stuff, you have to either duplicate the operationâ€™s code in many classes or make dependent on, which is an even worse option. 
+    Encapsulate a request as an object, thereby letting you parametrize clients with different requests, queue or log requests, and support undoable operations.
+    Promote ""invocation of a method on an object"" to full object status
+    An object-oriented callback
+
+Need to issue requests to objects without knowing anything about the operation being requested or the receiver of the request. The client that creates a command is not the same client that executes it. This separation provides flexibility in the timing and sequencing of commands. Materializing commands as objects means they can be passed, staged, shared, loaded in a table, and otherwise instrumented or manipulated like any other object.  interface separation (the invoker is isolated from the receiver), time separation (stores a ready-to-go processing request that's to be stated later).
+
+Command is a behavioral design pattern that turns a request into a stand-alone object that contains all information about the request. This transformation lets you pass requests as a method arguments, delay or queue a request’s execution, and support undoable operations.
+
+Imagine that you’re working on a new text-editor app. Your current task is to create a toolbar with a bunch of buttons for various operations of the editor. You created a very neat Button class that can be used for buttons on the toolbar, as well as for generic buttons in various dialogs.
+
+Problem solved by the Command pattern
+All buttons of the app are derived from the same class.
+While all of these buttons look similar, they’re all supposed to do different things. Where would you put the code for the various click handlers of these buttons? The simplest solution is to create tons of subclasses for each place where the button is used. These subclasses would contain the code that would have to be executed on a button click.
+
+Lots of button subclasses
+Lots of button subclasses. What can go wrong?
+Before long, you realize that this approach is deeply flawed. First, you have an enormous number of subclasses, and that would be okay if you weren’t risking breaking the code in these subclasses each time you modify the base Button class. Put simply, your GUI code has become awkwardly dependent on the volatile code of the business logic.
+
+Several classes implement the same functionality
+Several classes implement the same functionality.
+And here’s the ugliest part. Some operations, such as copying/pasting text, would need to be invoked from multiple places. For example, a user could click a small “Copy” button on the toolbar, or copy something via the context menu, or just hit Ctrl+C on the keyboard.
+
+Initially, when our app only had the toolbar, it was okay to place the implementation of various operations into the button subclasses. In other words, having the code for copying text inside the CopyButton subclass was fine. But then, when you implement context menus, shortcuts, and other stuff, you have to either duplicate the operation’s code in many classes or make menus dependent on buttons, which is an even worse option.
+
+Encapsulate a request as an object, thereby letting you parametrize clients with different requests, queue or log requests, and support undoable operations.
+Promote ""invocation of a method on an object"" to full object status
+An object-oriented callback
+
+Need to issue requests to objects without knowing anything about the operation being requested or the receiver of the request."
+14,interpreter,0,"Given a, define a represention for its along with an interpreter that uses the representation to interpret. If a particular kind of problem occurs often enough, then it might be worthwhile to express instances of the problem as in a simple. Then you can build an interpreter that solves the problem by interpreting these. searching for that match a is a common problem. are a standard for specifying. Rather than building custom to match each against, could interpret a that specifies a set of to match. simple, represent, and interpret these. In this example, the pattern describes how to define a for, represent a particular, and how to interpret that.
+
+The Interpreter pattern uses a class to represent each rule. Symbols on the right-hand side of the rule are instance variables of these classes. The above is represented by classes: an abstract class and its subclasses. The last classes define variables that hold sub. Every defined by this is represented by an abstract made up of instances of these classes. For example, the abstract argument the context in which to interpret the. The context contains the input and information on how much of it has been matched so far. Each subclass of implements Interpret to match the next part of the input based on the current context. For example,
+
+will check if the input matches the it defines,
+will check if the input matches any of its alternatives,
+will check if the input has multiple copies of it repeats,
+ the class hierarchy for the becomes large and unmanageable. Tools such as are a better alternative in such cases. save space and possibly time. The most efficient interpreters are usually not implemented by interpreting directly but by first translating them into another form. For example, are often transformed into state machines. Given a language, define a representation for its grammar along with an interpreter that uses the representation to interpret sentences in the language. objects in an application and how they communicate between them.
+
+who at some times need to interpret gestures. We need to observe a gesture, and present an interpretation. Based on the culture, our interpretation may have different significance and it is our interpretation that will give the gesture different meaning.
+
+Similarly, in the programming world, applications can receive user input from a wide variety of sources, such as browsers, GUI, command line tools, and mobile phones. The input, can be expressions in different formats, such as mathematical expressions following one of the Infix, Prefix, or Postfix notations. Also, when a new type of input format is introduced, we donâ€™t want to change the client code sending the input. The solution is to use the Interpreter pattern that allows automated and flexible processing of expression provided as input by users through client code.
+
+searching for strings that match a pattern is a common problem. Regular expressions are a standard language for specifying patterns of strings. Rather than building custom algorithms to match each pattern against strings, search algorithms could interpret a regular expression that specifies a set of strings to matchâ€.
+
+In a nutshell, the Interpreter Pattern allows you to create almost a mini language to implement program logic. Map a domain to a language, the language to a grammar, and the grammar to a hierarchical object-oriented design.  class of problems occurs repeatedly in a well-defined and well-understood domain. If the domain were characterized with a ""language"", then problems could be easily solved with an interpretation ""engine"".
+
+as a simple language grammar, representing domain rules as language sentences, and interpreting these sentences to solve the problem. The pattern uses a class to represent each grammar rule. And since grammars are usually hierarchical in structure, an inheritance hierarchy of rule classes maps nicely."
+15,iterator,0,"Provide a way to access the elements of an aggregate object sequentially without exposing its underlying representation. An aggregate object such as a list should give you a way to access its elements without exposing its internal structure. Moreover, you might want to traverse the list in different ways, depending on what you want to accomplish. But you probably donâ€™t want to bloat the List interface with operations for different traversals, even if you could anticipate the ones you will need. You might also need to have more than one traversal pending on the same list.
+
+The Iterator pattern lets you do all this. The key idea in this pattern is to take the responsibility for access and traversal out of the list object and put it into an iterator object. The Iterator class defines an interface for accessing the listâ€™s elements. An iterator object is responsible for keeping track of the current element; that is, it knows which elements have been traversed already.
+
+For example, a List class would call for a Iterator with the following relationship between them
+
+Before you can instantiate Iterator, you must supply the List to traverse. Once you have the Iterator instance, you can access the listâ€™s elements sequentially. The operation returns the current element in the list, First initializes the current element to the first element, Next advances the current element to the next element, and Done tests whether weâ€™ve advanced beyond the last elementâ€”that is, weâ€™re finished with the traversal.
+
+Separating the traversal mechanism from the List object lets us define iterators for different traversal policies without enumerating them in the List interface. For example, Iterator might provide access only to those elements that satisfy specific filtering constraints.
+
+Notice that the iterator and the list are coupled, and the client must know that it is a list thatâ€™s traversed as opposed to some other aggregate structure. Hence the client commits to a particular aggregate structure. It would be better if we could change the aggregate class without changing client code. We can do this by generalizing the iterator concept to support polymorphic iteration.
+
+As an example, letâ€™s assume that we also have a List implementation of a list. A is a probabilistic data structure with characteristics similar to balanced trees. We want to be able to write code that works for both List and List objects.
+
+We define an List class that provides a common interface for manipulating lists. Similarly, we need an abstract Iterator class that defines a common iteration interface. Then we can define concrete Iterator subclasses for the different list implementations. As a result, the iteration mechanism becomes independent of concrete aggregate classes.
+
+The remaining problem is how to create the iterator. Since we want to write code thatâ€™s independent of the concrete List subclasses, we cannot simply instantiate a specific class. Instead, we make the list objects responsible for creating their corresponding iterator. This requires an operation like Iterator through which clients request an iterator object.
+
+CreateIterator is an example of a factory method (see Factory Method (107)). We use it here to let a client ask a list object for the appropriate iterator. The Factory Method approach give rise to two class hierarchies, one for lists and another for iterators. The CreateIterator factory method â€œconnectsâ€ the two hierarchies. Use the Iterator pattern
+
+â€¢ to access an aggregate objectâ€™s contents without exposing its internal representation.
+
+â€¢ to support multiple traversals of aggregate objects.
+
+â€¢ to provide a uniform interface for traversing different aggregate structures (that is, to support polymorphic iteration).
+
+Iterator is a behavioral design pattern that lets you traverse elements of a collection without exposing its underlying representation (list, stack, tree, etc.).
+Collections are one of the most used data types in programming. Nonetheless, a collection is just a container for a group of objects.
+Various types of collections
+Various types of collections.
+Most collections store their elements in simple lists. However, some of them are based on stacks, trees, graphs and other complex data structures.
+But no matter how a collection is structured, it must provide some way of accessing its elements so that other code can use these elements. There should be a way to go through each element of the collection without accessing the same elements over and over.
+This may sound like an easy job if you have a collection based on a list. You just loop over all of the elements. But how do you sequentially traverse elements of a complex data structure, such as a tree? For example, one day you might be just fine with depth-first traversal of a tree. Yet the next day you might require breadth-first traversal. And the next week, you might need something else, like random access to the tree elements.
+Various traversal algorithms
+The same collection can be traversed in several different ways.
+Adding more and more traversal algorithms to the collection gradually blurs its primary responsibility, which is efficient data storage. Additionally, some algorithms might be tailored for a specific application, so including them into a generic collection class would be weird.
+On the other hand, the client code thatâ€™s supposed to work with various collections may not even care how they store their elements. However, since collections all provide different ways of accessing their elements, you have no option other than to couple your code to the specific collection classes. 
+    Provide a way to access the elements of an aggregate object sequentially without exposing its underlying representation.
+    The C++ and Java standard library abstraction that makes it possible to decouple collection classes and algorithms.
+    Promote to ""full object status"" the traversal of a collection.
+    Polymorphic traversal
+An aggregate object such as a list should give you a way to access its elements without exposing its internal structure. Moreover, you might want to traverse the list in different ways, depending on what you need to accomplish. But you probably don't want to bloat the List interface with operations for different traversals, even if you could anticipate the ones you'll require. You might also need to have more than one traversal pending on the same list."" And, providing a uniform interface for traversing many types of aggregate objects (i.e. polymorphic iteration) might be valuable.
+
+The Iterator pattern lets you do all this. The key idea is to take the responsibility for access and traversal out of the aggregate object and put it into an Iterator object that defines a standard traversal protocol.
+
+The Iterator abstraction is fundamental to an emerging technology called ""generic programming"". This strategy seeks to explicitly separate the notion of ""algorithm"" from that of ""data structure"". The motivation is to: promote component-based development, boost productivity, and reduce configuration management.
+access elements of an aggregate object sequentially without exposing the underlying structure of the object. Files are aggregate objects. In office settings where access to files is made through administrative or secretarial staff, the Iterator pattern is demonstrated with the secretary acting as the Iterator. Several television comedy skits have been developed around the premise of an executive trying to understand the secretary's filing system. To the executive, the filing system is confusing and illogical, but the secretary is able to access files quickly and efficiently. 
+As an example, if you wanted to support four data structures (array, binary tree, linked list, and hash table) and three algorithms (sort, find, and merge), a traditional approach would require four times three permutations to develop and maintain. Whereas, a generic programming approach would only require four plus three configuration items.
+
+Iterator is a behavioral design pattern that lets you traverse elements of a collection without exposing its underlying representation (list, stack, tree, etc.).
+
+Collections are one of the most used data types in programming. Nonetheless, a collection is just a container for a group of objects.
+
+Various types of collections
+Various types of collections.
+Most collections store their elements in simple lists. However, some of them are based on stacks, trees, graphs and other complex data structures.
+
+But no matter how a collection is structured, it must provide some way of accessing its elements so that other code can use these elements. There should be a way to go through each element of the collection without accessing the same elements over and over.
+
+This may sound like an easy job if you have a collection based on a list. You just loop over all of the elements. But how do you sequentially traverse elements of a complex data structure, such as a tree? For example, one day you might be just fine with depth-first traversal of a tree. Yet the next day you might require breadth-first traversal. And the next week, you might need something else, like random access to the tree elements.
+
+Various traversal algorithms
+The same collection can be traversed in several different ways.
+Adding more and more traversal algorithms to the collection gradually blurs its primary responsibility, which is efficient data storage. Additionally, some algorithms might be tailored for a specific application, so including them into a generic collection class would be weird.
+
+On the other hand, the client code that’s supposed to work with various collections may not even care how they store their elements. However, since collections all provide different ways of accessing their elements, you have no option other than to couple your code to the specific collection classes.
+
+Provide a way to access the elements of an aggregate object sequentially without exposing its underlying representation.
+The C++ and Java standard library abstraction that makes it possible to decouple collection classes and algorithms.
+Promote to ""full object status"" the traversal of a collection.
+Polymorphic traversal
+
+Need to ""abstract"" the traversal of wildly different data structures so that algorithms can be defined that are capable of interfacing with each transparently."
+16,mediator,0,"Define an object that encapsulates how a set of objects interact. Mediator promotes loose coupling by keeping objects from referring to each other explicitly, and it lets you vary their interaction independently. Object-oriented design encourages the distribution of behavior among objects. Such distribution can result in an object structure with many connections between objects; in the worst case, every object ends up knowing about every other.
+
+Though partitioning a system into many objects generally enhances reusability, proliferating interconnections tend to reduce it again. Lots of interconnections make it less likely that an object can work without the support of othersâ€”the system acts as though it were monolithic. Moreover, it can be difficult to change the systemâ€™s behavior in any significant way, since behavior is distributed among many objects. As a result, you may be forced to define many subclasses to customize the systemâ€™s behavior.
+
+As an example, consider the implementation of in a. A uses a to present a collection of such as
+
+Often there are dependencies between the in the. For example, a gets disabled when a certain is empty. Selecting an entry in a list of choices called a list might change the contents of an. Conversely, into the might automatically select one or more corresponding entries in the list. Once appears in the, other may become enabled that let the user do something with the, such as changing or deleting the thing to which it refers.
+
+Different will have different dependencies between. So even though display the same kinds of, they canâ€™t simply reuse classes; they have to be customized to reflect specific dependencies. Customizing them individually by subclassing will be tedious, since many classes are involved.
+
+You can avoid these problems by encapsulating collective behavior in a separate mediator object. A mediator is responsible for controlling and coordinating the interactions of a group of objects. The mediator serves as an intermediary that keeps objects in the group from referring to each other explicitly. The objects only know the mediator, thereby reducing the number of interconnections.
+
+For example, can be the mediator between the in a. A object knows the in a and coordinates their interaction. It acts as a hub of communication for
+
+The following interaction diagram illustrates how the objects cooperate to handle a change in a list selection
+
+Hereâ€™s the succession of events by which a list selection passes to an:
+
+1. The list tells its that itâ€™s changed.
+
+2. The director gets the selection from the list.
+
+3. The director passes the selection to the.
+
+4. Now that the contains some, the director enables for initiating an action.
+
+Note how the director mediates between the list and the. communicate with each other only indirectly, through the director. They donâ€™t have to know about each other; all they know is the director. Furthermore, because the behavior is localized in one class, it can be changed or replaced by extending or replacing that class.
+
+Hereâ€™s how the Director abstraction can be integrated into a class library
+
+Director is an abstract class that defines the overall behavior of a. Clients call the operation to. is an abstract operation for creating the of a. is another abstract operation; call it to inform their director that they have changed. Director subclasses override to create the proper, and they override to handle the changes.
+
+Object-oriented design encourages the distribution of behavior among objects. Such distribution can result in an object structure with many connections between objects; in the worst case, every object ends up knowing about every other.
+
+Though partitioning a system into many objects generally enhances reusability, proliferating interconnections tend to reduce it again. Lots of interconnections make it less likely that an object can work without the support of othersâ€”the system acts as though it were monolithic. Moreover, it can be difficult to change the systemâ€™s behavior in any significant way, since behavior is distributed among many objects. As a result, you may be forced to define many subclasses to customize the systemâ€™s behavior.
+
+As an example, consider the implementation of in a. A uses a to present a collection of such as
+
+Often there are dependencies between the in the. For example, a gets disabled when a certain is empty. Selecting an in a list called a list might change the contents of an. Conversely, into the might automatically select one or more corresponding in the list. Once appears in the, other may become enabled that let the user do something with the, such as changing or deleting the thing to which it refers.
+
+Different dialog boxes will have different dependencies between. So even though display the same kinds of, they canâ€™t simply reuse classes; they have to be customized to reflect specific dependencies. Customizing them individually by subclassing will be tedious, since many classes are involved.
+
+You can avoid these problems by encapsulating collective behavior in a separate mediator object. A mediator is responsible for controlling and coordinating the interactions of a group of objects. The mediator serves as an intermediary that keeps objects in the group from referring to each other explicitly. The objects only know the mediator, thereby reducing the number of interconnections.
+
+For example, Director can be the mediator between the in a. A Director object knows the in a and coordinates their interaction. It acts as a hub of communication for
+
+The following interaction diagram illustrates how the objects cooperate to handle a change in a
+
+Hereâ€™s the succession of events by which a passes to an:
+
+1. The tells its director that itâ€™s changed.
+
+2. The director gets the from the.
+
+3. The director passes the to the.
+
+4. Now that the contains some, the director enables for initiating an action.
+
+Note how the director mediates between the and the. communicate with each other only indirectly, through the director. They donâ€™t have to know about each other; all they know is the director. Furthermore, because the behavior is localized in one class, it can be changed or replaced by extending or replacing that class.
+
+Hereâ€™s how the abstraction can be integrated into a class library
+
+Director is an abstract class that defines the overall behavior of a. Clients call the ShowDialog operation to display the dialog on the screen. CreateWidgets is an abstract operation for creating the widgets of a dialog. WidgetChanged is another abstract operation; widgets call it to inform their director that they have changed. DialogDirector subclasses override CreateWidgets to create the proper widgets, and they override WidgetChanged to handle the changes. Use the Mediator pattern when
+
+â€¢ a set of objects communicate in well-defined but complex ways. The resulting interdependencies are unstructured and difficult to understand.
+
+â€¢ reusing an object is difficult because it refers to and communicates with many other objects.
+
+â€¢ a behavior thatâ€™s distributed between several classes should be customizable without a lot of subclassing.
+
+Mediator is a behavioral design pattern that lets you reduce chaotic dependencies between objects. The pattern restricts direct communications between the objects and forces them to collaborate only via a mediator object.
+Say you have a dialog for creating and editing customer profiles. It consists of various form controls such as text fields, checkboxes, buttons, etc.
+Chaotic relations between elements of the user interface
+Relations between elements of the user interface can become chaotic as the application evolves.
+Some of the form elements may interact with others. For instance, selecting the â€œI have a dogâ€ checkbox may reveal a hidden text field for entering the dogâ€™s name. Another example is the submit button that has to validate values of all fields before saving the data.
+Elements of the UI are interdependent
+Elements can have lots of relations with other elements. Hence, changes to some elements may affect the others.
+By having this logic implemented directly inside the code of the form elements you make these elementsâ€™ classes much harder to reuse in other forms of the app. For example, you wonâ€™t be able to use that checkbox class inside another form, because itâ€™s coupled to the dogâ€™s text field. You can use either all the classes involved in rendering the profile form, or none at all."
+17,memento,0,"Without violating encapsulation, capture and externalize an objectâ€™s internal state so that the object can be restored to this state later. Sometimes itâ€™s necessary to record the internal state of an object. This is required when implementing checkpoints and undo mechanisms that let users back out of tentative operations or recover from errors. You must save state information somewhere so that you can restore objects to their previous states. But objects normally encapsulate some or all of their state, making it inaccessible to other objects and impossible to save externally. Exposing this state would violate encapsulation, which can compromise the applicationâ€™s reliability and extensibility.
+
+Consider for example a graphical editor that supports connectivity between objects. A user can connect two rectangles with a line, and the rectangles stay connected when the user moves either of them. The editor ensures that the line stretches to maintain the connection.
+
+image
+
+A well-known way to maintain connectivity relationships between objects is with a constraint-solving system. We can encapsulate this functionality in a ConstraintSolver object. ConstraintSolver records connections as they are made and generates mathematical equations that describe them. It solves these equations whenever the user makes a connection or otherwise modifies the diagram. Constraint-Solver uses the results of its calculations to rearrange the graphics so that they maintain the proper connections.
+
+Supporting undo in this application isnâ€™t as easy as it may seem. An obvious way to undo a move operation is to store the original distance moved and move the object back an equivalent distance. However, this does not guarantee all objects will appear where they did before. Suppose there is some slack in the connection. In that case, simply moving the rectangle back to its original location wonâ€™t necessarily achieve the desired effect.
+
+image
+
+In general, the ConstraintSolverâ€™s public interface might be insufficient to allow precise reversal of its effects on other objects. The undo mechanism must work more closely with ConstraintSolver to reestablish previous state, but we should also avoid exposing the ConstraintSolverâ€™s internals to the undo mechanism.
+
+We can solve this problem with the Memento pattern. A memento is an object that stores a snapshot of the internal state of another objectâ€”the mementoâ€™s originator. The undo mechanism will request a memento from the originator when it needs to checkpoint the originatorâ€™s state. The originator initializes the memento with information that characterizes its current state. Only the originator can store and retrieve information from the mementoâ€”the memento is â€œopaqueâ€ to other objects.
+
+In the graphical editor example just discussed, the ConstraintSolver can act as an originator. The following sequence of events characterizes the undo process:
+
+1. The editor requests a memento from the ConstraintSolver as a side-effect of the move operation.
+
+2. The ConstraintSolver creates and returns a memento, an instance of a class SolverState in this case. A SolverState memento contains data structures that describe the current state of the ConstraintSolverâ€™s internal equations and variables.
+
+3. Later when the user undoes the move operation, the editor gives the SolverState back to the ConstraintSolver.
+
+4. Based on the information in the SolverState, the ConstraintSolver changes its internal structures to return its equations and variables to their exact previous state.
+
+This arrangement lets the ConstraintSolver entrust other objects with the information it needs to revert to a previous state without exposing its internal structure and representations. Use the Memento pattern when
+
+â€¢ a snapshot of (some portion of) an objectâ€™s state must be saved so that it can be restored to that state later, and
+
+â€¢ a direct interface to obtaining the state would expose implementation details and break the objectâ€™s encapsulation.
+
+Memento is a behavioral design pattern that lets you save and restore the previous state of an object without revealing the details of its implementation.
+Imagine that youâ€™re creating a text editor app. In addition to simple text editing, your editor can format text, insert inline images, etc.
+At some point, you decided to let users undo any operations carried out on the text. This feature has become so common over the years that nowadays people expect every app to have it. For the implementation, you chose to take the direct approach. Before performing any operation, the app records the state of all objects and saves it in some storage. Later, when a user decides to revert an action, the app fetches the latest snapshot from the history and uses it to restore the state of all objects.
+Reverting operations in the editor
+Before executing an operation, the app saves a snapshot of the objectsâ€™ state, which can later be used to restore objects to their previous state.
+Letâ€™s think about those state snapshots. How exactly would you produce one? Youâ€™d probably need to go over all the fields in an object and copy their values into storage. However, this would only work if the object had quite relaxed access restrictions to its contents. Unfortunately, most real objects wonâ€™t let others peek inside them that easily, hiding all significant data in private fields.
+Ignore that problem for now and letâ€™s assume that our objects behave like hippies: preferring open relations and keeping their state public. While this approach would solve the immediate problem and let you produce snapshots of objectsâ€™ states at will, it still has some serious issues. In the future, you might decide to refactor some of the editor classes, or add or remove some of the fields. Sounds easy, but this would also require changing the classes responsible for copying the state of the affected objects.
+How to make a copy of the object's private state?
+How to make a copy of the objectâ€™s private state?
+But thereâ€™s more. Letâ€™s consider the actual â€œsnapshotsâ€ of the editorâ€™s state. What data does it contain? At a bare minimum, it must contain the actual text, cursor coordinates, current scroll position, etc. To make a snapshot, youâ€™d need to collect these values and put them into some kind of container.
+Most likely, youâ€™re going to store lots of these container objects inside some list that would represent the history. Therefore the containers would probably end up being objects of one class. The class would have almost no methods, but lots of fields that mirror the editorâ€™s state. To allow other objects to write and read data to and from a snapshot, youâ€™d probably need to make its fields public. That would expose all the editorâ€™s states, private or not. Other classes would become dependent on every little change to the snapshot class, which would otherwise happen within private fields and methods without affecting outer classes.
+It looks like weâ€™ve reached a dead end: you either expose all internal details of classes, making them too fragile, or restrict access to their state, making it impossible to produce snapshots. Is there any other way to implement the ""undo""?"
+18,observer,0,"Define a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically. A common side-effect of partitioning a system into a collection of cooperating classes is the need to maintain consistency between related objects. You donâ€™t want to achieve consistency by making the classes tightly coupled, because that reduces their reusability.
+
+For example, many graphical user interface toolkits separate the presentational aspects of the user interface from the underlying application data [KP88, LVC89, P+88, WGM88]. Classes defining application data and presentations can be reused independently. They can work together, too. Both a spreadsheet object and bar chart object can depict information in the same application data object using different presentations. The spreadsheet and the bar chart donâ€™t know about each other, thereby letting you reuse only the one you need. But they behave as though they do. When the user changes the information in the spreadsheet, the bar chart reflects the changes immediately, and vice versa.
+
+image
+
+This behavior implies that the spreadsheet and bar chart are dependent on the data object and therefore should be notified of any change in its state. And thereâ€™s no reason to limit the number of dependent objects to two; there may be any number of different user interfaces to the same data.
+
+The Observer pattern describes how to establish these relationships. The key objects in this pattern are subject and observer. A subject may have any number of dependent observers. All observers are notified whenever the subject undergoes a change in state. In response, each observer will query the subject to synchronize its state with the subjectâ€™s state.
+
+This kind of interaction is also known as publish-subscribe. The subject is the publisher of notifications. It sends out these notifications without having to know who its observers are. Any number of observers can subscribe to receive notifications. Use the Observer pattern in any of the following situations:
+
+â€¢ When an abstraction has two aspects, one dependent on the other. Encapsulating these aspects in separate objects lets you vary and reuse them independently.
+
+â€¢ When a change to one object requires changing others, and you donâ€™t know how many objects need to be changed.
+
+â€¢ When an object should be able to notify other objects without making assumptions about who these objects are. In other words, you donâ€™t want these objects tightly coupled.
+
+Observer is a behavioral design pattern that lets you define a subscription mechanism to notify multiple objects about any events that happen to the object theyâ€™re observing.
+Imagine that you have two types of objects: a Customer and a Store. The customer is very interested in a particular brand of product (say, itâ€™s a new model of the iPhone) which should become available in the store very soon.
+The customer could visit the store every day and check product availability. But while the product is still en route, most of these trips would be pointless.
+Visiting store vs. sending spam
+Visiting the store vs. sending spam
+On the other hand, the store could send tons of emails (which might be considered spam) to all customers each time a new product becomes available. This would save some customers from endless trips to the store. At the same time, itâ€™d upset other customers who arenâ€™t interested in new products.
+It looks like weâ€™ve got a conflict. Either the customer wastes time checking product availability or the store wastes resources notifying the wrong customers."
+19,state,0,"Allow an object to alter its behavior when its internal state changes. The object will appear to change its class. Consider a class TCPConnection that represents a network connection. A TCP-Connection object can be in one of several different states: Established, Listening, Closed. When a TCPConnection object receives requests from other objects, it responds differently depending on its current state. For example, the effect of an Open request depends on whether the connection is in its Closed state or its Established state. The State pattern describes how TCPConnection can exhibit different behavior in each state.
+
+The key idea in this pattern is to introduce an abstract class called TCPState to represent the states of the network connection. The TCPState class declares an interface common to all classes that represent different operational states. Subclasses of TCPState implement state-specific behavior. For example, the classes TCPEstablished and TCPClosed implement behavior particular to the Established and Closed states of TCPConnection.
+
+image
+
+The class TCPConnection maintains a state object (an instance of a subclass of TCPState) that represents the current state of the TCP connection. The class TCP-Connection delegates all state-specific requests to this state object. TCPConnection uses its TCPState subclass instance to perform operations particular to the state of the connection.
+
+Whenever the connection changes state, the TCPConnection object changes the state object it uses. When the connection goes from established to closed, for example, TCPConnection will replace its TCPEstablished instance with a TCPClosed instance. Use the State pattern in either of the following cases:
+
+â€¢ An objectâ€™s behavior depends on its state, and it must change its behavior at run-time depending on that state.
+
+â€¢ Operations have large, multipart conditional statements that depend on the objectâ€™s state. This state is usually represented by one or more enumerated constants. Often, several operations will contain this same conditional structure. The State pattern puts each branch of the conditional in a separate class. This lets you treat the objectâ€™s state as an object in its own right that can vary independently from other objects.
+
+State is a behavioral design pattern that lets an object alter its behavior when its internal state changes. It appears as if the object changed its class.
+The State pattern is closely related to the concept of a Finite-State Machine .
+Finite-State Machine
+Finite-State Machine.
+The main idea is that, at any given moment, thereâ€™s a finite number of states which a program can be in. Within any unique state, the program behaves differently, and the program can be switched from one state to another instantaneously. However, depending on a current state, the program may or may not switch to certain other states. These switching rules, called transitions, are also finite and predetermined.
+You can also apply this approach to objects. Imagine that we have a Document class. A document can be in one of three states: Draft, Moderation and Published. The publish method of the document works a little bit differently in each state:
+In Draft, it moves the document to moderation.
+In Moderation, it makes the document public, but only if the current user is an administrator.
+In Published, it doesnâ€™t do anything at all.
+Possible states of a document object
+Possible states and transitions of a document object.
+State machines are usually implemented with lots of conditional statements (if or switch) that select the appropriate behavior depending on the current state of the object. Usually, this â€œstateâ€ is just a set of values of the objectâ€™s fields. Even if youâ€™ve never heard about finite-state machines before, youâ€™ve probably implemented a state at least once. Does the following code structure ring a bell?
+The biggest weakness of a state machine based on conditionals reveals itself once we start adding more and more states and state-dependent behaviors to the Document class. Most methods will contain monstrous conditionals that pick the proper behavior of a method according to the current state. Code like this is very difficult to maintain because any change to the transition logic may require changing state conditionals in every method.
+The problem tends to get bigger as a project evolves. Itâ€™s quite difficult to predict all possible states and transitions at the design stage. Hence, a lean state machine built with a limited set of conditionals can grow into a bloated mess over time."
+20,strategy,0,"Define a family of algorithms, encapsulate each one, and make them interchangeable. Strategy lets the algorithm vary independently from clients that use it.
+
+
+ Many algorithms exist for breaking a stream of text into lines. Hard-wiring all such algorithms into the classes that require them isnâ€™t desirable for several reasons:
+
+â€¢ Clients that need linebreaking get more complex if they include the line-breaking code. That makes clients bigger and harder to maintain, especially if they support multiple linebreaking algorithms.
+
+â€¢ Different algorithms will be appropriate at different times. We donâ€™t want to support multiple linebreaking algorithms if we donâ€™t use them all.
+
+â€¢ Itâ€™s difficult to add new algorithms and vary existing ones when linebreaking is an integral part of a client.
+
+We can avoid these problems by defining classes that encapsulate different line-breaking algorithms. An algorithm thatâ€™s encapsulated in this way is called a strategy.
+
+image
+
+Suppose a Composition class is responsible for maintaining and updating the linebreaks of text displayed in a text viewer. Linebreaking strategies arenâ€™t implemented by the class Composition. Instead, they are implemented separately by subclasses of the abstract Compositor class. Compositor subclasses implement different strategies:
+
+â€¢ SimpleCompositor implements a simple strategy that determines linebreaks one at a time.
+
+â€¢ TeXCompositor implements the TEX algorithm for finding linebreaks. This strategy tries to optimize linebreaks globally, that is, one paragraph at a time.
+
+â€¢ ArrayCompositor implements a strategy that selects breaks so that each row has a fixed number of items. Itâ€™s useful for breaking a collection of icons into rows, for example.
+
+A Composition maintains a reference to a Compositor object. Whenever a Composition reformats its text, it forwards this responsibility to its Compositor object. The client of Composition specifies which Compositor should be used by installing the Compositor it desires into the Composition.
+
+ Use the Strategy pattern when
+
+â€¢ many related classes differ only in their behavior. Strategies provide a way to configure a class with one of many behaviors.
+
+â€¢ you need different variants of an algorithm. For example, you might define algorithms reflecting different space/time trade-offs. Strategies can be used when these variants are implemented as a class hierarchy of algorithms [HO87].
+
+â€¢ an algorithm uses data that clients shouldnâ€™t know about. Use the Strategy pattern to avoid exposing complex, algorithm-specific data structures.
+
+â€¢ a class defines many behaviors, and these appear as multiple conditional statements in its operations. Instead of many conditionals, move related conditional branches into their own Strategy class.
+
+Strategy is a behavioral design pattern that lets you define a family of algorithms, put each of them into a separate class, and make their objects interchangeable.
+One day you decided to create a navigation app for casual travelers. The app was centered around a beautiful map which helped users quickly orient themselves in any city.
+One of the most requested features for the app was automatic route planning. A user should be able to enter an address and see the fastest route to that destination displayed on the map.
+The first version of the app could only build the routes over roads. People who traveled by car were bursting with joy. But apparently, not everybody likes to drive on their vacation. So with the next update, you added an option to build walking routes. Right after that, you added another option to let people use public transport in their routes.
+However, that was only the beginning. Later you planned to add route building for cyclists. And even later, another option for building routes through all of a cityâ€™s tourist attractions.
+The code of the navigator became very bloated
+The code of the navigator became bloated.
+While from a business perspective the app was a success, the technical part caused you many headaches. Each time you added a new routing algorithm, the main class of the navigator doubled in size. At some point, the beast became too hard to maintain.
+Any change to one of the algorithms, whether it was a simple bug fix or a slight adjustment of the street score, affected the whole class, increasing the chance of creating an error in already-working code.
+In addition, teamwork became inefficient. Your teammates, who had been hired right after the successful release, complain that they spend too much time resolving merge conflicts. Implementing a new feature requires you to change the same huge class, conflicting with the code produced by other people."
+21,template method,0,"Define the skeleton of an algorithm in an operation, deferring some steps to subclasses. Template Method lets subclasses redefine certain steps of an algorithm without changing the algorithmâ€™s structure. Consider an application framework that provides Application and Document classes. The Application class is responsible for opening existing documents stored in an external format, such as a file. A Document object represents the information in a document once itâ€™s read from the file.
+
+Applications built with the framework can subclass Application and Document to suit specific needs. For example, a drawing application defines Draw Application and DrawDocument subclasses; a spreadsheet application defines Spreadsheet-Application and SpreadsheetDocument subclasses.
+
+image
+
+The abstract Application class defines the algorithm for opening and reading a document in its OpenDocument operation:
+
+image
+
+OpenDocument defines each step for opening a document. It checks if the document can be opened, creates the application-specific Document object, adds it to its set of documents, and reads the Document from a file.
+
+We call OpenDocument a template method. A template method defines an algorithm in terms of abstract operations that subclasses override to provide concrete behavior. Application subclasses define the steps of the algorithm that check if the document can be opened (CanOpenDocument) and that create the Document (DoCreateDocument). Document classes define the step that reads the document (DoRead). The template method also defines an operation that lets Application subclasses know when the document is about to be opened (AboutToOpenDocument), in case they care.
+
+By defining some of the steps of an algorithm using abstract operations, the template method fixes their ordering, but it lets Application and Document subclasses vary those steps to suit their needs. The Template Method pattern should be used
+
+â€¢ to implement the invariant parts of an algorithm once and leave it up to subclasses to implement the behavior that can vary.
+
+â€¢ when common behavior among subclasses should be factored and localized in a common class to avoid code duplication. This is a good example of â€œrefactoring to generalizeâ€ as described by Opdyke and Johnson [OJ93]. You first identify the differences in the existing code and then separate the differences into new operations. Finally, you replace the differing code with a template method that calls one of these new operations.
+
+â€¢ to control subclasses extensions. You can define a template method that calls â€œhookâ€ operations (see Consequences) at specific points, thereby permitting extensions only at those points.
+
+Template Method is a behavioral design pattern that defines the skeleton of an algorithm in the superclass but lets subclasses override specific steps of the algorithm without changing its structure.
+Imagine that youâ€™re creating a data mining application that analyzes corporate documents. Users feed the app documents in various formats (PDF, DOC, CSV), and it tries to extract meaningful data from these docs in a uniform format.
+The first version of the app could work only with DOC files. In the following version, it was able to support CSV files. A month later, you â€œtaughtâ€ it to extract data from PDF files.
+Data mining classes contained a lot of duplicate code
+Data mining classes contained a lot of duplicate code.
+At some point, you noticed that all three classes have a lot of similar code. While the code for dealing with various data formats was entirely different in all classes, the code for data processing and analysis is almost identical. Wouldnâ€™t it be great to get rid of the code duplication, leaving the algorithm structure intact?
+There was another problem related to client code that used these classes. It had lots of conditionals that picked a proper course of action depending on the class of the processing object. If all three processing classes had a common interface or a base class, youâ€™d be able to eliminate the conditionals in client code and use polymorphism when calling methods on a processing object."
+22,visitor,0,"Represent an operation to be performed on the elements of an object structure. Visitor lets you define a new operation without changing the classes of the elements on which it operates. Consider a compiler that represents programs as abstract syntax trees. It will need to perform operations on abstract syntax trees for â€œstatic semanticâ€ analyses like checking that all variables are defined. It will also need to generate code. So it might define operations for type-checking, code optimization, flow analysis, checking for variables being assigned values before theyâ€™re used, and so on. Moreover, we could use the abstract syntax trees for pretty-printing, program restructuring, code instrumentation, and computing various metrics of a program.
+
+Most of these operations will need to treat nodes that represent assignment statements differently from nodes that represent variables or arithmetic expressions. Hence there will be one class for assignment statements, another for variable accesses, another for arithmetic expressions, and so on. The set of node classes depends on the language being compiled, of course, but it doesnâ€™t change much for a given language.
+
+This diagram shows part of the Node class hierarchy. The problem here is that distributing all these operations across the various node classes leads to a system thatâ€™s hard to understand, maintain, and change. It will be confusing to have type-checking code mixed with pretty-printing code or flow analysis code. Moreover, adding a new operation usually requires recompiling all of these classes. It would be better if each new operation could be added separately, and the node classes were independent of the operations that apply to them.
+
+We can have both by packaging related operations from each class in a separate object, called a visitor, and passing it to elements of the abstract syntax tree as itâ€™s traversed. When an element â€œacceptsâ€ the visitor, it sends a request to the visitor that encodes the elementâ€™s class. It also includes the element as an argument. The visitor will then execute the operation for that elementâ€”the operation that used to be in the class of the element.
+
+For example, a compiler that didnâ€™t use visitors might type-check a procedure by calling the TypeCheck operation on its abstract syntax tree. Each of the nodes would implement TypeCheck by calling TypeCheck on its components (see the preceding class diagram). If the compiler type-checked a procedure using visitors, then it would create a TypeCheckingVisitor object and call the Accept operation on the abstract syntax tree with that object as an argument. Each of the nodes would implement Accept by calling back on the visitor: an assignment node calls VisitAssignment operation on the visitor, while a variable reference calls VisitVariableReference. What used to be the TypeCheck operation in class AssignmentNode is now the VisitAssignment operation on TypeCheckingVisitor.
+
+To make visitors work for more than just type-checking, we need an abstract parent class NodeVisitor for all visitors of an abstract syntax tree. NodeVisitor must declare an operation for each node class. An application that needs to compute program metrics will define new subclasses of NodeVisitor and will no longer need to add application-specific code to the node classes. The Visitor pattern encapsulates the operations for each compilation phase in a Visitor associated with that phase.
+
+With the Visitor pattern, you define two class hierarchies: one for the elements being operated on (the Node hierarchy) and one for the visitors that define operations on the elements (the NodeVisitor hierarchy). You create a new operation by adding a new subclass to the visitor class hierarchy. As long as the grammar that the compiler accepts doesnâ€™t change (that is, we donâ€™t have to add new Node subclasses), we can add new functionality simply by defining new NodeVisitor subclasses. Use the Visitor pattern when
+
+â€¢ an object structure contains many classes of objects with differing interfaces, and you want to perform operations on these objects that depend on their concrete classes.
+
+â€¢ many distinct and unrelated operations need to be performed on objects in an object structure, and you want to avoid â€œpollutingâ€ their classes with these operations. Visitor lets you keep related operations together by defining them in one class. When the object structure is shared by many applications, use Visitor to put operations in just those applications that need them.
+
+â€¢ the classes defining the object structure rarely change, but you often want to define new operations over the structure. Changing the object structure classes requires redefining the interface to all visitors, which is potentially costly. If the object structure classes change often, then itâ€™s probably better to define the operations in those classes.
+
+Visitor is a behavioral design pattern that lets you separate algorithms from the objects on which they operate.
+Imagine that your team develops an app which works with geographic information structured as one colossal graph. Each node of the graph may represent a complex entity such as a city, but also more granular things like industries, sightseeing areas, etc. The nodes are connected with others if thereâ€™s a road between the real objects that they represent. Under the hood, each node type is represented by its own class, while each specific node is an object.
+Exporting the graph into XML
+Exporting the graph into XML.
+At some point, you got a task to implement exporting the graph into XML format. At first, the job seemed pretty straightforward. You planned to add an export method to each node class and then leverage recursion to go over each node of the graph, executing the export method. The solution was simple and elegant: thanks to polymorphism, you werenâ€™t coupling the code which called the export method to concrete classes of nodes.
+Unfortunately, the system architect refused to allow you to alter existing node classes. He said that the code was already in production and he didnâ€™t want to risk breaking it because of a potential bug in your changes.
+The XML export method had to be added into all node classes
+The XML export method had to be added into all node classes, which bore the risk of breaking the whole application if any bugs slipped through along with the change.
+Besides, he questioned whether it makes sense to have the XML export code within the node classes. The primary job of these classes was to work with geodata. The XML export behavior would look alien there.
+There was another reason for the refusal. It was highly likely that after this feature was implemented, someone from the marketing department would ask you to provide the ability to export into a different format, or request some other weird stuff. This would force you to change those precious and fragile classes again.
+
+Visitor is a behavioral design pattern that lets you separate algorithms from the objects on which they operate.
+
+Imagine that your team develops an app which works with geographic information structured as one colossal graph. Each node of the graph may represent a complex entity such as a city, but also more granular things like industries, sightseeing areas, etc. The nodes are connected with others if there’s a road between the real objects that they represent. Under the hood, each node type is represented by its own class, while each specific node is an object.
+
+Exporting the graph into XML
+Exporting the graph into XML.
+At some point, you got a task to implement exporting the graph into XML format. At first, the job seemed pretty straightforward. You planned to add an export method to each node class and then leverage recursion to go over each node of the graph, executing the export method. The solution was simple and elegant: thanks to polymorphism, you weren’t coupling the code which called the export method to concrete classes of nodes.
+
+Unfortunately, the system architect refused to allow you to alter existing node classes. He said that the code was already in production and he didn’t want to risk breaking it because of a potential bug in your changes.
+
+The XML export method had to be added into all node classes
+The XML export method had to be added into all node classes, which bore the risk of breaking the whole application if any bugs slipped through along with the change.
+Besides, he questioned whether it makes sense to have the XML export code within the node classes. The primary job of these classes was to work with geodata. The XML export behavior would look alien there.
+
+There was another reason for the refusal. It was highly likely that after this feature was implemented, someone from the marketing department would ask you to provide the ability to export into a different format, or request some other weird stuff. This would force you to change those precious and fragile classes again.
+
+Represent an operation to be performed on the elements of an object structure. Visitor lets you define a new operation without changing the classes of the elements on which it operates.
+The classic technique for recovering lost type information.
+Do the right thing based on the type of two objects.
+Double dispatch
+
+Many distinct and unrelated operations need to be performed on node objects in a heterogeneous aggregate structure. You want to avoid ""polluting"" the node classes with these operations. And, you don't want to have to query the type of each node and cast the pointer to the correct type before performing the desired operation."
