@@ -54,7 +54,11 @@ def preprocess(corpus):
                 for word in document.split()
                 if (
                     word not in stop_words
-                    and pos_tag(word_tokenize(word), tagset="universal")[0][1] == "VERB"
+                    and (
+                        pos_tag(word_tokenize(word), tagset="universal")[0][1] == "VERB"
+                        or pos_tag(word_tokenize(word), tagset="universal")[0][1]
+                        == "ADJ"
+                    )
                 )
             ]
         ).strip()
