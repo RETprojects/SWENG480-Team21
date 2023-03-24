@@ -12,6 +12,7 @@ class SourceMakingSpider(CrawlSpider):
     allowed_domains = ["sourcemaking.com"]
     start_urls = ["https://sourcemaking.com/"]
 
+    # we can only collect data from pages that are about a specific design pattern
     rules = (
         # https://regex101.com/r/c5EFB6/1
         Rule(
@@ -22,14 +23,13 @@ class SourceMakingSpider(CrawlSpider):
 
     rows = []
 
-    # TODO: write the extracted data to a DB rather than a CSV file
-
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super(SourceMakingSpider, cls).from_crawler(crawler, *args, **kwargs)
         crawler.signals.connect(spider.spider_closed, signal=signals.spider_closed)
         return spider
 
+    # write the extracted data to a CSV file that can be used in other parts of the system
     def spider_closed(self, spider):
         with open(
             os.path.dirname(os.path.abspath(__file__)) + "/sourcemaking.csv", "w"
@@ -38,6 +38,7 @@ class SourceMakingSpider(CrawlSpider):
             for line in self.rows:
                 f.write(f"{line}\n")
 
+    # extract text data from a webpage
     def parse_item(self, response):
         text_nodes = response.xpath(
             "//article/*[not(self::script or contains(@class,'banner'))]/descendant::*/text()"
