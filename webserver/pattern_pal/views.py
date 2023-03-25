@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-
+from .models import MyPattern, MyProblem
 from .forms import JonathanForm
 
 
@@ -157,18 +157,18 @@ def display_predictions(cos_sim, txts, df, output):
 def main(design_problem):
     output = []
     # Load the data we are working with
-    FILENAME = "design-patterns.csv"
-    file_path = os.path.join(os.path.dirname(__file__), f"{FILENAME}")
+    # FILENAME = "design-patterns.csv"
+    # file_path = os.path.join(os.path.dirname(__file__), f"{FILENAME}")
 
-    if FILENAME.endswith(".csv"):
-        df = pd.read_csv(file_path)
-    elif FILENAME.endswith(".xls") or FILENAME.endswith(".xlsx"):
-        df = pd.read_excel(file_path)
-    else:
-        print("Unknown file extension. Ending program.")
-        return
+    # if FILENAME.endswith(".csv"):
+    #     df = pd.read_csv(file_path)
+    # elif FILENAME.endswith(".xls") or FILENAME.endswith(".xlsx"):
+    #     df = pd.read_excel(file_path)
+    # else:
+    #     print("Unknown file extension. Ending program.")
+    #     return
 
-    # design_problem = sys.argv[1]
+    df = pd.DataFrame(list(MyPattern.objects.all().values()))
 
     # Final example demonstrates how to append a Series as a row
     # https://pandas.pydata.org/docs/reference/api/pandas.concat.html
