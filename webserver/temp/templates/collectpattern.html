@@ -16,18 +16,21 @@
     <section style="margin-left: 50px;margin-right: 50px;">
         <p style=" font-size: 25px">Design Pattern Recommendation System: Pattern Collection</p>
         <p style="line-height: 20px; font-size: 15px">Have an online design pattern repository? Put it into our database!</p>
+        <!--
         <p style="line-height: 20px; font-size: 15px">Write the URL to the library here:</p>
-        <form method="post">
-            {% csrf_token %}
-            <textarea id="textarea1" name="textarea1" rows = 1 style="overflow: auto; resize: none; width: 50%;"></textarea>
-        </form>
+        <textarea id="textarea1" name="textarea1" rows = 1 style="overflow: auto; resize: none; width: 50%;"></textarea>
         <p style="line-height: 20px; font-size: 15px">Are there any specific sections of pages that you would like to collect data from?</p>
         <textarea id="textarea2" rows = 1 style="overflow: auto; resize: none; width: 50%;"></textarea>
         <textarea id="textarea3" rows = 1 style="overflow: auto; resize: none; width: 50%; vertical-align: middle "></textarea>
         <button type="button" style="vertical-align: middle">+</button>
         <br>
+        -->
         <form method="post">
             {% csrf_token %}
+            <p style="line-height: 20px; font-size: 15px">Write the URL to the library here:</p>
+            {{ form.urlContent }}
+            <p style="line-height: 20px; font-size: 15px">Are there any specific sections of pages that you would like to collect data from? (Separate text range by :+_:)</p>
+            {{ form.sectionContent }}
             <button type="submit" name="run_script" style="margin-top: 5px">Crawl</button>
         </form>
     </section>

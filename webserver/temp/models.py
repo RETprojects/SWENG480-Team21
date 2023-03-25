@@ -36,6 +36,9 @@ class PatternCatalog(models.Model):
     def __str__(self):
         return self.name
 
+    def get_attname(self):
+        return self.name
+
     class Meta:
         managed = False
         db_table = 'pattern_catalog'
@@ -47,6 +50,9 @@ class PatternCategory(models.Model):
     description = models.CharField(max_length=300)
 
     def __str__(self):
+        return self.name
+
+    def get_attname(self):
         return self.name
 
     class Meta:

@@ -18,22 +18,34 @@
         <section style="display: flex; justify-content:space-between;">
             Describe your problem here:
             <section>
+                <!--
             Select a pattern category:
             <label for="list1"></label>
-            <select id="list1" onchange="run()" onload="run()">
-                <!--
+            <select id="list1">
                  <option value="1">Object Oriented:Behavioral</option>
                  <option value="2">Object Oriented:Creational</option>
                  <option value="3">Object Oriented:Structural</option>
-                -->
                  <option value="4">Realtime</option>
                  <option value="5">Security</option>
                  <option value="6">Object Oriented</option>
             </select>
+                -->
             </section>
         </section>
+        <!--
         <label for="text"></label><textarea style="resize: none; width: 99.65%; height: 375px" id = "text" name="text" ></textarea>
+        -->
+        <form method="post">
+            {% csrf_token %}
+            {{ form.content }}
+            <button type="submit" name="run_script" style="margin-top: 5px">Run ML</button>
+        </form>
+        <!--
         <button onclick="window.location.href='/temp/recommendpattern';">Submit</button>
+        -->
+        {% for t in data %}
+        <p>{{t}}</p>
+        {% endfor %}
     </section>
 </body>
 </html>
