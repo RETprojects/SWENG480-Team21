@@ -161,7 +161,7 @@ def display_predictions(cos_sim, txts, df, output):
 def main(design_problem):
     output = []
     # Load the data we are working with
-    FILENAME = "GOF Patterns (2.0).csv"
+    FILENAME = "design-patterns.csv"
     file_path = os.path.join(os.path.dirname(__file__), f"{FILENAME}")
 
     if FILENAME.endswith(".csv"):
