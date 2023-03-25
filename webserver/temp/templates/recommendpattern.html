@@ -17,7 +17,7 @@
         <p style="line-height: 20px; font-size: 15px">Here are the design patterns recommended for your design problems, ordered by similarity score.</p>
         <div style="display: flex">
             <div style="flex: 25%">
-                <textarea id="textarea3" readonly style="overflow: auto; resize: none; width: 90%; height: 627px; margin-top: 47px"></textarea>
+                <textarea id="textarea3" style="overflow: auto; resize: none; width: 90%; height: 627px; margin-top: 47px"></textarea>
             </div>
             <div style="flex: 50%">
                 <p id="output1" style= "font-size: 15px; font-weight: bold">Design Pattern</p>
@@ -26,6 +26,83 @@
                 <textarea id="textarea2" readonly rows = 20 style="overflow: auto; resize: none; width: 99.65%;">Solution Domain&#10</textarea>
             </div>
         </div>
+        {{ patternListJSON|json_script:"patternListJSON" }}
+        {{ patternCategoryListJSON|json_script:"patternCategoryListJSON" }}
+        {{ patternCatalogListJSON|json_script:"patternCatalogListJSON" }}
+        <script>
+            /*
+            let patternList = JSON.parse(JSON.parse(document.getElementById('patternListJSON').textContent));
+            let patternCategoryList = JSON.parse(JSON.parse(document.getElementById('patternCategoryListJSON').textContent));
+            let patternCatalogList = JSON.parse(JSON.parse(document.getElementById('patternCatalogListJSON').textContent));
+            let pList = [];
+            let ulList = [];
+            let liList = [];
+            let buttonList = [];
+            function run(){
+                clearList(pList)
+                clearList(ulList)
+                clearList(liList)
+                clearList(buttonList)
+                clearText()
+                //console.log(patternList)
+                //console.log(patternCategoryList)
+                //console.log(patternCatalogList)
+
+                generateCategories(parseInt(document.getElementById("list1").value))
+            }
+            function generateCategories(catalog){
+                for(const x in patternCategoryList){
+                    if(patternCategoryList[x].fields.catalog === catalog){
+                        const p = document.createElement('p')
+                        p.id = 'p' + patternCategoryList[x].pk
+                        p.textContent = patternCategoryList[x].fields.name
+                        pList[pList.length] = p
+                        const ul = document.createElement('ul')
+                        ul.id = 'ul' + patternCategoryList[x].pk
+                        ulList[ulList.length] = ul
+                        document.getElementById("div1").append(p)
+                        document.getElementById("div1").append(ul)
+                        generateButtons(patternCategoryList[x].pk)
+                    }
+                }
+            }
+            function generateButtons(category){
+                for (const x in patternList) {
+                    if(patternList[x].fields.category === category){
+                        const btn = document.createElement("BUTTON");
+                        btn.textContent = patternList[x].fields.name;
+                        btn.onclick = function(){
+                            autoOnClick(patternList[x]);
+                        };
+                        btn.id = 'btn' + patternList[x].pk
+                        buttonList[buttonList.length] = btn
+                        const li = document.createElement('li')
+                        liList[liList.length] = li
+                        li.append(btn)
+                        document.getElementById("ul" + patternList[x].fields.category).appendChild(li)
+                    }
+                }
+            }
+            function autoOnClick(pattern){
+                document.getElementById("output1").innerText = pattern.fields.name;
+                document.getElementById("textarea1").innerText = "Problem Domain" + pattern.fields.intent + pattern.fields.applicability + pattern.fields.motivation;
+                document.getElementById("textarea2").innerText = "Solution Domain" + pattern.fields.structure + pattern.fields.participant_collaborations + pattern.fields.consequences + pattern.fields.implementation + pattern.fields.related_patterns;
+            }
+            function clearList(list){
+                for(const x in list){
+                    list[x].remove()
+                }
+            }
+            function clearText(){
+                document.getElementById("output1").innerText = "Design Pattern";
+                document.getElementById("textarea1").innerText = "Problem Domain";
+                document.getElementById("textarea2").innerText = "Solution Domain";
+            }
+            window.onload = function(){
+                run()
+            }
+            */
+        </script>
     </section>
 </body>
 </html>

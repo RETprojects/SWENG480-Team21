@@ -90,7 +90,10 @@ def cosine_sim(df: pd.DataFrame, predicted_cluster: int) -> tuple[dict, dict]:
 # clearly established categories for each design pattern involved.
 
 
-def display_predictions(cos_sim: np.ndarray, txts: pd.Series, df: pd.DataFrame) -> None:
+# We should handle the output (web app integration) better.
+def display_predictions(
+    cos_sim: np.ndarray, txts: pd.Series, df: pd.DataFrame, output: list
+) -> list:
     sim_sorted_doc_idx = cos_sim.argsort()
     for i in range(len(txts) - 1):
         pattern_desc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]
@@ -99,6 +102,9 @@ def display_predictions(cos_sim: np.ndarray, txts: pd.Series, df: pd.DataFrame) 
         )
         percentMatch = int(
             (cos_sim[0][sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]) * 100
+        )
+        output.append(
+            "{}th pattern:  {:<20}{}%  match".format(i + 1, pattern_name, percentMatch)
         )
         print(
             "{}th pattern:  {:<20}{}%  match".format(i + 1, pattern_name, percentMatch)
@@ -120,7 +126,11 @@ def display_predictions(cos_sim: np.ndarray, txts: pd.Series, df: pd.DataFrame) 
         top_pattern_cat_name = "Structural (GoF)"
     else:
         top_pattern_cat_name = "Creational (GoF)"
+
+    output.append(f"Most recommended pattern: {top_pattern_cat_name}")
     print("Most recommended pattern: ", top_pattern_cat_name)
+
+    return output
 
 
 def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
@@ -180,7 +190,8 @@ def do_weighting(method: str, series: pd.Series) -> pd.DataFrame:
     ).sparse.to_dense()
 
 
-def main():
+def main(design_problem):
+    output = []
     # Load the data we are working with
     FILENAME = "GOF Patterns (2.0).csv"
     file_path = os.path.join(os.path.dirname(__file__), f"data/{FILENAME}")
@@ -193,7 +204,7 @@ def main():
         print("Unknown file extension. Ending program.")
         return
 
-    design_problem = sys.argv[1]
+    # design_problem = sys.argv[1]
 
     # Final example demonstrates how to append a Series as a row
     # https://pandas.pydata.org/docs/reference/api/pandas.concat.html
@@ -217,12 +228,13 @@ def main():
     df = pd.concat([df, df_labels], axis=1)
 
     for algorithm in algorithms:
+        output.append(f"---------{algorithm}------------")
         print("---------", algorithm, "------------")
 
         cos_sim_dict, txts_dict = cosine_sim(df, df[algorithm].iloc[df.index[-1]])
         cos_sim = cos_sim_dict[algorithm]
         txts = txts_dict[algorithm]
-        display_predictions(cos_sim, txts, df)
+        display_predictions(cos_sim, txts, df, output)
 
         # Calculate the RCD
         # RCD = number of right design patterns / total suggested design patterns
@@ -236,8 +248,9 @@ def main():
             rcd = (len(txts.loc[df[algorithm] == df["correct_category"]]) - 1) / (
                 len(txts) - 1
             )
-        print("RCD = ", rcd)
+        output.append(f"RCD = {rcd}")
+        # print("RCD = ", rcd)
 
+    print(output)
 
-if __name__ == "__main__":
-    main()
+    return output
