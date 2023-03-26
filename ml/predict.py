@@ -69,8 +69,6 @@ def preprocess(corpus):
     return corpus
 
 
-# TODO: calculate cosine similarity measures for all clustering algorithms,
-#       not just k-means
 # Source: https://danielcaraway.github.io/html/sklearn_cosine_similarity.html
 def cosine_sim(df, df_col, class_no, pos_to_last):
     unigram_count = CountVectorizer(encoding="latin-1", binary=False)
@@ -109,6 +107,9 @@ def display_predictions(cos_sim, txts, df):
         print(
             "{}th pattern:  {:<20}{}%  match".format(i + 1, patternName, percentMatch)
         )
+
+
+# TODO: Recommend a pattern category in addition to patterns.
 
 
 def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
