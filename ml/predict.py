@@ -9,6 +9,7 @@ import os
 import re
 import sys
 
+import numpy as np
 import pandas as pd
 from fcmeans import FCM
 from nltk import PorterStemmer
@@ -18,6 +19,7 @@ from nltk.tokenize import word_tokenize
 from sklearn import cluster
 from sklearn.cluster import AgglomerativeClustering, BisectingKMeans
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.metrics import silhouette_score, f1_score
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn_extra.cluster import KMedoids
 
@@ -167,6 +169,63 @@ def do_weighting(method: str, series: pd.Series) -> pd.DataFrame:
     return pd.DataFrame.sparse.from_spmatrix(
         matrix, columns=vectorizer.get_feature_names_out()
     ).sparse.to_dense()
+
+
+# Functions from PatternKMeans
+
+
+def Silhouette(vector_data, cluster_labels):
+    # range_n_clusters = [2, 3, 4, 5, 6, 7, 8, 9]
+    # silhouette_avg = []
+    # for num_clusters in range_n_clusters:
+    #   # initialise kmeans
+    #   kmeans = KMeans(n_clusters=num_clusters, n_init='auto')
+    #   kmeans.fit(vector_data)
+    #   cluster_labels = kmeans.labels_
+
+    # silhouette score
+    # silhouette_avg.append(silhouette_score(vector_data, cluster_labels))
+    s_avg = silhouette_score(vector_data, cluster_labels)
+    return s_avg
+    # plt.plot(range_n_clusters,silhouette_avg,'bx-')
+
+    # plt.xlabel('Values of K')
+    # plt.ylabel('Silhouette score')
+    # plt.title('Silhouette analysis For Optimal k')
+    # plt.show()
+
+
+def getFScore(labels, df):
+    df2 = df.pivot_table(index=["correct_category"], aggfunc="size")
+
+    num_of_creational = df2[2]
+    num_of_structural = df2[1]
+    num_of_behavioral = df2[0]
+
+    true_1 = [0] * num_of_creational + [1] * num_of_structural + [2] * num_of_behavioral
+    true_2 = [0] * num_of_creational + [2] * num_of_structural + [1] * num_of_behavioral
+    true_3 = [1] * num_of_creational + [0] * num_of_structural + [2] * num_of_behavioral
+    true_4 = [1] * num_of_creational + [2] * num_of_structural + [0] * num_of_behavioral
+    true_5 = [2] * num_of_creational + [0] * num_of_structural + [1] * num_of_behavioral
+    true_6 = [2] * num_of_creational + [1] * num_of_structural + [0] * num_of_behavioral
+
+    # print('===========KMEANS===========')
+    # print('Predicted labels:')
+    # display(Kmeans_labels.tolist())
+
+    fscores = [
+        f1_score(true_1, labels.tolist(), average="micro"),
+        f1_score(true_2, labels.tolist(), average="micro"),
+        f1_score(true_3, labels.tolist(), average="micro"),
+        f1_score(true_4, labels.tolist(), average="micro"),
+        f1_score(true_5, labels.tolist(), average="micro"),
+        f1_score(true_6, labels.tolist(), average="micro"),
+    ]
+
+    km_best = np.around(max(fscores), 3)
+    # print('\nBest fscore is:', km_best, 'from true_' + str(np.argmax(fscores) + 1))
+    # display(globals()['true_' + str(np.argmax(fscores) + 1)])
+    return km_best
 
 
 def main():
