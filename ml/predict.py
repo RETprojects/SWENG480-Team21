@@ -9,6 +9,7 @@ import os
 import re
 import sys
 
+import numpy as np
 import pandas as pd
 from fcmeans import FCM
 from nltk import PorterStemmer
@@ -18,6 +19,7 @@ from nltk.tokenize import word_tokenize
 from sklearn import cluster
 from sklearn.cluster import AgglomerativeClustering, BisectingKMeans
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.metrics import silhouette_score, f1_score
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn_extra.cluster import KMedoids
 
@@ -69,8 +71,6 @@ def preprocess(corpus):
     return corpus
 
 
-# TODO: calculate cosine similarity measures for all clustering algorithms,
-#       not just k-means
 # Source: https://danielcaraway.github.io/html/sklearn_cosine_similarity.html
 def cosine_sim(df, df_col, class_no, pos_to_last):
     unigram_count = CountVectorizer(encoding="latin-1", binary=False)
@@ -109,6 +109,9 @@ def display_predictions(cos_sim, txts, df):
         print(
             "{}th pattern:  {:<20}{}%  match".format(i + 1, patternName, percentMatch)
         )
+
+
+# TODO: Recommend a pattern category in addition to patterns.
 
 
 def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
@@ -168,7 +171,109 @@ def do_weighting(method: str, series: pd.Series) -> pd.DataFrame:
     ).sparse.to_dense()
 
 
+# Functions from PatternKMeans
+
+
+def Silhouette(vector_data, cluster_labels):
+    # range_n_clusters = [2, 3, 4, 5, 6, 7, 8, 9]
+    # silhouette_avg = []
+    # for num_clusters in range_n_clusters:
+    #   # initialise kmeans
+    #   kmeans = KMeans(n_clusters=num_clusters, n_init='auto')
+    #   kmeans.fit(vector_data)
+    #   cluster_labels = kmeans.labels_
+
+    # silhouette score
+    # silhouette_avg.append(silhouette_score(vector_data, cluster_labels))
+    s_avg = silhouette_score(vector_data, cluster_labels)
+    return s_avg
+    # plt.plot(range_n_clusters,silhouette_avg,'bx-')
+
+    # plt.xlabel('Values of K')
+    # plt.ylabel('Silhouette score')
+    # plt.title('Silhouette analysis For Optimal k')
+    # plt.show()
+
+
+def getFScore(labels, df):
+    df2 = df.pivot_table(index=["correct_category"], aggfunc="size")
+
+    num_of_creational = df2[2]
+    num_of_structural = df2[1]
+    num_of_behavioral = df2[0]
+
+    true_1 = [0] * num_of_creational + [1] * num_of_structural + [2] * num_of_behavioral
+    true_2 = [0] * num_of_creational + [2] * num_of_structural + [1] * num_of_behavioral
+    true_3 = [1] * num_of_creational + [0] * num_of_structural + [2] * num_of_behavioral
+    true_4 = [1] * num_of_creational + [2] * num_of_structural + [0] * num_of_behavioral
+    true_5 = [2] * num_of_creational + [0] * num_of_structural + [1] * num_of_behavioral
+    true_6 = [2] * num_of_creational + [1] * num_of_structural + [0] * num_of_behavioral
+
+    # print('===========KMEANS===========')
+    # print('Predicted labels:')
+    # display(Kmeans_labels.tolist())
+
+    fscores = [
+        f1_score(true_1, labels.tolist(), average="micro"),
+        f1_score(true_2, labels.tolist(), average="micro"),
+        f1_score(true_3, labels.tolist(), average="micro"),
+        f1_score(true_4, labels.tolist(), average="micro"),
+        f1_score(true_5, labels.tolist(), average="micro"),
+        f1_score(true_6, labels.tolist(), average="micro"),
+    ]
+
+    km_best = np.around(max(fscores), 3)
+    # print('\nBest fscore is:', km_best, 'from true_' + str(np.argmax(fscores) + 1))
+    # display(globals()['true_' + str(np.argmax(fscores) + 1)])
+    return km_best
+
+
+# TODO: put this somewhere
+
+# kmeans_fscore_avg.append(getFScore(Kmeans_labels, df))
+# kmeans_silhouette_avg.append(Silhouette(tfidf, Kmeans_labels))
+#
+# fmeans_fscore_avg.append(getFScore(fuzzy_labels, df))
+# fmeans_silhouette_avg.append(Silhouette(tfidf, fuzzy_labels))
+#
+# hier_fscore_avg.append(getFScore(hierarchy_labels, df))
+# hier_silhouette_avg.append(Silhouette(tfidf, hierarchy_labels))
+
+# kmed_fscore_avg.append(getFScore(kmed_labels, df))
+# kmed_silhouette_avg.append(Silhouette(tfidf, kmed_labels))
+
+# kmed_man_fscore_avg.append(getFScore(kmed_man_labels, df))
+# kmed_man_silhouette_avg.append(Silhouette(tfidf, kmed_man_labels))
+
+# bi_bisect_fscore_avg.append(getFScore(bi_bisect_labels, df))
+# bi_bisect_silhouette_avg.append(Silhouette(tfidf, bi_bisect_labels))
+
+# lc_bisect_fscore_avg.append(getFScore(lc_bisect_labels, df))
+# lc_bisect_silhouette_avg.append(Silhouette(tfidf, lc_bisect_labels))
+
+
 def main():
+    kmeans_silhouette_avg = []
+    kmeans_fscore_avg = []
+
+    fmeans_silhouette_avg = []
+    fmeans_fscore_avg = []
+
+    hier_silhouette_avg = []
+    hier_fscore_avg = []
+
+    kmed_silhouette_avg = []
+    kmed_fscore_avg = []
+
+    kmed_man_silhouette_avg = []
+    kmed_man_fscore_avg = []
+
+    bi_bisect_silhouette_avg = []
+    bi_bisect_fscore_avg = []
+
+    lc_bisect_silhouette_avg = []
+    lc_bisect_fscore_avg = []
+
     # Load the data we are working with
     FILENAME = "GOF Patterns (2.0).csv"
     file_path = os.path.join(os.path.dirname(__file__), f"data/{FILENAME}")
@@ -220,7 +325,8 @@ def main():
         # This is a fraction of the suggested patterns that were in the correct cluster.
         # TODO: We probably need to account for the fact that cluster labels
         #       may not be the same every run (0 isn't always behavioral,
-        #       for example).
+        #       for example). Jonathan may have already accounted for this
+        #       with the getFScore function.
         rcd = 0
         if len(txts.loc[df[a_name] == df["correct_category"]]) > 1:
             rcd = (len(txts.loc[df[a_name] == df["correct_category"]]) - 1) / (
