@@ -228,7 +228,52 @@ def getFScore(labels, df):
     return km_best
 
 
+# TODO: put this somewhere
+
+# kmeans_fscore_avg.append(getFScore(Kmeans_labels, df))
+# kmeans_silhouette_avg.append(Silhouette(tfidf, Kmeans_labels))
+#
+# fmeans_fscore_avg.append(getFScore(fuzzy_labels, df))
+# fmeans_silhouette_avg.append(Silhouette(tfidf, fuzzy_labels))
+#
+# hier_fscore_avg.append(getFScore(hierarchy_labels, df))
+# hier_silhouette_avg.append(Silhouette(tfidf, hierarchy_labels))
+
+# kmed_fscore_avg.append(getFScore(kmed_labels, df))
+# kmed_silhouette_avg.append(Silhouette(tfidf, kmed_labels))
+
+# kmed_man_fscore_avg.append(getFScore(kmed_man_labels, df))
+# kmed_man_silhouette_avg.append(Silhouette(tfidf, kmed_man_labels))
+
+# bi_bisect_fscore_avg.append(getFScore(bi_bisect_labels, df))
+# bi_bisect_silhouette_avg.append(Silhouette(tfidf, bi_bisect_labels))
+
+# lc_bisect_fscore_avg.append(getFScore(lc_bisect_labels, df))
+# lc_bisect_silhouette_avg.append(Silhouette(tfidf, lc_bisect_labels))
+
+
 def main():
+    kmeans_silhouette_avg = []
+    kmeans_fscore_avg = []
+
+    fmeans_silhouette_avg = []
+    fmeans_fscore_avg = []
+
+    hier_silhouette_avg = []
+    hier_fscore_avg = []
+
+    kmed_silhouette_avg = []
+    kmed_fscore_avg = []
+
+    kmed_man_silhouette_avg = []
+    kmed_man_fscore_avg = []
+
+    bi_bisect_silhouette_avg = []
+    bi_bisect_fscore_avg = []
+
+    lc_bisect_silhouette_avg = []
+    lc_bisect_fscore_avg = []
+
     # Load the data we are working with
     FILENAME = "GOF Patterns (2.0).csv"
     file_path = os.path.join(os.path.dirname(__file__), f"data/{FILENAME}")
@@ -280,7 +325,8 @@ def main():
         # This is a fraction of the suggested patterns that were in the correct cluster.
         # TODO: We probably need to account for the fact that cluster labels
         #       may not be the same every run (0 isn't always behavioral,
-        #       for example).
+        #       for example). Jonathan may have already accounted for this
+        #       with the getFScore function.
         rcd = 0
         if len(txts.loc[df[a_name] == df["correct_category"]]) > 1:
             rcd = (len(txts.loc[df[a_name] == df["correct_category"]]) - 1) / (
