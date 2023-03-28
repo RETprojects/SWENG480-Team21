@@ -1,0 +1,7 @@
+django
+fuzzy-c-means
+nltk
+numpy
+pandas
+scikit-learn
+scikit-learn-extra
