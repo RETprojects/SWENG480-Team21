@@ -22,7 +22,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn_extra.cluster import KMedoids
 
 # global variables
-algos = [
+algorithms = [
     "kmeans",
     "fuzzy_cmeans",
     "agglomerative",
@@ -70,28 +70,27 @@ def preprocess(corpus):
 
 
 # Source: https://danielcaraway.github.io/html/sklearn_cosine_similarity.html
-def cosine_sim(df, df_col, class_no, pos_to_last):
-    unigram_count = CountVectorizer(encoding="latin-1", binary=False)
-    unigram_count_stop_remove = CountVectorizer(
-        encoding="latin-1", binary=False, stop_words="english"
-    )
+def cosine_sim(df: pd.DataFrame, predicted_cluster: int) -> tuple[dict, dict]:
+    unigram_count = CountVectorizer()
 
     # Loop through the clustering algorithms and calculate the cosine similarity measures based on each algorithm.
-    CosSimDict = {}
-    TxtsDict = {}
-    for algo_name in algos:
+    cos_sim_dict = {}
+    txts_dict = {}
+    for algorithm in algorithms:
         # get the list of candidate patterns
-        txts = df_col.loc[df[algo_name] == class_no]  # where label == class_no
+        txts = df["overview"].loc[
+            df[algorithm] == predicted_cluster
+        ]  # where label == predicted_cluster
         vecs = unigram_count.fit_transform(txts)
 
-        cos_sim = cosine_similarity(vecs[-pos_to_last], vecs)
+        cos_sim = cosine_similarity(vecs[-1], vecs)
 
         # add cos_sim and txts to the dictionaries with the algorithm name as the key
-        CosSimDict[algo_name] = cos_sim
-        TxtsDict[algo_name] = txts
+        cos_sim_dict[algorithm] = cos_sim
+        txts_dict[algorithm] = txts
 
     # return cos_sim, txts
-    return CosSimDict, TxtsDict
+    return cos_sim_dict, txts_dict
 
 
 # TODO: Recommend a pattern category in addition to patterns.
@@ -105,34 +104,34 @@ def cosine_sim(df, df_col, class_no, pos_to_last):
 def display_predictions(cos_sim, txts, df):
     sim_sorted_doc_idx = cos_sim.argsort()
     for i in range(len(txts) - 1):
-        patternDesc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]
-        patternName = (df["name"][(df["overview"] == patternDesc)]).to_string(
+        pattern_desc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]
+        pattern_name = (df["name"][(df["overview"] == pattern_desc)]).to_string(
             index=False
         )
         percentMatch = int(
             (cos_sim[0][sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]) * 100
         )
         print(
-            "{}th pattern:  {:<20}{}%  match".format(i + 1, patternName, percentMatch)
+            "{}th pattern:  {:<20}{}%  match".format(i + 1, pattern_name, percentMatch)
         )
 
     # Display the name of the pattern category corresponding to the most
     # recommended pattern.
-    topPatternDesc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - 2]]
-    # topPatternName = (df["name"][(df["overview"] == topPatternDesc)]).to_string(
+    top_pattern_desc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - 2]]
+    # top_pattern_name = (df["name"][(df["overview"] == top_pattern_desc)]).to_string(
     #     index=False
     # )
-    topPatternCatNum = df.loc[
-        df["overview"] == topPatternDesc, "correct_category"
+    top_pattern_cat_num = df.loc[
+        df["overview"] == top_pattern_desc, "correct_category"
     ].iloc[0]
-    topPatternCatName = ""
-    if topPatternCatNum == 0:
-        topPatternCatName = "Behavioral (GoF)"
-    elif topPatternCatNum == 1:
-        topPatternCatName = "Structural (GoF)"
+    top_pattern_cat_name = ""
+    if top_pattern_cat_num == 0:
+        top_pattern_cat_name = "Behavioral (GoF)"
+    elif top_pattern_cat_num == 1:
+        top_pattern_cat_name = "Structural (GoF)"
     else:
-        topPatternCatName = "Creational (GoF)"
-    print("Most recommended pattern: ", topPatternCatName)
+        top_pattern_cat_name = "Creational (GoF)"
+    print("Most recommended pattern: ", top_pattern_cat_name)
 
 
 def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
@@ -193,7 +192,6 @@ def do_weighting(method: str, series: pd.Series) -> pd.DataFrame:
 
 
 def main():
-
     # Load the data we are working with
     FILENAME = "GOF Patterns (2.0).csv"
     file_path = os.path.join(os.path.dirname(__file__), f"data/{FILENAME}")
@@ -230,14 +228,12 @@ def main():
     df_labels = do_cluster(do_weighting("Tfidf", corpus))
     df = pd.concat([df, df_labels], axis=1)
 
-    for a_name in algos:
-        print("---------", a_name, "------------")
+    for algorithm in algorithms:
+        print("---------", algorithm, "------------")
 
-        CosSimDict, TxtsDict = cosine_sim(
-            df, df["overview"], df[a_name].iloc[df.index[-1]], 1
-        )
-        cos_sim = CosSimDict[a_name]
-        txts = TxtsDict[a_name]
+        cos_sim_dict, txts_dict = cosine_sim(df, df[algorithm].iloc[df.index[-1]])
+        cos_sim = cos_sim_dict[algorithm]
+        txts = txts_dict[algorithm]
         display_predictions(cos_sim, txts, df)
 
         # Calculate the RCD
@@ -248,8 +244,8 @@ def main():
         #       for example). Jonathan may have already accounted for this
         #       with the getFScore function.
         rcd = 0
-        if len(txts.loc[df[a_name] == df["correct_category"]]) > 1:
-            rcd = (len(txts.loc[df[a_name] == df["correct_category"]]) - 1) / (
+        if len(txts.loc[df[algorithm] == df["correct_category"]]) > 1:
+            rcd = (len(txts.loc[df[algorithm] == df["correct_category"]]) - 1) / (
                 len(txts) - 1
             )
         print("RCD = ", rcd)
