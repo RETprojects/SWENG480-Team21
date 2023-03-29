@@ -55,11 +55,11 @@ def preprocess(corpus):
                 if (
                     word not in stop_words
                     and (
-                        pos_tag(word_tokenize(word), tagset="universal")[0][1] == "VERB"
-                        or pos_tag(word_tokenize(word), tagset="universal")[0][1]
-                        == "ADJ"
+                            pos_tag(word_tokenize(word), tagset="universal")[0][1] == "VERB"
+                            or pos_tag(word_tokenize(word), tagset="universal")[0][1]
+                            == "ADJ"
                     )
-                )
+            )
             ]
         ).strip()
 
@@ -96,7 +96,7 @@ def cosine_sim(df, df_col, class_no, pos_to_last):
     return CosSimDict, TxtsDict
 
 
-def display_predictions(cos_sim, txts, df):
+def display_predictions(cos_sim, txts, df, output):
     sim_sorted_doc_idx = cos_sim.argsort()
     for i in range(len(txts) - 1):
         patternDesc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]
@@ -106,9 +106,10 @@ def display_predictions(cos_sim, txts, df):
         percentMatch = int(
             (cos_sim[0][sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]) * 100
         )
-        print(
+        output.append(
             "{}th pattern:  {:<20}{}%  match".format(i + 1, patternName, percentMatch)
         )
+    return output
 
 
 def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
@@ -168,7 +169,8 @@ def do_weighting(method: str, series: pd.Series) -> pd.DataFrame:
     ).sparse.to_dense()
 
 
-def main():
+def main(design_problem):
+    output = []
     # Load the data we are working with
     FILENAME = "GOF Patterns (2.0).csv"
     file_path = os.path.join(os.path.dirname(__file__), f"data/{FILENAME}")
@@ -181,7 +183,7 @@ def main():
         print("Unknown file extension. Ending program.")
         return
 
-    design_problem = sys.argv[1]
+    # design_problem = sys.argv[1]
 
     # Final example demonstrates how to append a Series as a row
     # https://pandas.pydata.org/docs/reference/api/pandas.concat.html
@@ -205,15 +207,19 @@ def main():
     df_labels = do_cluster(do_weighting("Tfidf", corpus))
     df = pd.concat([df, df_labels], axis=1)
 
+    print(algos)
     for a_name in algos:
-        print("---------", a_name, "------------")
+        print("Hello")
+        # print("---------", a_name, "------------")
+        output.append(f"---------{a_name}------------")
 
         CosSimDict, TxtsDict = cosine_sim(
             df, df["overview"], df[a_name].iloc[df.index[-1]], 1
         )
         cos_sim = CosSimDict[a_name]
         txts = TxtsDict[a_name]
-        display_predictions(cos_sim, txts, df)
+
+        output = display_predictions(cos_sim, txts, df, output)
 
         # Calculate the RCD
         # RCD = number of right design patterns / total suggested design patterns
@@ -224,10 +230,13 @@ def main():
         rcd = 0
         if len(txts.loc[df[a_name] == df["correct_category"]]) > 1:
             rcd = (len(txts.loc[df[a_name] == df["correct_category"]]) - 1) / (
-                len(txts) - 1
+                    len(txts) - 1
             )
-        print("RCD = ", rcd)
+        output.append(f"RCD = {rcd}")
+        # print("RCD = ", rcd)
+
+    print(output)
+
+    return output
 
 
-if __name__ == "__main__":
-    main()
