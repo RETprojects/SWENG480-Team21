@@ -1,14 +1,11 @@
-"""
-Command line usage: `python predict.py "Insert design problem here."`
-
-Missing some NLTK data? Make sure you download 'punkt' and 'stopwords'.
-`python -m nltk.downloader punkt stopwords`
-"""
+# Command line usage: `python predict.py "Insert design problem here."`
 
 import os
 import re
 import sys
 
+import nltk
+import numpy as np
 import pandas as pd
 from fcmeans import FCM
 from nltk import PorterStemmer
@@ -20,6 +17,11 @@ from sklearn.cluster import AgglomerativeClustering, BisectingKMeans
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn_extra.cluster import KMedoids
+
+try:
+    nltk.find("corpora/stopwords")
+except LookupError:
+    nltk.download("stopwords")
 
 # global variables
 algorithms = [
@@ -33,7 +35,7 @@ algorithms = [
 ]
 
 
-def preprocess(corpus):
+def preprocess(corpus: list) -> list:
     # We use a set for better lookup performance
     stop_words = set(stopwords.words("english"))
 
@@ -101,7 +103,7 @@ def cosine_sim(df: pd.DataFrame, predicted_cluster: int) -> tuple[dict, dict]:
 # clearly established categories for each design pattern involved.
 
 
-def display_predictions(cos_sim, txts, df):
+def display_predictions(cos_sim: np.ndarray, txts: pd.Series, df: pd.DataFrame) -> None:
     sim_sorted_doc_idx = cos_sim.argsort()
     for i in range(len(txts) - 1):
         pattern_desc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]
