@@ -9,7 +9,6 @@ import os
 import re
 import sys
 
-import numpy as np
 import pandas as pd
 from fcmeans import FCM
 from nltk import PorterStemmer
@@ -19,7 +18,6 @@ from nltk.tokenize import word_tokenize
 from sklearn import cluster
 from sklearn.cluster import AgglomerativeClustering, BisectingKMeans
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from sklearn.metrics import silhouette_score, f1_score
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn_extra.cluster import KMedoids
 
@@ -96,6 +94,14 @@ def cosine_sim(df, df_col, class_no, pos_to_last):
     return CosSimDict, TxtsDict
 
 
+# TODO: Recommend a pattern category in addition to patterns.
+# Idea: if we find that a majority of the candidate patterns or the most
+# recommended patterns for a problem belong to a category according to the
+# correct_category label, then we can recommend that overall category for the
+# design problem. Try Hussain et al. 2017 section 7.1, Pseudocode-2, but with
+# clearly established categories for each design pattern involved.
+
+
 def display_predictions(cos_sim, txts, df):
     sim_sorted_doc_idx = cos_sim.argsort()
     for i in range(len(txts) - 1):
@@ -110,8 +116,23 @@ def display_predictions(cos_sim, txts, df):
             "{}th pattern:  {:<20}{}%  match".format(i + 1, patternName, percentMatch)
         )
 
-
-# TODO: Recommend a pattern category in addition to patterns.
+    # Display the name of the pattern category corresponding to the most
+    # recommended pattern.
+    topPatternDesc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - 2]]
+    # topPatternName = (df["name"][(df["overview"] == topPatternDesc)]).to_string(
+    #     index=False
+    # )
+    topPatternCatNum = df.loc[
+        df["overview"] == topPatternDesc, "correct_category"
+    ].iloc[0]
+    topPatternCatName = ""
+    if topPatternCatNum == 0:
+        topPatternCatName = "Behavioral (GoF)"
+    elif topPatternCatNum == 1:
+        topPatternCatName = "Structural (GoF)"
+    else:
+        topPatternCatName = "Creational (GoF)"
+    print("Most recommended pattern: ", topPatternCatName)
 
 
 def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
