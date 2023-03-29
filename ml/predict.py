@@ -23,6 +23,8 @@ try:
 except LookupError:
     nltk.download("stopwords")
 
+stop_words = set(stopwords.words("english"))
+
 # global variables
 algorithms = [
     "kmeans",
@@ -34,41 +36,28 @@ algorithms = [
     "pam_manhattan",
 ]
 
+stemmer = PorterStemmer()
 
-def preprocess(corpus: list) -> list:
-    # We use a set for better lookup performance
-    stop_words = set(stopwords.words("english"))
 
-    stemmer = PorterStemmer()
-
-    for index, document in enumerate(corpus):
-        # Lowercase the string
-        document = document.lower()
-
-        # Replace all non-alphabetical characters with whitespace, then compress duplicate whitespace
-        document = re.sub("[^A-Za-z]", " ", document)
-        document = re.sub("\s{2,}", " ", document)
-
-        # Remove stop words, stem, and remove leading and trailing whitespace
-        document = " ".join(
+def preprocess(series: pd.Series) -> pd.Series:
+    # Lowercase
+    series = series.str.lower()
+    # Remove all non-alphabetical characters
+    series = series.str.replace("[^A-Za-z]", repl=" ", regex=True)
+    # Stem, remove stop words, and remove all parts of speech (POS) except verbs and adjectives
+    series = series.map(
+        lambda x: " ".join(
             [
                 stemmer.stem(word)
-                for word in document.split()
-                if (
-                    word not in stop_words
-                    and (
-                        pos_tag(word_tokenize(word), tagset="universal")[0][1] == "VERB"
-                        or pos_tag(word_tokenize(word), tagset="universal")[0][1]
-                        == "ADJ"
-                    )
-                )
+                for word, pos in pos_tag(x.split(), tagset="universal")
+                if word not in stop_words and (pos == "VERB" or pos == "ADJ")
             ]
-        ).strip()
+        )
+    )
+    # Remove leading and trailing space
+    series = series.str.strip()
 
-        # Replace the original string
-        corpus[index] = document
-
-    return corpus
+    return series
 
 
 # Source: https://danielcaraway.github.io/html/sklearn_cosine_similarity.html
@@ -223,8 +212,7 @@ def main():
     )
     df = pd.concat([df, new_row], ignore_index=True)
 
-    corpus = df["overview"].tolist()
-    corpus = preprocess(corpus)
+    corpus = preprocess(df["overview"]).tolist()
 
     # Add the predicted labels to the DataFrame (concat horizontally)
     df_labels = do_cluster(do_weighting("Tfidf", corpus))
