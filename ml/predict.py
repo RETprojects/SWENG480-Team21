@@ -94,6 +94,14 @@ def cosine_sim(df, df_col, class_no, pos_to_last):
     return CosSimDict, TxtsDict
 
 
+# TODO: Recommend a pattern category in addition to patterns.
+# Idea: if we find that a majority of the candidate patterns or the most
+# recommended patterns for a problem belong to a category according to the
+# correct_category label, then we can recommend that overall category for the
+# design problem. Try Hussain et al. 2017 section 7.1, Pseudocode-2, but with
+# clearly established categories for each design pattern involved.
+
+
 def display_predictions(cos_sim, txts, df):
     sim_sorted_doc_idx = cos_sim.argsort()
     for i in range(len(txts) - 1):
@@ -125,14 +133,6 @@ def display_predictions(cos_sim, txts, df):
     else:
         topPatternCatName = "Creational (GoF)"
     print("Most recommended pattern: ", topPatternCatName)
-
-
-# TODO: Recommend a pattern category in addition to patterns.
-# Idea: if we find that a majority of the candidate patterns or the most
-# recommended patterns for a problem belong to a category according to the
-# correct_category label, then we can recommend that overall category for the
-# design problem. Try Hussain et al. 2017 section 7.1, Pseudocode-2, but with
-# clearly established categories for each design pattern involved.
 
 
 def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
