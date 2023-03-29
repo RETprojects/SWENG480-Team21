@@ -1,7 +1,6 @@
 # Command line usage: `python predict.py "Insert design problem here."`
 
 import os
-import re
 import sys
 
 import nltk
@@ -11,7 +10,6 @@ from fcmeans import FCM
 from nltk import PorterStemmer
 from nltk.corpus import stopwords
 from nltk.tag import pos_tag
-from nltk.tokenize import word_tokenize
 from sklearn import cluster
 from sklearn.cluster import AgglomerativeClustering, BisectingKMeans
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
