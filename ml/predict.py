@@ -46,10 +46,13 @@ algorithms_pretty = [
 
 stemmer = PorterStemmer()
 
+# This is for the Django web app. This can definitely be improved.
+output = []
 
-def do_output(text: str, output: list) -> None:
-    print(text)
+
+def do_output(text: str = "") -> None:
     output.append(text)
+    print(text)
 
 
 # Modified from https://stackoverflow.com/a/20007730
@@ -112,10 +115,7 @@ def cosine_sim(df: pd.DataFrame, predicted_cluster: int) -> tuple[dict, dict]:
 # clearly established categories for each design pattern involved.
 
 
-# We should handle the output (web app integration) better.
-def display_predictions(
-    cos_sim: np.ndarray, txts: pd.Series, df: pd.DataFrame, output: list
-) -> list:
+def display_predictions(cos_sim: np.ndarray, txts: pd.Series, df: pd.DataFrame) -> None:
     sim_sorted_doc_idx = cos_sim.argsort()
     max_len = df.name.str.len().max()
     # The user shouldn't need to see more than 9 patterns, so we ignore the rest.
@@ -132,9 +132,8 @@ def display_predictions(
         )
         do_output(
             f"{to_ordinal(i + 1)} pattern: {pattern_name_pretty.ljust(max_len)} {percent_match}% match",
-            output,
         )
-    do_output("", output)
+    do_output()
 
     # Display the name of the pattern category corresponding to the most
     # recommended pattern.
@@ -155,8 +154,6 @@ def display_predictions(
 
     # output.append(f"Most recommended pattern: {top_pattern_cat_name}")
     # print("Most recommended pattern: ", top_pattern_cat_name)
-
-    return output
 
 
 def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
@@ -221,7 +218,6 @@ def main(design_problem: str = ""):
     if not design_problem:
         design_problem = sys.argv[1]
 
-    output = []
     # Load the data we are working with
     FILENAME = "GOF Patterns (2.0).csv"
     file_path = os.path.join(os.path.dirname(__file__), f"data/{FILENAME}")
@@ -254,15 +250,15 @@ def main(design_problem: str = ""):
     df = pd.concat([df, df_labels], axis=1)
 
     max_len = len(max(algorithms_pretty, key=len))
-    do_output("", output)
+    do_output()
     for i, algorithm in enumerate(algorithms):
-        do_output(f"{algorithms_pretty[i]}", output)
-        do_output("-" * max_len, output)
+        do_output(f"{algorithms_pretty[i]}")
+        do_output("-" * max_len)
 
         cos_sim_dict, txts_dict = cosine_sim(df, df[algorithm].iloc[df.index[-1]])
         cos_sim = cos_sim_dict[algorithm]
         txts = txts_dict[algorithm]
-        display_predictions(cos_sim, txts, df, output)
+        display_predictions(cos_sim, txts, df)
 
         # Calculate the RCD
         # RCD = number of right design patterns / total suggested design patterns
