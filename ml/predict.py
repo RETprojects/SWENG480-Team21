@@ -37,6 +37,18 @@ algorithms = [
 stemmer = PorterStemmer()
 
 
+def do_output(text: str, output: list) -> None:
+    print(text)
+    output.append(text)
+
+
+# Modified from https://stackoverflow.com/a/20007730
+def to_ordinal(n: int) -> str:
+    if n < 1 or n > 9:
+        raise ValueError
+    return str(n) + ["st", "nd", "rd", "th"][min(n - 1, 3)]
+
+
 def preprocess(series: pd.Series) -> pd.Series:
     # Lowercase
     series = series.str.lower()
@@ -95,40 +107,43 @@ def display_predictions(
     cos_sim: np.ndarray, txts: pd.Series, df: pd.DataFrame, output: list
 ) -> list:
     sim_sorted_doc_idx = cos_sim.argsort()
-    for i in range(len(txts) - 1):
+    max_len = df.name.str.len().max()
+    # The user shouldn't need to see more than 9 patterns, so we ignore the rest.
+    for i in range(min(9, len(txts) - 1)):
         pattern_desc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]
-        pattern_name = (df["name"][(df["overview"] == pattern_desc)]).to_string(
-            index=False
+        pattern_name = (
+            (df["name"][(df["overview"] == pattern_desc)])
+            .to_string(index=False)
+            .replace("_", " ")
+            .capitalize()
         )
-        percentMatch = int(
-            (cos_sim[0][sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]) * 100
+        percent_match = round(
+            int((cos_sim[0][sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]) * 100)
         )
-        output.append(
-            "{}th pattern:  {:<20}{}%  match".format(i + 1, pattern_name, percentMatch)
-        )
-        print(
-            "{}th pattern:  {:<20}{}%  match".format(i + 1, pattern_name, percentMatch)
+        do_output(
+            f"{to_ordinal(i + 1)} pattern: {pattern_name.ljust(max_len)} {percent_match}% match",
+            output,
         )
 
     # Display the name of the pattern category corresponding to the most
     # recommended pattern.
-    top_pattern_desc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - 2]]
+    # top_pattern_desc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - 2]]
     # top_pattern_name = (df["name"][(df["overview"] == top_pattern_desc)]).to_string(
     #     index=False
     # )
-    top_pattern_cat_num = df.loc[
-        df["overview"] == top_pattern_desc, "correct_category"
-    ].iloc[0]
-    top_pattern_cat_name = ""
-    if top_pattern_cat_num == 0:
-        top_pattern_cat_name = "Behavioral (GoF)"
-    elif top_pattern_cat_num == 1:
-        top_pattern_cat_name = "Structural (GoF)"
-    else:
-        top_pattern_cat_name = "Creational (GoF)"
+    # top_pattern_cat_num = df.loc[
+    #     df["overview"] == top_pattern_desc, "correct_category"
+    # ].iloc[0]
+    # top_pattern_cat_name = ""
+    # if top_pattern_cat_num == 0:
+    #     top_pattern_cat_name = "Behavioral (GoF)"
+    # elif top_pattern_cat_num == 1:
+    #     top_pattern_cat_name = "Structural (GoF)"
+    # else:
+    #     top_pattern_cat_name = "Creational (GoF)"
 
-    output.append(f"Most recommended pattern: {top_pattern_cat_name}")
-    print("Most recommended pattern: ", top_pattern_cat_name)
+    # output.append(f"Most recommended pattern: {top_pattern_cat_name}")
+    # print("Most recommended pattern: ", top_pattern_cat_name)
 
     return output
 
@@ -210,28 +225,25 @@ def main(design_problem: str = ""):
 
     # Final example demonstrates how to append a Series as a row
     # https://pandas.pydata.org/docs/reference/api/pandas.concat.html
-    new_row = (
-        pd.Series(
-            {
-                "name": "design problem",
-                "correct_category": 4,
-                "overview": design_problem,
-            }
-        )
-        .to_frame()
-        .T
+    new_row = pd.Series(
+        {
+            "name": "design_problem",
+            "overview": design_problem,
+        }
     )
-    df = pd.concat([df, new_row], ignore_index=True)
+    df = pd.concat([df, new_row.to_frame().T], ignore_index=True)
 
-    corpus = preprocess(df["overview"]).tolist()
-
-    # Add the predicted labels to the DataFrame (concat horizontally)
-    df_labels = do_cluster(do_weighting("Tfidf", corpus))
+    # Preprocess
+    cleaned_text = preprocess(df["overview"])
+    # Create a dense tfidf matrix
+    tfidf_matrix = do_weighting("Tfidf", cleaned_text)
+    # Perform clustering
+    df_labels = do_cluster(tfidf_matrix)
+    # Append (horizontally) the cluster labels to the original DF
     df = pd.concat([df, df_labels], axis=1)
 
     for algorithm in algorithms:
-        output.append(f"---------{algorithm}------------")
-        print("---------", algorithm, "------------")
+        do_output(f"---------{algorithm}------------", output)
 
         cos_sim_dict, txts_dict = cosine_sim(df, df[algorithm].iloc[df.index[-1]])
         cos_sim = cos_sim_dict[algorithm]
@@ -245,12 +257,12 @@ def main(design_problem: str = ""):
         #       may not be the same every run (0 isn't always behavioral,
         #       for example). Jonathan may have already accounted for this
         #       with the getFScore function.
-        rcd = 0
-        if len(txts.loc[df[algorithm] == df["correct_category"]]) > 1:
-            rcd = (len(txts.loc[df[algorithm] == df["correct_category"]]) - 1) / (
-                len(txts) - 1
-            )
-        output.append(f"RCD = {rcd}")
+        # rcd = 0
+        # if len(txts.loc[df[algorithm] == df["correct_category"]]) > 1:
+        #     rcd = (len(txts.loc[df[algorithm] == df["correct_category"]]) - 1) / (
+        #         len(txts) - 1
+        #     )
+        # output.append(f"RCD = {rcd}")
         # print("RCD = ", rcd)
 
     return output
