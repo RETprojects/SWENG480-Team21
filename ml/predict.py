@@ -190,7 +190,11 @@ def do_weighting(method: str, series: pd.Series) -> pd.DataFrame:
     ).sparse.to_dense()
 
 
-def main(design_problem):
+def main(design_problem: str = ""):
+    # Handle command line execution
+    if not design_problem:
+        design_problem = sys.argv[1]
+
     output = []
     # Load the data we are working with
     FILENAME = "GOF Patterns (2.0).csv"
@@ -203,8 +207,6 @@ def main(design_problem):
     else:
         print("Unknown file extension. Ending program.")
         return
-
-    # design_problem = sys.argv[1]
 
     # Final example demonstrates how to append a Series as a row
     # https://pandas.pydata.org/docs/reference/api/pandas.concat.html
@@ -251,6 +253,8 @@ def main(design_problem):
         output.append(f"RCD = {rcd}")
         # print("RCD = ", rcd)
 
-    print(output)
-
     return output
+
+
+if __name__ == "__main__":
+    main()
