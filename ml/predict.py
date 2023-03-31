@@ -34,6 +34,16 @@ algorithms = [
     "pam_manhattan",
 ]
 
+algorithms_pretty = [
+    "K-means",
+    "Fuzzy c-means",
+    "Agglomerative",
+    "Bisecting k-means (biggest inertia strategy)",
+    "Bisecting k-means (largest cluster strategy)",
+    "K-medoids/PAM (Euclidean distance)",
+    "K-medoids/PAM (Manhattan distance)",
+]
+
 stemmer = PorterStemmer()
 
 
@@ -111,19 +121,20 @@ def display_predictions(
     # The user shouldn't need to see more than 9 patterns, so we ignore the rest.
     for i in range(min(9, len(txts) - 1)):
         pattern_desc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]
-        pattern_name = (
-            (df["name"][(df["overview"] == pattern_desc)])
-            .to_string(index=False)
-            .replace("_", " ")
-            .capitalize()
+        pattern_name = (df["name"][(df["overview"] == pattern_desc)]).to_string(
+            index=False
+        )
+        pattern_name_pretty = " ".join(
+            [x.capitalize() if x != "of" else x for x in pattern_name.split("_")]
         )
         percent_match = round(
             int((cos_sim[0][sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]) * 100)
         )
         do_output(
-            f"{to_ordinal(i + 1)} pattern: {pattern_name.ljust(max_len)} {percent_match}% match",
+            f"{to_ordinal(i + 1)} pattern: {pattern_name_pretty.ljust(max_len)} {percent_match}% match",
             output,
         )
+    do_output("", output)
 
     # Display the name of the pattern category corresponding to the most
     # recommended pattern.
@@ -242,8 +253,11 @@ def main(design_problem: str = ""):
     # Append (horizontally) the cluster labels to the original DF
     df = pd.concat([df, df_labels], axis=1)
 
-    for algorithm in algorithms:
-        do_output(f"---------{algorithm}------------", output)
+    max_len = len(max(algorithms_pretty, key=len))
+    do_output("", output)
+    for i, algorithm in enumerate(algorithms):
+        do_output(f"{algorithms_pretty[i]}", output)
+        do_output("-" * max_len, output)
 
         cos_sim_dict, txts_dict = cosine_sim(df, df[algorithm].iloc[df.index[-1]])
         cos_sim = cos_sim_dict[algorithm]
