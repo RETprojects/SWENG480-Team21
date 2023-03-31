@@ -177,7 +177,7 @@ def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
 
     # Fuzzy c-means
     final_df_np = df_weighted.to_numpy()
-    fcm = FCM(n_clusters=3)
+    fcm = FCM(n_clusters=3, random_state=9)
     fcm.fit(final_df_np)
     df["fuzzy_cmeans"] = fcm.predict(final_df_np)
 
