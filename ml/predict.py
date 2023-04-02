@@ -132,7 +132,22 @@ def display_predictions(cos_sim, txts, df):
         topPatternCatName = "Structural (GoF)"
     else:
         topPatternCatName = "Creational (GoF)"
-    print("Most recommended pattern: ", topPatternCatName)
+    print("Category of most recommended pattern: ", topPatternCatName)
+    # also determine the category of the majority of the candidate patterns
+    # if there is no majority, it's the category of the top recommendation
+    majPatternCatName = ""
+    numBehavioral = 0
+    numStructural = 0
+    numCreational = 0
+    if numBehavioral > (len(txts) / 2):
+        majPatternCatName == "Behavioral (GoF)"
+    elif numStructural > (len(txts) / 2):
+        majPatternCatName == "Structural (GoF)"
+    elif numCreational > (len(txts) / 2):
+        majPatternCatName == "Creational (GoF)"
+    else:
+        majPatternCatName = topPatternCatName
+    print("Mode category: ", majPatternCatName)
 
 
 def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
