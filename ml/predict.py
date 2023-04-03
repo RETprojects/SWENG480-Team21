@@ -1,28 +1,30 @@
-"""
-Command line usage: `python predict.py "Insert design problem here."`
-
-Missing some NLTK data? Make sure you download 'punkt' and 'stopwords'.
-`python -m nltk.downloader punkt stopwords`
-"""
+# Command line usage: `python predict.py "Insert design problem here."`
 
 import os
-import re
 import sys
 
+import nltk
+import numpy as np
 import pandas as pd
 from fcmeans import FCM
 from nltk import PorterStemmer
 from nltk.corpus import stopwords
 from nltk.tag import pos_tag
-from nltk.tokenize import word_tokenize
 from sklearn import cluster
 from sklearn.cluster import AgglomerativeClustering, BisectingKMeans
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn_extra.cluster import KMedoids
 
+try:
+    nltk.find("corpora/stopwords")
+except LookupError:
+    nltk.download("stopwords")
+
+stop_words = set(stopwords.words("english"))
+
 # global variables
-algos = [
+algorithms = [
     "kmeans",
     "fuzzy_cmeans",
     "agglomerative",
@@ -32,66 +34,77 @@ algos = [
     "pam_manhattan",
 ]
 
+algorithms_pretty = [
+    "K-means",
+    "Fuzzy c-means",
+    "Agglomerative",
+    "Bisecting k-means (biggest inertia strategy)",
+    "Bisecting k-means (largest cluster strategy)",
+    "K-medoids/PAM (Euclidean distance)",
+    "K-medoids/PAM (Manhattan distance)",
+]
 
-def preprocess(corpus):
-    # We use a set for better lookup performance
-    stop_words = set(stopwords.words("english"))
+stemmer = PorterStemmer()
 
-    stemmer = PorterStemmer()
+# This is for the Django web app. This can definitely be improved.
+output = []
 
-    for index, document in enumerate(corpus):
-        # Lowercase the string
-        document = document.lower()
 
-        # Replace all non-alphabetical characters with whitespace, then compress duplicate whitespace
-        document = re.sub("[^A-Za-z]", " ", document)
-        document = re.sub("\s{2,}", " ", document)
+def do_output(text: str = "") -> None:
+    output.append(text)
+    print(text)
 
-        # Remove stop words, stem, and remove leading and trailing whitespace
-        document = " ".join(
+
+# Modified from https://stackoverflow.com/a/20007730
+def to_ordinal(n: int) -> str:
+    if n < 1 or n > 9:
+        raise ValueError
+    return str(n) + ["st", "nd", "rd", "th"][min(n - 1, 3)]
+
+
+def preprocess(series: pd.Series) -> pd.Series:
+    # Lowercase
+    series = series.str.lower()
+    # Remove all non-alphabetical characters
+    series = series.str.replace("[^A-Za-z]", repl=" ", regex=True)
+    # Stem, remove stop words, and remove all parts of speech (POS) except verbs and adjectives
+    series = series.map(
+        lambda x: " ".join(
             [
                 stemmer.stem(word)
-                for word in document.split()
-                if (
-                    word not in stop_words
-                    and (
-                        pos_tag(word_tokenize(word), tagset="universal")[0][1] == "VERB"
-                        or pos_tag(word_tokenize(word), tagset="universal")[0][1]
-                        == "ADJ"
-                    )
-                )
+                for word, pos in pos_tag(x.split(), tagset="universal")
+                if word not in stop_words and (pos == "VERB" or pos == "ADJ")
             ]
-        ).strip()
+        )
+    )
+    # Remove leading and trailing space
+    series = series.str.strip()
 
-        # Replace the original string
-        corpus[index] = document
-
-    return corpus
+    return series
 
 
 # Source: https://danielcaraway.github.io/html/sklearn_cosine_similarity.html
-def cosine_sim(df, df_col, class_no, pos_to_last):
-    unigram_count = CountVectorizer(encoding="latin-1", binary=False)
-    unigram_count_stop_remove = CountVectorizer(
-        encoding="latin-1", binary=False, stop_words="english"
-    )
+def cosine_sim(df: pd.DataFrame, predicted_cluster: int) -> tuple[dict, dict]:
+    unigram_count = CountVectorizer()
 
     # Loop through the clustering algorithms and calculate the cosine similarity measures based on each algorithm.
-    CosSimDict = {}
-    TxtsDict = {}
-    for algo_name in algos:
+    cos_sim_dict = {}
+    txts_dict = {}
+    for algorithm in algorithms:
         # get the list of candidate patterns
-        txts = df_col.loc[df[algo_name] == class_no]  # where label == class_no
+        txts = df["overview"].loc[
+            df[algorithm] == predicted_cluster
+        ]  # where label == predicted_cluster
         vecs = unigram_count.fit_transform(txts)
 
-        cos_sim = cosine_similarity(vecs[-pos_to_last], vecs)
+        cos_sim = cosine_similarity(vecs[-1], vecs)
 
         # add cos_sim and txts to the dictionaries with the algorithm name as the key
-        CosSimDict[algo_name] = cos_sim
-        TxtsDict[algo_name] = txts
+        cos_sim_dict[algorithm] = cos_sim
+        txts_dict[algorithm] = txts
 
     # return cos_sim, txts
-    return CosSimDict, TxtsDict
+    return cos_sim_dict, txts_dict
 
 
 # TODO: Recommend a pattern category in addition to patterns.
@@ -102,24 +115,30 @@ def cosine_sim(df, df_col, class_no, pos_to_last):
 # clearly established categories for each design pattern involved.
 
 
-def display_predictions(cos_sim, txts, df):
+def display_predictions(cos_sim: np.ndarray, txts: pd.Series, df: pd.DataFrame) -> None:
     sim_sorted_doc_idx = cos_sim.argsort()
-    for i in range(len(txts) - 1):
-        patternDesc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]
-        patternName = (df["name"][(df["overview"] == patternDesc)]).to_string(
+    max_len = df.name.str.len().max()
+    # The user shouldn't need to see more than 9 patterns, so we ignore the rest.
+    for i in range(min(9, len(txts) - 1)):
+        pattern_desc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]
+        pattern_name = (df["name"][(df["overview"] == pattern_desc)]).to_string(
             index=False
         )
-        percentMatch = int(
-            (cos_sim[0][sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]) * 100
+        pattern_name_pretty = " ".join(
+            [x.capitalize() if x != "of" else x for x in pattern_name.split("_")]
         )
-        print(
-            "{}th pattern:  {:<20}{}%  match".format(i + 1, patternName, percentMatch)
+        percent_match = round(
+            int((cos_sim[0][sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]) * 100)
         )
+        do_output(
+            f"{to_ordinal(i + 1)} pattern: {pattern_name_pretty.ljust(max_len)} {percent_match}% match",
+        )
+    do_output()
 
     # Display the name of the pattern category corresponding to the most
     # recommended pattern.
-    topPatternDesc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - 2]]
-    # topPatternName = (df["name"][(df["overview"] == topPatternDesc)]).to_string(
+    # top_pattern_desc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - 2]]
+    # top_pattern_name = (df["name"][(df["overview"] == top_pattern_desc)]).to_string(
     #     index=False
     # )
     topPatternCatNum = df.loc[
@@ -177,7 +196,7 @@ def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
 
     # Fuzzy c-means
     final_df_np = df_weighted.to_numpy()
-    fcm = FCM(n_clusters=3)
+    fcm = FCM(n_clusters=3, random_state=9)
     fcm.fit(final_df_np)
     df["fuzzy_cmeans"] = fcm.predict(final_df_np)
 
@@ -216,7 +235,10 @@ def do_weighting(method: str, series: pd.Series) -> pd.DataFrame:
     ).sparse.to_dense()
 
 
-def main():
+def main(design_problem: str = ""):
+    # Handle command line execution
+    if not design_problem:
+        design_problem = sys.argv[1]
 
     # Load the data we are working with
     FILENAME = "GOF Patterns (2.0).csv"
@@ -230,38 +252,34 @@ def main():
         print("Unknown file extension. Ending program.")
         return
 
-    design_problem = sys.argv[1]
-
     # Final example demonstrates how to append a Series as a row
     # https://pandas.pydata.org/docs/reference/api/pandas.concat.html
-    new_row = (
-        pd.Series(
-            {
-                "name": "design problem",
-                "correct_category": 4,
-                "overview": design_problem,
-            }
-        )
-        .to_frame()
-        .T
+    new_row = pd.Series(
+        {
+            "name": "design_problem",
+            "overview": design_problem,
+        }
     )
-    df = pd.concat([df, new_row], ignore_index=True)
+    df = pd.concat([df, new_row.to_frame().T], ignore_index=True)
 
-    corpus = df["overview"].tolist()
-    corpus = preprocess(corpus)
-
-    # Add the predicted labels to the DataFrame (concat horizontally)
-    df_labels = do_cluster(do_weighting("Tfidf", corpus))
+    # Preprocess
+    cleaned_text = preprocess(df["overview"])
+    # Create a dense tfidf matrix
+    tfidf_matrix = do_weighting("Tfidf", cleaned_text)
+    # Perform clustering
+    df_labels = do_cluster(tfidf_matrix)
+    # Append (horizontally) the cluster labels to the original DF
     df = pd.concat([df, df_labels], axis=1)
 
-    for a_name in algos:
-        print("---------", a_name, "------------")
+    max_len = len(max(algorithms_pretty, key=len))
+    do_output()
+    for i, algorithm in enumerate(algorithms):
+        do_output(f"{algorithms_pretty[i]}")
+        do_output("-" * max_len)
 
-        CosSimDict, TxtsDict = cosine_sim(
-            df, df["overview"], df[a_name].iloc[df.index[-1]], 1
-        )
-        cos_sim = CosSimDict[a_name]
-        txts = TxtsDict[a_name]
+        cos_sim_dict, txts_dict = cosine_sim(df, df[algorithm].iloc[df.index[-1]])
+        cos_sim = cos_sim_dict[algorithm]
+        txts = txts_dict[algorithm]
         display_predictions(cos_sim, txts, df)
 
         # Calculate the RCD
@@ -271,12 +289,15 @@ def main():
         #       may not be the same every run (0 isn't always behavioral,
         #       for example). Jonathan may have already accounted for this
         #       with the getFScore function.
-        rcd = 0
-        if len(txts.loc[df[a_name] == df["correct_category"]]) > 1:
-            rcd = (len(txts.loc[df[a_name] == df["correct_category"]]) - 1) / (
-                len(txts) - 1
-            )
-        print("RCD = ", rcd)
+        # rcd = 0
+        # if len(txts.loc[df[algorithm] == df["correct_category"]]) > 1:
+        #     rcd = (len(txts.loc[df[algorithm] == df["correct_category"]]) - 1) / (
+        #         len(txts) - 1
+        #     )
+        # output.append(f"RCD = {rcd}")
+        # print("RCD = ", rcd)
+
+    return output
 
 
 if __name__ == "__main__":

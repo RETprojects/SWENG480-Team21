@@ -12,9 +12,15 @@ class InvalidInputException(BaseException):
 
 
 def run(arg1, arg2):
-    os.chdir('C:\\Users\\Benjamin\\PycharmProjects\\SWENG480-Team21\\crawler\\tutorial\\tutorial\\spiders')
-    os.system('scrapy crawl auto -a start_urls=https://www.crummy.com/software/BeautifulSoup/bs4/doc/ -a range="which have been removed.:+_:that no longer exists.:+_:Beautiful Soup will never be as fast as the parsers:+_:searching the document much faster."')
-
+    os.chdir(os.path.dirname(__file__))
+    print('scrapy crawl auto -a start_urls=' + arg1 + ' -a range=' + arg2)
+    print(type(arg2))
+    if arg2 == "":
+        os.system('scrapy crawl auto -a start_urls=' + arg1)
+    else:
+        os.system('scrapy crawl auto -a start_urls=' + arg1 + ' -a range="' + arg2 + '"')
+    # os.system('scrapy crawl auto -a start_urls=https://www.crummy.com/software/BeautifulSoup/bs4/doc/ -a range="which have been removed.:+_:that no longer exists.:+_:Beautiful Soup will never be as fast as the parsers:+_:searching the document much faster."')
+    # os.system('scrapy crawl auto -a start_urls=' + arg1 + ' -a range=' + arg2)
 
 class AutoSpider(scrapy.Spider):
     name = "auto"

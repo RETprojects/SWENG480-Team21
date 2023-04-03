@@ -79,11 +79,11 @@ class ExampleSpider(scrapy.Spider):
     def parse(self, response):
         HOST = "localhost"
         # database name, if you want just to connect to MySQL server, leave it empty
-        DATABASE = "pattern_recommender"
+        DATABASE = "test"
         # this is the user you create
         USER = "root"
         # user password
-        PASSWORD = "THX4theF1$h!"
+        PASSWORD = "admin"
         # connect to MySQL server
         db_connection = mysql.connector.connect(host=HOST, database=DATABASE, user=USER, password=PASSWORD)
         print("Connected to:", db_connection.get_server_info())
@@ -137,7 +137,7 @@ class ExampleSpider(scrapy.Spider):
 
         # now that the data is stored in the DB, export the table as a CSV file
         # source: https://datatofish.com/export-sql-table-to-csv-python/
-        query_all = pd.read_sql_query("select * from pattern_recommender.pattern_ML", db_connection)
+        query_all = pd.read_sql_query("select * from test.pattern_ML", db_connection)
 
         df = pd.DataFrame(query_all)
         df.to_csv(r'scraped_pattern_data.csv', index=False)

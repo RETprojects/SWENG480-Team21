@@ -24,18 +24,22 @@ SECRET_KEY = "django-insecure-)z$a^t522j$y$c_a$um^j(10ny$^=*+!hu)lw$2*e=4a_(u50^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "gray-tree-5e6256c667134b55be8b03458f873f4d.azurewebsites.net",
+]
 
 # Application definition
 
 INSTALLED_APPS = [
+    "pattern_pal.apps.PatternPalConfig",
+    "temp.apps.TempConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'temp.apps.TempConfig'
 ]
 
 MIDDLEWARE = [
@@ -71,14 +75,23 @@ WSGI_APPLICATION = "mysite.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# SQLite config
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": "mydatabase",
+#     }
+# }
+
+# MySQL config
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'test',
-        'USER': 'root',
-        'PASSWORD': 'admin',
-        'HOST': 'localhost',
-        'PORT': '3306',
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "test",
+        "USER": "root",
+        "PASSWORD": "admin",
+        "HOST": "localhost",
+        "PORT": "3306",
     }
 }
 
