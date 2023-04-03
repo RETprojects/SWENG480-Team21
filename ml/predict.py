@@ -137,45 +137,45 @@ def display_predictions(cos_sim: np.ndarray, txts: pd.Series, df: pd.DataFrame) 
 
     # Display the name of the pattern category corresponding to the most
     # recommended pattern.
-    # top_pattern_desc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - 2]]
+    top_pattern_desc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - 2]]
     # top_pattern_name = (df["name"][(df["overview"] == top_pattern_desc)]).to_string(
     #     index=False
     # )
-    topPatternCatNum = df.loc[
-        df["overview"] == topPatternDesc, "correct_category"
+    top_pattern_cat_num = df.loc[
+        df["overview"] == top_pattern_desc, "correct_category"
     ].iloc[0]
-    topPatternCatName = ""
-    if topPatternCatNum == 0:
-        topPatternCatName = "Behavioral (GoF)"
-    elif topPatternCatNum == 1:
-        topPatternCatName = "Structural (GoF)"
+    top_pattern_cat_name = ""
+    if top_pattern_cat_num == 0:
+        top_pattern_cat_name = "Behavioral (GoF)"
+    elif top_pattern_cat_num == 1:
+        top_pattern_cat_name = "Structural (GoF)"
     else:
-        topPatternCatName = "Creational (GoF)"
-    print("Category of most recommended pattern: ", topPatternCatName)
+        top_pattern_cat_name = "Creational (GoF)"
+    print("Category of most recommended pattern: ", top_pattern_cat_name)
     # also determine the category of the majority of the candidate patterns
     # if there is no majority, it's the category of the top recommendation
-    majPatternCatName = ""
-    numBehavioral = 0
-    numStructural = 0
-    numCreational = 0
+    maj_pattern_cat_name = ""
+    num_behavioral = 0
+    num_structural = 0
+    num_creational = 0
     # find the pattern entry corresponding to the description in txts, then get the category of this pattern
     for desc in txts:
-        patternCat = df.loc[df["overview"] == desc, "correct_category"].iloc[0]
-        if patternCat == 0:
-            numBehavioral += 1
-        elif patternCat == 1:
-            numStructural += 1
+        pattern_cat = df.loc[df["overview"] == desc, "correct_category"].iloc[0]
+        if pattern_cat == 0:
+            num_behavioral += 1
+        elif pattern_cat == 1:
+            num_structural += 1
         else:
-            numCreational += 1
-    if numBehavioral > (len(txts) / 2):
-        majPatternCatName = "Behavioral (GoF)"
-    elif numStructural > (len(txts) / 2):
-        majPatternCatName = "Structural (GoF)"
-    elif numCreational > (len(txts) / 2):
-        majPatternCatName = "Creational (GoF)"
+            num_creational += 1
+    if num_behavioral > (len(txts) / 2):
+        maj_pattern_cat_name = "Behavioral (GoF)"
+    elif num_structural > (len(txts) / 2):
+        maj_pattern_cat_name = "Structural (GoF)"
+    elif num_creational > (len(txts) / 2):
+        maj_pattern_cat_name = "Creational (GoF)"
     else:
-        majPatternCatName = topPatternCatName
-    print("Mode category: ", majPatternCatName)
+        maj_pattern_cat_name = top_pattern_cat_name
+    print("Mode category: ", maj_pattern_cat_name)
 
 
 def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
