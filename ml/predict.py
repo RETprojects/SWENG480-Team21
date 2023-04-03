@@ -139,12 +139,21 @@ def display_predictions(cos_sim, txts, df):
     numBehavioral = 0
     numStructural = 0
     numCreational = 0
+    # find the pattern entry corresponding to the description in txts, then get the category of this pattern
+    for desc in txts:
+        patternCat = df.loc[df["overview"] == desc, "correct_category"].iloc[0]
+        if patternCat == 0:
+            numBehavioral += 1
+        elif patternCat == 1:
+            numStructural += 1
+        else:
+            numCreational += 1
     if numBehavioral > (len(txts) / 2):
-        majPatternCatName == "Behavioral (GoF)"
+        majPatternCatName = "Behavioral (GoF)"
     elif numStructural > (len(txts) / 2):
-        majPatternCatName == "Structural (GoF)"
+        majPatternCatName = "Structural (GoF)"
     elif numCreational > (len(txts) / 2):
-        majPatternCatName == "Creational (GoF)"
+        majPatternCatName = "Creational (GoF)"
     else:
         majPatternCatName = topPatternCatName
     print("Mode category: ", majPatternCatName)
