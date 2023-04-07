@@ -148,16 +148,14 @@ def cosine_sim(df: pd.DataFrame, predicted_cluster: int) -> tuple[dict, dict]:
 # clearly established categories for each design pattern involved.
 
 
-def display_predictions(cos_sim: np.ndarray, txts: pd.Series, df: pd.DataFrame) -> None:
+def display_predictions(df: pd.DataFrame, cos_sim: np.ndarray) -> None:
     # Display the name of the pattern category corresponding to the most
     # recommended pattern.
     creational_count = 0
     behavioral_count = 0
     structural_count = 0
 
-    # Get all the matching rows from the original DataFrame
-    filtered_df = df[df.index.isin(txts.index)][:-1]
-    for name in filtered_df["name"]:
+    for name in df["name"]:
         if name in patterns["creational"]:
             creational_count += 1
         elif name in patterns["structural"]:
@@ -165,30 +163,21 @@ def display_predictions(cos_sim: np.ndarray, txts: pd.Series, df: pd.DataFrame) 
         elif name in patterns["behavioral"]:
             behavioral_count += 1
 
-    if creational_count > behavioral_count and creational_count > structural_count:
+    if creational_count >= behavioral_count and creational_count >= structural_count:
         do_output("Category is most likely to be Creational.")
-    elif behavioral_count > creational_count and behavioral_count > structural_count:
+    elif behavioral_count >= creational_count and behavioral_count >= structural_count:
         do_output("Category is most likely to be Behavioral.")
     else:
         do_output("Category is most likely to be Structural.")
     do_output()
 
-    sim_sorted_doc_idx = cos_sim.argsort()
-    max_len = df.name.str.len().max()
-    # The user shouldn't need to see more than 9 patterns, so we ignore the rest.
-    for i in range(min(9, len(txts) - 1)):
-        pattern_desc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]
-        pattern_name = (df["name"][(df["overview"] == pattern_desc)]).to_string(
-            index=False
-        )
-        pattern_name_pretty = " ".join(
-            [x.capitalize() if x != "of" else x for x in pattern_name.split("_")]
-        )
-        percent_match = round(
-            int((cos_sim[0][sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]) * 100)
-        )
+    # Show only the first 5 recommendations
+    for row in df[:5].itertuples():
+        friendly_index = to_ordinal(row.Index + 1)
+        percent_match = int(round(cos_sim[row.Index], 2) * 100)
+
         do_output(
-            f"{to_ordinal(i + 1)} pattern: {pattern_name_pretty.ljust(max_len)} {percent_match}% match",
+            f"{friendly_index} pattern: {row.name} {percent_match}% match",
         )
     do_output()
 
@@ -295,7 +284,9 @@ def main(design_problem: str = ""):
         cos_sim_dict, txts_dict = cosine_sim(df, df[algorithm].iloc[df.index[-1]])
         cos_sim = cos_sim_dict[algorithm]
         txts = txts_dict[algorithm]
-        display_predictions(cos_sim, txts, df)
+        display_predictions(
+            df[df.index.isin(txts.index)][:-1].reset_index(drop=True), cos_sim[0]
+        )
 
         # Calculate the RCD
         # RCD = number of right design patterns / total suggested design patterns
