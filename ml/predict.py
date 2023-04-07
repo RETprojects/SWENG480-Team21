@@ -16,6 +16,9 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn_extra.cluster import KMedoids
 
+# Read more here https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+pd.options.mode.chained_assignment = None
+
 try:
     nltk.find("corpora/stopwords")
 except LookupError:
@@ -116,28 +119,19 @@ def preprocess(series: pd.Series) -> pd.Series:
     return series
 
 
-# Source: https://danielcaraway.github.io/html/sklearn_cosine_similarity.html
-def cosine_sim(df: pd.DataFrame, predicted_cluster: int) -> tuple[dict, dict]:
-    unigram_count = CountVectorizer()
-
-    # Loop through the clustering algorithms and calculate the cosine similarity measures based on each algorithm.
+def cosine_sim(df: pd.DataFrame, predicted_cluster: int) -> dict:
     cos_sim_dict = {}
-    txts_dict = {}
+
+    vectorizer = CountVectorizer()
+    X = vectorizer.fit_transform(df["overview"])
+
     for algorithm in algorithms:
-        # get the list of candidate patterns
-        txts = df["overview"].loc[
-            df[algorithm] == predicted_cluster
-        ]  # where label == predicted_cluster
-        vecs = unigram_count.fit_transform(txts)
+        indexes = df[df[algorithm] == predicted_cluster].index
+        cos_sim_dict[algorithm] = cosine_similarity(
+            X[indexes][:-1], X[indexes][-1]
+        ).mean()
 
-        cos_sim = cosine_similarity(vecs[-1], vecs)
-
-        # add cos_sim and txts to the dictionaries with the algorithm name as the key
-        cos_sim_dict[algorithm] = cos_sim
-        txts_dict[algorithm] = txts
-
-    # return cos_sim, txts
-    return cos_sim_dict, txts_dict
+    return cos_sim_dict
 
 
 # TODO: Recommend a pattern category in addition to patterns.
@@ -148,7 +142,7 @@ def cosine_sim(df: pd.DataFrame, predicted_cluster: int) -> tuple[dict, dict]:
 # clearly established categories for each design pattern involved.
 
 
-def display_predictions(df: pd.DataFrame, cos_sim: np.ndarray) -> None:
+def display_predictions(df: pd.DataFrame, cos_sim: np.int32) -> None:
     # Display the name of the pattern category corresponding to the most
     # recommended pattern.
     creational_count = 0
@@ -174,7 +168,7 @@ def display_predictions(df: pd.DataFrame, cos_sim: np.ndarray) -> None:
     # Show only the first 5 recommendations
     for row in df[:5].itertuples():
         friendly_index = to_ordinal(row.Index + 1)
-        percent_match = int(round(cos_sim[row.Index], 2) * 100)
+        percent_match = int(round(cos_sim, 2) * 100)
 
         do_output(
             f"{friendly_index} pattern: {row.name} {percent_match}% match",
@@ -275,33 +269,39 @@ def main(design_problem: str = ""):
     # Append (horizontally) the cluster labels to the original DF
     df = pd.concat([df, df_labels], axis=1)
 
+    vectorizer = CountVectorizer()
+    X = vectorizer.fit_transform(df["overview"])
+
     max_len = len(max(algorithms_pretty, key=len))
     do_output()
     for i, algorithm in enumerate(algorithms):
         do_output(f"{algorithms_pretty[i]}")
         do_output("-" * max_len)
 
-        cos_sim_dict, txts_dict = cosine_sim(df, df[algorithm].iloc[df.index[-1]])
-        cos_sim = cos_sim_dict[algorithm]
-        txts = txts_dict[algorithm]
-        display_predictions(
-            df[df.index.isin(txts.index)][:-1].reset_index(drop=True), cos_sim[0]
-        )
+        predicted_cluster = df[algorithm].iloc[-1]
 
-        # Calculate the RCD
-        # RCD = number of right design patterns / total suggested design patterns
-        # This is a fraction of the suggested patterns that were in the correct cluster.
-        # TODO: We probably need to account for the fact that cluster labels
-        #       may not be the same every run (0 isn't always behavioral,
-        #       for example). Jonathan may have already accounted for this
-        #       with the getFScore function.
-        # rcd = 0
-        # if len(txts.loc[df[algorithm] == df["correct_category"]]) > 1:
-        #     rcd = (len(txts.loc[df[algorithm] == df["correct_category"]]) - 1) / (
-        #         len(txts) - 1
-        #     )
-        # output.append(f"RCD = {rcd}")
-        # print("RCD = ", rcd)
+        df_problem_cluster = df.loc[df[algorithm] == predicted_cluster]
+        indexes = df_problem_cluster.index
+        cos_sim = cosine_similarity(X[indexes], X[indexes][-1]).flatten()
+
+        df_problem_cluster["match"] = cos_sim
+
+        # Calculate the most likely category
+        predicted_category = (
+            df_problem_cluster.iloc[:-1][["category", "match"]]
+            .groupby("category")["match"]
+            .mean()
+            .idxmax()
+        )
+        do_output(f"Category is most likely {predicted_category}\n")
+
+        for name, percent in sorted(
+            list(zip(df_problem_cluster.name, cos_sim))[:-1],
+            key=lambda x: x[1],
+            reverse=True,
+        ):
+            do_output(f"{name} {percent:.0%}")
+        do_output()
 
     return output
 
