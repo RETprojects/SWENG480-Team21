@@ -149,6 +149,30 @@ def cosine_sim(df: pd.DataFrame, predicted_cluster: int) -> tuple[dict, dict]:
 
 
 def display_predictions(cos_sim: np.ndarray, txts: pd.Series, df: pd.DataFrame) -> None:
+    # Display the name of the pattern category corresponding to the most
+    # recommended pattern.
+    creational_count = 0
+    behavioral_count = 0
+    structural_count = 0
+
+    # Get all the matching rows from the original DataFrame
+    filtered_df = df[df.index.isin(txts.index)][:-1]
+    for name in filtered_df["name"]:
+        if name in patterns["creational"]:
+            creational_count += 1
+        elif name in patterns["structural"]:
+            structural_count += 1
+        elif name in patterns["behavioral"]:
+            behavioral_count += 1
+
+    if creational_count > behavioral_count and creational_count > structural_count:
+        do_output("Category is most likely to be Creational.")
+    elif behavioral_count > creational_count and behavioral_count > structural_count:
+        do_output("Category is most likely to be Behavioral.")
+    else:
+        do_output("Category is most likely to be Structural.")
+    do_output()
+
     sim_sorted_doc_idx = cos_sim.argsort()
     max_len = df.name.str.len().max()
     # The user shouldn't need to see more than 9 patterns, so we ignore the rest.
@@ -167,68 +191,6 @@ def display_predictions(cos_sim: np.ndarray, txts: pd.Series, df: pd.DataFrame) 
             f"{to_ordinal(i + 1)} pattern: {pattern_name_pretty.ljust(max_len)} {percent_match}% match",
         )
     do_output()
-
-    # Display the name of the pattern category corresponding to the most
-    # recommended pattern.
-    # top_pattern_desc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - 2]]
-    # # top_pattern_name = (df["name"][(df["overview"] == top_pattern_desc)]).to_string(
-    # #     index=False
-    # # )
-    # top_pattern_cat_num = df.loc[
-    #     df["overview"] == top_pattern_desc, "correct_category"
-    # ].iloc[0]
-    # top_pattern_cat_name = ""
-    # if top_pattern_cat_num == 0:
-    #     top_pattern_cat_name = "Behavioral (GoF)"
-    # elif top_pattern_cat_num == 1:
-    #     top_pattern_cat_name = "Structural (GoF)"
-    # else:
-    #     top_pattern_cat_name = "Creational (GoF)"
-    # print("Category of most recommended pattern: ", top_pattern_cat_name)
-    # # also determine the category of the majority of the candidate patterns
-    # # if there is no majority, it's the category of the top recommendation
-    # maj_pattern_cat_name = ""
-    # num_behavioral = 0
-    # num_structural = 0
-    # num_creational = 0
-    # # find the pattern entry corresponding to the description in txts, then get the category of this pattern
-    # for desc in txts:
-    #     pattern_cat = df.loc[df["overview"] == desc, "correct_category"].iloc[0]
-    #     if pattern_cat == 0:
-    #         num_behavioral += 1
-    #     elif pattern_cat == 1:
-    #         num_structural += 1
-    #     else:
-    #         num_creational += 1
-    # if num_behavioral > (len(txts) / 2):
-    #     maj_pattern_cat_name = "Behavioral (GoF)"
-    # elif num_structural > (len(txts) / 2):
-    #     maj_pattern_cat_name = "Structural (GoF)"
-    # elif num_creational > (len(txts) / 2):
-    #     maj_pattern_cat_name = "Creational (GoF)"
-    # else:
-    #     maj_pattern_cat_name = top_pattern_cat_name
-    # print("Mode category: ", maj_pattern_cat_name)
-    creational_count = 0
-    behavioral_count = 0
-    structural_count = 0
-
-    # Get all the matching rows from the original DataFrame
-    filtered_df = df[df.index.isin(txts.index)][:-1]
-    for name in filtered_df["name"]:
-        if name in patterns["creational"]:
-            creational_count += 1
-        elif name in patterns["structural"]:
-            structural_count += 1
-        elif name in patterns["behavioral"]:
-            behavioral_count += 1
-
-    if creational_count > behavioral_count and creational_count > structural_count:
-        do_output("Category is most likely to be creational.")
-    elif behavioral_count > creational_count and behavioral_count > structural_count:
-        do_output("Category is most likely to be behavioral.")
-    else:
-        do_output("Category is most likely to be structural.")
 
 
 def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
