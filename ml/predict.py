@@ -44,39 +44,6 @@ algorithms_pretty = [
     "K-medoids/PAM (Manhattan distance)",
 ]
 
-# This is a dictionary of all of the patterns listed in each GoF category.
-patterns = {
-    "creational": {
-        "abstract_factory",
-        "builder",
-        "factory_method",
-        "prototype",
-        "singleton",
-    },
-    "structural": {
-        "adapter",
-        "bridge",
-        "composite",
-        "decorator",
-        "facade",
-        "flyweight",
-        "proxy",
-    },
-    "behavioral": {
-        "chain_of_responsibility",
-        "command",
-        "interpreter",
-        "iterator",
-        "mediator",
-        "memento",
-        "observer",
-        "state",
-        "strategy",
-        "template_method",
-        "visitor",
-    },
-}
-
 stemmer = PorterStemmer()
 
 # This is for the Django web app. This can definitely be improved.
@@ -86,13 +53,6 @@ output = []
 def do_output(text: str = "") -> None:
     output.append(text)
     print(text)
-
-
-# Modified from https://stackoverflow.com/a/20007730
-def to_ordinal(n: int) -> str:
-    if n < 1 or n > 9:
-        raise ValueError
-    return str(n) + ["st", "nd", "rd", "th"][min(n - 1, 3)]
 
 
 def preprocess(series: pd.Series) -> pd.Series:
@@ -114,63 +74,6 @@ def preprocess(series: pd.Series) -> pd.Series:
     series = series.str.strip()
 
     return series
-
-
-def cosine_sim(df: pd.DataFrame, predicted_cluster: int) -> dict:
-    cos_sim_dict = {}
-
-    vectorizer = CountVectorizer()
-    X = vectorizer.fit_transform(df["overview"])
-
-    for algorithm in algorithms:
-        indexes = df[df[algorithm] == predicted_cluster].index
-        cos_sim_dict[algorithm] = cosine_similarity(
-            X[indexes][:-1], X[indexes][-1]
-        ).mean()
-
-    return cos_sim_dict
-
-
-# TODO: Recommend a pattern category in addition to patterns.
-# Idea: if we find that a majority of the candidate patterns or the most
-# recommended patterns for a problem belong to a category according to the
-# correct_category label, then we can recommend that overall category for the
-# design problem. Try Hussain et al. 2017 section 7.1, Pseudocode-2, but with
-# clearly established categories for each design pattern involved.
-
-
-def display_predictions(df: pd.DataFrame, cos_sim: np.int32) -> None:
-    # Display the name of the pattern category corresponding to the most
-    # recommended pattern.
-    creational_count = 0
-    behavioral_count = 0
-    structural_count = 0
-
-    for name in df["name"]:
-        if name in patterns["creational"]:
-            creational_count += 1
-        elif name in patterns["structural"]:
-            structural_count += 1
-        elif name in patterns["behavioral"]:
-            behavioral_count += 1
-
-    if creational_count >= behavioral_count and creational_count >= structural_count:
-        do_output("Category is most likely to be Creational.")
-    elif behavioral_count >= creational_count and behavioral_count >= structural_count:
-        do_output("Category is most likely to be Behavioral.")
-    else:
-        do_output("Category is most likely to be Structural.")
-    do_output()
-
-    # Show only the first 5 recommendations
-    for row in df[:5].itertuples():
-        friendly_index = to_ordinal(row.Index + 1)
-        percent_match = int(round(cos_sim, 2) * 100)
-
-        do_output(
-            f"{friendly_index} pattern: {row.name} {percent_match}% match",
-        )
-    do_output()
 
 
 def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
@@ -230,21 +133,34 @@ def do_weighting(method: str, series: pd.Series) -> pd.DataFrame:
     ).sparse.to_dense()
 
 
+def file_to_df(path: str) -> pd.DataFrame:
+    if path.endswith(".csv"):
+        df = pd.read_csv(path)
+    elif path.endswith(".xls") or path.endswith(".xlsx"):
+        df = pd.read_excel(path)
+    return df
+
+
+# https://stackoverflow.com/a/20007730
+def ordinal(n: int) -> str:
+    if 11 <= (n % 100) <= 13:
+        suffix = "th"
+    else:
+        suffix = ["th", "st", "nd", "rd", "th"][min(n % 10, 4)]
+    return str(n) + suffix
+
+
 def main(design_problem: str = ""):
     # Handle command line execution
     if not design_problem:
         design_problem = sys.argv[1]
 
-    # Load the data we are working with
-    FILENAME = "GOF Patterns (2.0).csv"
-    file_path = os.path.join(os.path.dirname(__file__), f"data/{FILENAME}")
+    df = file_to_df(
+        os.path.join(os.path.dirname(__file__), f"data/GOF Patterns (2.0).csv")
+    )
 
-    if FILENAME.endswith(".csv"):
-        df = pd.read_csv(file_path)
-    elif FILENAME.endswith(".xls") or FILENAME.endswith(".xlsx"):
-        df = pd.read_excel(file_path)
-    else:
-        print("Unknown file extension. Ending program.")
+    if df.empty:
+        print("Error reading file.")
         return
 
     # Final example demonstrates how to append a Series as a row
@@ -270,7 +186,10 @@ def main(design_problem: str = ""):
     vectorizer = CountVectorizer()
     X = vectorizer.fit_transform(df["overview"])
 
+    # Used for output formatting
+    max_len_pattern = df["name"].str.len().max()
     max_len = len(max(algorithms_pretty, key=len))
+
     do_output()
     for i, algorithm in enumerate(algorithms):
         do_output(f"{algorithms_pretty[i]}")
@@ -303,12 +222,16 @@ def main(design_problem: str = ""):
         do_output(f"Category is most likely {predicted_category}\n")
 
         # Display the matching patterns by match % in descending order
-        for name, percent in sorted(
-            list(zip(df_problem_cluster["name"], df_problem_cluster["match"])),
-            key=lambda x: x[1],
-            reverse=True,
+        for index, (name, percent) in enumerate(
+            sorted(
+                zip(df_problem_cluster["name"], df_problem_cluster["match"]),
+                key=lambda x: x[1],
+                reverse=True,
+            )
         ):
-            do_output(f"{name} {percent:.0%}")
+            do_output(
+                f"{ordinal(index + 1).ljust(4)} pattern: {name.ljust(max_len_pattern)} {percent:.0%}"
+            )
         do_output()
 
     return output
