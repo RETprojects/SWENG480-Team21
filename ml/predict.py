@@ -16,9 +16,6 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn_extra.cluster import KMedoids
 
-# Read more here https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-pd.options.mode.chained_assignment = None
-
 try:
     nltk.find("corpora/stopwords")
 except LookupError:
@@ -269,6 +266,7 @@ def main(design_problem: str = ""):
     # Append (horizontally) the cluster labels to the original DF
     df = pd.concat([df, df_labels], axis=1)
 
+    # Used for cosine similarity
     vectorizer = CountVectorizer()
     X = vectorizer.fit_transform(df["overview"])
 
@@ -278,25 +276,35 @@ def main(design_problem: str = ""):
         do_output(f"{algorithms_pretty[i]}")
         do_output("-" * max_len)
 
+        # Get the cluster number of the design problem
         predicted_cluster = df[algorithm].iloc[-1]
 
-        df_problem_cluster = df.loc[df[algorithm] == predicted_cluster]
-        indexes = df_problem_cluster.index
-        cos_sim = cosine_similarity(X[indexes], X[indexes][-1]).flatten()
+        """
+        1. Filter all rows where the cluster number matches
+        2. Select the name, category, and `algorithm` rows
+        3. Remove the design problem row
+        4. Make a copy to make the logic more clear
+        """
+        df_problem_cluster = (
+            df.loc[df[algorithm] == predicted_cluster][["name", "category", algorithm]]
+            .iloc[:-1]
+            .copy()
+        )
 
-        df_problem_cluster["match"] = cos_sim
+        # Calculate cosine similarity for all patterns in the cluster vs. design problem
+        df_problem_cluster["match"] = cosine_similarity(
+            X[df_problem_cluster.index], X[-1]
+        ).flatten()
 
         # Calculate the most likely category
         predicted_category = (
-            df_problem_cluster.iloc[:-1][["category", "match"]]
-            .groupby("category")["match"]
-            .mean()
-            .idxmax()
+            df_problem_cluster.groupby("category")["match"].mean().idxmax()
         )
         do_output(f"Category is most likely {predicted_category}\n")
 
+        # Display the matching patterns by match % in descending order
         for name, percent in sorted(
-            list(zip(df_problem_cluster.name, cos_sim))[:-1],
+            list(zip(df_problem_cluster["name"], df_problem_cluster["match"])),
             key=lambda x: x[1],
             reverse=True,
         ):
