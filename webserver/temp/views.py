@@ -64,9 +64,9 @@ def collect_pattern(request):
     if request.method == "POST" and "run_script" in request.POST:
         form = CollectPatternForm(request.POST)
         if form.is_valid():
-            # print(os.path.split(os.path.split(os.path.dirname(__file__))[0])[0])
             from crawler.tutorial.tutorial.spiders.automated_scraping import run
             run(form.cleaned_data["urlContent"], form.cleaned_data["sectionContent"])
+            os.chdir(os.path.split(os.path.dirname(__file__))[0])
             return render(request, "collectpattern.html", {"form": form})
 
     return render(request, "collectpattern.html", {"form": form})

@@ -7,5 +7,5 @@ class SubmitPatternForm(forms.Form):
 
 class CollectPatternForm(forms.Form):
     urlContent = forms.CharField(label="", widget=forms.TextInput(attrs={'style': 'width: 50%;'}))
-    sectionContent = forms.CharField(required=False, label="", widget=forms.TextInput(attrs={'style': 'width: 50%;'}))
+    sectionContent = forms.CharField(label="", widget=forms.TextInput(attrs={'style': 'width: 50%;'}))
 
