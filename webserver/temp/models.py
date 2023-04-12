@@ -81,7 +81,7 @@ class Problem(models.Model):
     description = models.CharField(max_length=150)
 
     def __str__(self):
-        return self.category
+        return self.category.name
 
     class Meta:
         managed = False

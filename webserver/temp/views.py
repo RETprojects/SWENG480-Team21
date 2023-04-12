@@ -66,7 +66,6 @@ def collect_pattern(request):
         if form.is_valid():
             # print(os.path.split(os.path.split(os.path.dirname(__file__))[0])[0])
             from crawler.tutorial.tutorial.spiders.automated_scraping import run
-
             run(form.cleaned_data["urlContent"], form.cleaned_data["sectionContent"])
             return render(request, "collectpattern.html", {"form": form})
 
