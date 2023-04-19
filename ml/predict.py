@@ -151,6 +151,9 @@ def ordinal(n: int) -> str:
 
 
 def main(design_problem: str = ""):
+    # Reset output
+    output.clear()
+
     # Handle command line execution
     if not design_problem:
         design_problem = sys.argv[1]
