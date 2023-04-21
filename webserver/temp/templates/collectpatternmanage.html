@@ -19,18 +19,24 @@
 <body style="text-align: left;background-color: #d9d9d9">
     <section style="margin-left: 50px;margin-right: 50px;">
         <p style=" font-size: 25px">Design Pattern Recommendation System: Pattern Collection</p>
-        <p style="line-height: 20px; font-size: 15px">Have an online design pattern repository? Put it into our database!</p>
         <form method="post">
-            {% csrf_token %}
-            <p style="line-height: 20px; font-size: 15px">Write the URL to the library here:</p>
-            {{ form.urlContent }}
-            <p style="line-height: 20px; font-size: 15px">Are there any specific sections of pages that you would like to collect data from? (Separate text range by :+_:)</p>
-            {{ form.sectionContent }}
-            <button id="btn1" type="submit" onclick="run()" style="margin-top: 5px">Crawl</button>
-            <button hidden id="btn2" type="submit" name="run_script" style="margin-top: 5px">Crawl</button>
+          {% csrf_token %}
+            <p style="line-height: 20px; font-size: 15px">Modify crawled pattern data. Specify pattern name.</p>
+          {{ form.nameContent }}
+          <br>
+            <p style="line-height: 20px; font-size: 15px">Specify crawled pattern category. Recommended category: {{ category }}</p>
+          {{ form.categoryContent }}
+          <br>
+            <p style="line-height: 20px; font-size: 15px">Additional modification to crawled data can be made here.</p>
+          {{ form.descriptionContent }}
+          <br>
+          <button id="btn" type="submit" name="run_script" onclick="run()" style="margin-top: 5px">Add pattern to database</button>
         </form>
-        <p id="p1">{{ message }}</p>
+        {{ fileData|json_script:"fileData" }}
         <script>
+            let fileData = JSON.parse(document.getElementById('fileData').textContent)
+            document.getElementById("id_descriptionContent").value = fileData
+            console.log(fileData)
             function run(){
                 const urlContent = document.getElementById("id_urlContent")
                 const sectionContent = document.getElementById("id_sectionContent")
@@ -43,4 +49,3 @@
         </script>
     </section>
 </body>
-</html>

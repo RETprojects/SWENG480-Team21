@@ -14,7 +14,17 @@ class InvalidInputException(BaseException):
 
 def run(arg1, arg2):
     os.chdir(os.path.dirname(__file__))
+    open("automated_scraping_output.txt", "w").close()
     os.system('scrapy crawl auto -a start_urls=' + arg1 + ' -a range="' + arg2 + '"')
+    # os.chdir(os.path.dirname(__file__))
+    # print('scrapy crawl auto -a start_urls=' + arg1 + ' -a range=' + arg2)
+    # print(type(arg2))
+    # if arg2 == "":
+    #    os.system('scrapy crawl auto -a start_urls=' + arg1)
+    # else:
+    #    os.system('scrapy crawl auto -a start_urls=' + arg1 + ' -a range="' + arg2 + '"')
+    # os.system('scrapy crawl auto -a start_urls=https://www.crummy.com/software/BeautifulSoup/bs4/doc/ -a range="which have been removed.:+_:that no longer exists.:+_:Beautiful Soup will never be as fast as the parsers:+_:searching the document much faster."')
+    # os.system('scrapy crawl auto -a start_urls=' + arg1 + ' -a range=' + arg2)
 
 
 class AutoSpider(scrapy.Spider):
@@ -37,10 +47,13 @@ class AutoSpider(scrapy.Spider):
 
     def parse(self, response, **kwargs):
         # print("TEST" + os.path.split(os.path.split(os.path.split(os.path.split(os.path.dirname(__file__))[0])[0])[0])[0] + "\webserver\sqlitedatabase.db")
-        conn = sqlite3.connect(
-            os.path.split(os.path.split(os.path.split(os.path.split(os.path.dirname(__file__))[0])[0])[0])[
-                0] + "\webserver\sqlitedatabase")
-        cur = conn.cursor()
+
+        # conn = sqlite3.connect(
+        #    os.path.split(os.path.split(os.path.split(os.path.split(os.path.dirname(__file__))[0])[0])[0])[
+        #        0] + "\webserver\sqlitedatabase")
+        # cur = conn.cursor()
+        # open("automated_scraping_output.txt", "w").close()
+        file = open("automated_scraping_output.txt", 'a')
         soup = BeautifulSoup(response.text, 'lxml')
         s = soup.get_text().strip()
         s = s.replace("\t", "").replace("\r", "").replace("\n", " ")
@@ -54,13 +67,14 @@ class AutoSpider(scrapy.Spider):
         # print("TEST: " + str(s.find(self.range[0])) + " BREAK " + str(s.find(self.range[1])))
         for i in range(0, len(self.range), 2):
             text_in_range = s[s.find(self.range[i]):s.rfind(self.range[i + 1]) + len(self.range[i + 1])]
+            file.write(text_in_range)
             # print(text_in_range)
-            add_pattern = ("INSERT INTO problem "
-                           "(category_id, description) "
-                           "VALUES (?, ?)")
-            data_pattern = (1, text_in_range)
-            cur.execute(add_pattern, data_pattern)
-            conn.commit()
+            # add_pattern = ("INSERT INTO problem "
+            #               "(category_id, description) "
+            #               "VALUES (?, ?)")
+            # data_pattern = (1, text_in_range)
+            # cur.execute(add_pattern, data_pattern)
+            # conn.commit()
 
     def errback(self, failure):
         self.logger.error(repr(failure))

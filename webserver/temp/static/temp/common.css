@@ -13,9 +13,9 @@ body {
     float: left;
     color: #f2f2f2;
     text-align: center;
-    padding: 14px 16px;
+    padding: 32px 16px;
     text-decoration: none;
-    font-size: 17px;
+    font-size: 18px;
 }
 
 .topnav a:hover {
@@ -39,8 +39,8 @@ body {
     float: right;
     color: #f2f2f2;
     text-align: center;
-    padding: 14px 16px;
-    margin-right: 100px;
+    padding: 32px 16px;
+    margin-right: 20px;
     text-decoration: none;
-    font-size: 17px;
+    font-size: 18px;
 }

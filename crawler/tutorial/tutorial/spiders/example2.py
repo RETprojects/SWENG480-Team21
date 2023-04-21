@@ -1,3 +1,6 @@
+import os
+import sqlite3
+
 import scrapy
 import mysql.connector
 from bs4 import BeautifulSoup
@@ -12,8 +15,6 @@ class CustomItem(Item):
     header = Field()
     paragraph = Field()
     link = Field()
-
-
 
 
 class ExampleSpider(scrapy.Spider):
@@ -37,7 +38,6 @@ class ExampleSpider(scrapy.Spider):
         'https://sourcemaking.com/design_patterns/flyweight',
         'https://sourcemaking.com/design_patterns/proxy',
         'https://sourcemaking.com/design_patterns/private_class_data',
-        'https://sourcemaking.com/design_patterns/proxy'
     ]
 
     behavioral_urls = [
@@ -75,25 +75,36 @@ class ExampleSpider(scrapy.Spider):
     #     data = link.get('href')
     #     start_urls.append('https://refactoring.guru' + data)
 
-
     def parse(self, response):
-        HOST = "localhost"
+        # HOST = "localhost"
         # database name, if you want just to connect to MySQL server, leave it empty
-        DATABASE = "test"
+        # DATABASE = "test"
         # this is the user you create
-        USER = "root"
+        # USER = "root"
         # user password
-        PASSWORD = "admin"
+        # PASSWORD = "admin"
         # connect to MySQL server
-        db_connection = mysql.connector.connect(host=HOST, database=DATABASE, user=USER, password=PASSWORD)
-        print("Connected to:", db_connection.get_server_info())
-
-        cursor = db_connection.cursor()
+        # db_connection = mysql.connector.connect(host=HOST, database=DATABASE, user=USER, password=PASSWORD)
+        # print("Connected to:", db_connection.get_server_info())
+        conn = sqlite3.connect(
+            os.path.split(os.path.split(os.path.split(os.path.split(os.path.dirname(__file__))[0])[0])[0])[
+                0] + "\webserver\sqlitedatabase")
+        cur = conn.cursor()
+        # cursor = db_connection.cursor()
 
         file = open('temp_text.txt', 'w', encoding="utf-8")
         soup = BeautifulSoup(response.text, 'lxml')
 
-        patternName = response.url.split("/")[-1]
+        patternName = (response.url.split("/")[-1]).capitalize()
+        category = ""
+        if any(response.url in word for word in ExampleSpider.creational_urls):
+            category = "2"
+        elif any(response.url in word for word in ExampleSpider.structural_urls):
+            category = "3"
+        elif any(response.url in word for word in ExampleSpider.behavioral_urls):
+            category = "1"
+        else:
+            category = "0"
         last_heading = ""
         intent = ""
         problem = ""
@@ -116,35 +127,45 @@ class ExampleSpider(scrapy.Spider):
                 if last_heading == "Intent":
                     # write the current text to the intent field
                     intent += ns.text
+                    intent = intent.replace("\t", "").replace("\r", "").replace("\n", " ")
                 elif last_heading == "Problem":
                     problem += ns.text
+                    problem = problem.replace("\t", "").replace("\r", "").replace("\n", " ")
                 elif last_heading == "Discussion":
                     discussion += ns.text
+                    discussion = discussion.replace("\t", "").replace("\r", "").replace("\n", " ")
                 elif last_heading == "Structure":
                     structure += ns.text
+                    structure = structure.replace("\t", "").replace("\r", "").replace("\n", " ")
                 else:
                     break
                 file.write(ns.text + '\n')
                 print(ns)
 
         # insert the pieces of text collected into a new DB entry
-        add_pattern = ("INSERT INTO pattern_ML "
-                       "(category_id, name, intent, problem, discussion, structure) "
-                       "VALUES (%s, %s, %s, %s, %s, %s)")
-        data_pattern = (0, patternName, intent, problem, discussion, structure)
-        cursor.execute(add_pattern, data_pattern) # insert new pattern
-        db_connection.commit() # commit the data to the DB
+        add_pattern = ("INSERT INTO pattern "
+                       "(category_id, name, intent, problem, discussion, structure, miscellaneous, link) "
+                       "VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+        data_pattern = (category, patternName, intent, problem, discussion, structure, 'NA', response.url)
+        cur.execute(add_pattern, data_pattern)
+        conn.commit()
+        # add_pattern = ("INSERT INTO pattern_ML "
+        #                "(category_id, name, intent, problem, discussion, structure) "
+        #                "VALUES (%s, %s, %s, %s, %s, %s)")
+        # data_pattern = (0, patternName, intent, problem, discussion, structure)
+        # cursor.execute(add_pattern, data_pattern) # insert new pattern
+        # db_connection.commit() # commit the data to the DB
 
         # now that the data is stored in the DB, export the table as a CSV file
         # source: https://datatofish.com/export-sql-table-to-csv-python/
-        query_all = pd.read_sql_query("select * from test.pattern_ML", db_connection)
+        # query_all = pd.read_sql_query("select * from test.pattern_ML", db_connection)
 
-        df = pd.DataFrame(query_all)
-        df.to_csv(r'scraped_pattern_data.csv', index=False)
+        # df = pd.DataFrame(query_all)
+        # df.to_csv(r'scraped_pattern_data.csv', index=False)
 
         # source: https://stackoverflow.com/questions/4613465/using-python-to-write-mysql-query-to-csv-need-to-show-field-names
-        #rows = cursor.fetchall()
-        #fp = open('/tmp/file.csv', 'w')
-        #myFile = csv.writer(fp)
-        #myFile.writerows(rows)
-        #fp.close()
+        # rows = cursor.fetchall()
+        # fp = open('/tmp/file.csv', 'w')
+        # myFile = csv.writer(fp)
+        # myFile.writerows(rows)
+        # fp.close()
