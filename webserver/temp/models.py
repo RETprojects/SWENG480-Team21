@@ -12,13 +12,11 @@ class Pattern(models.Model):
     category = models.ForeignKey('PatternCategory', models.DO_NOTHING)
     name = models.CharField(max_length=150)
     intent = models.CharField(max_length=150)
-    motivation = models.CharField(max_length=150)
-    applicability = models.CharField(max_length=150)
+    problem = models.CharField(max_length=150)
+    discussion = models.CharField(max_length=150)
     structure = models.TextField()
-    participant_collaborations = models.CharField(max_length=150)
-    consequences = models.CharField(max_length=150)
-    implementation = models.CharField(max_length=150)
-    related_patterns = models.CharField(max_length=150)
+    miscellaneous = models.CharField(max_length=1500)
+    link = models.CharField(max_length=150)
 
     def __str__(self):
         return self.name
@@ -81,7 +79,7 @@ class Problem(models.Model):
     description = models.CharField(max_length=150)
 
     def __str__(self):
-        return self.category
+        return self.category.name
 
     class Meta:
         managed = False

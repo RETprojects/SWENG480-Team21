@@ -1,10 +1,13 @@
-import scrapy
-import mysql.connector
-from bs4 import BeautifulSoup
-from scrapy.item import Item, Field
-import pandas as pd
+"""
 import csv
+
+import mysql.connector
+import pandas as pd
 import requests
+import scrapy
+from bs4 import BeautifulSoup
+from scrapy.item import Field, Item
+
 
 # scrapy crawl example -O myfile.csv:csv
 class CustomItem(Item):
@@ -118,3 +121,4 @@ class RefactoringGuruSpider(scrapy.Spider):
         #
         df = pd.DataFrame(query_all)
         df.to_csv(r"scraped_pattern_data_guru.csv", index=False)
+"""

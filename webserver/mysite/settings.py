@@ -75,23 +75,10 @@ WSGI_APPLICATION = "mysite.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-# SQLite config
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": "mydatabase",
-#     }
-# }
-
-# MySQL config
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "test",
-        "USER": "root",
-        "PASSWORD": "admin",
-        "HOST": "localhost",
-        "PORT": "3306",
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'sqlitedatabase'
     }
 }
 
@@ -133,3 +120,4 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+

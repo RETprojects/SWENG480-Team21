@@ -6,10 +6,13 @@
     <link rel="stylesheet" href="{% static 'temp/common.css' %}">
 </head>
 <header><div class="topnav">
-    <section> Penn State Behrend</section>
-  <a class="" href="/temp/home">Home</a>
-  <a class="active" href="/temp/browsepattern">Browse Pattern</a>
-  <a class="" href="/temp/submitpattern">Recommend a Pattern</a>
+    <section> <img src="{% static 'temp/Penn_State_Behrend_logo.svg.png'%}", width="50px"> </section>
+    <a class="" href="/temp/home">Home</a>
+    <a class="active" href="/temp/browsepattern">Browse Pattern</a>
+    <a class="" href="/temp/submitpattern">Recommend a Pattern</a>
+    {% if user.is_superuser %}
+        <a class="" href="/temp/collectpattern">Collect Patterns</a>
+    {% endif %}
 </div></header>
 <body style="text-align: left;background-color: #d9d9d9">
     <section style="margin-left: 50px;margin-right: 50px;">
@@ -31,6 +34,10 @@
                 <textarea id="textarea1" readonly rows = 20 style="overflow: auto; resize: none; width: 99.65%;">Problem Domain&#10</textarea>
                 <p></p>
                 <textarea id="textarea2" readonly rows = 20 style="overflow: auto; resize: none; width: 99.65%;">Solution Domain&#10</textarea>
+                <p></p>
+                <div style="overflow: auto; resize: none; width: 99.65%;">URL:
+                    <a id="a1" href="" title="Description"></a>
+                </div>
             </div>
         </div>
         {{ patternListJSON|json_script:"patternListJSON" }}
@@ -91,8 +98,16 @@
             }
             function autoOnClick(pattern){
                 document.getElementById("output1").innerText = pattern.fields.name;
-                document.getElementById("textarea1").innerText = "Problem Domain" + pattern.fields.intent + pattern.fields.applicability + pattern.fields.motivation;
-                document.getElementById("textarea2").innerText = "Solution Domain" + pattern.fields.structure + pattern.fields.participant_collaborations + pattern.fields.consequences + pattern.fields.implementation + pattern.fields.related_patterns;
+                if(pattern.fields.miscellaneous === "" || pattern.fields.miscellaneous === "NA"){
+                    document.getElementById("textarea1").textContent = "Problem Domain\n\n" + 'Intent: ' + pattern.fields.intent + '\n\nProblem: ' + pattern.fields.problem
+                    document.getElementById("textarea2").textContent = "Solution Domain\n\n" + 'Discussion: ' + pattern.fields.discussion + '\n\nStructure: ' + pattern.fields.structure
+                }
+                else{
+                    document.getElementById("textarea1").textContent = "Problem Domain\n\n" + pattern.fields.miscellaneous
+                    document.getElementById("textarea2").textContent = "Solution Domain"
+                }
+                document.getElementById("a1").href = pattern.fields.link
+                document.getElementById("a1").textContent = pattern.fields.link
             }
             function clearList(list){
                 for(const x in list){

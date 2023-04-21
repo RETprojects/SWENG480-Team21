@@ -1,3 +1,4 @@
+"""
 import scrapy
 from bs4 import BeautifulSoup
 from scrapy.item import Item, Field
@@ -78,3 +79,4 @@ class BrowseSpider(scrapy.Spider):
             #file.write(img)
 
         #print(ns)
+"""

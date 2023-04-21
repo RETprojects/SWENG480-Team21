@@ -6,10 +6,13 @@
     <link rel="stylesheet" href="{% static 'temp/common.css' %}">
 </head>
 <header><div class="topnav">
-    <section> Penn State Behrend</section>
-  <a class="" href="/temp/home">Home</a>
-  <a class="" href="/temp/browsepattern">Browse Pattern</a>
-  <a class="active" href="/temp/submitpattern">Recommend a Pattern</a>
+    <section> <img src="{% static 'temp/Penn_State_Behrend_logo.svg.png'%}", width="50px"> </section>
+    <a class="" href="/temp/home">Home</a>
+    <a class="" href="/temp/browsepattern">Browse Pattern</a>
+    <a class="active" href="/temp/submitpattern">Recommend a Pattern</a>
+    {% if user.is_superuser %}
+        <a class="" href="/temp/collectpattern">Collect Patterns</a>
+    {% endif %}
 </div></header>
 <body style="text-align: left;background-color: #d9d9d9">
     <section style="margin-left: 50px;margin-right: 50px;">
@@ -43,9 +46,11 @@
         <!--
         <button onclick="window.location.href='/temp/recommendpattern';">Submit</button>
         -->
+        <!--
         {% for t in data %}
         <p>{{t}}</p>
         {% endfor %}
+        -->
     </section>
 </body>
 </html>

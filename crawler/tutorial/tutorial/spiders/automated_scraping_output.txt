@@ -1,0 +1,1 @@
+An easy way to do this would be to make use of create function. By mentioning the field name and their values. The following illustrated code helps you to insert data into your database from views.py and display the contents of database into the html page.
