@@ -6,15 +6,90 @@
     <link rel="stylesheet" href="{% static 'temp/common.css' %}">
 </head>
 <header><div class="topnav">
-    <section> Penn State Behrend</section>
-  <a class="" href="/temp/home">Home</a>
-  <a class="" href="/temp/browsepattern">Browse Pattern</a>
-  <a class="active" href="/temp/submitpattern">Recommend a Pattern</a>
+    <section> <img src="{% static 'temp/Penn_State_Behrend_logo.svg.png'%}", width="50px"> </section>
+    <a class="" href="/temp/home">Home</a>
+    <a class="" href="/temp/browsepattern">Browse Pattern</a>
+    <a class="active" href="/temp/submitpattern">Recommend a Pattern</a>
+    {% if user.is_superuser %}
+        <a class="" href="/temp/collectpattern">Collect Patterns</a>
+    {% endif %}
 </div></header>
 <body style="text-align: left;background-color: #d9d9d9">
     <section style="margin-left: 50px;margin-right: 50px;">
         <p style=" font-size: 25px">Design Pattern Recommendation System: Pattern Selection</p>
         <p style="line-height: 20px; font-size: 15px">Here are the design patterns recommended for your design problems, ordered by similarity score.</p>
+        <div style="display: flex">
+            <div id="div1" style="flex: 15%; padding-bottom: 200px"></div>
+            <div id="div2" style="flex: 15%;"></div>
+            <div id="div3" style="flex: 15%;"></div>
+        </div>
+        <div style="float: bottom; display: flex">
+            <div id="div4" style=" flex: 50%; float: right"><canvas id="Chart1"></canvas></div>
+            <div id="div5" style=" flex: 50%; float: right"><canvas id="Chart2"></canvas></div>
+        </div>
+        {{ listList|json_script:"listList" }}
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            let listList = JSON.parse(document.getElementById('listList').textContent);
+            //console.log(listList)
+            const ctx = document.getElementById('Chart1');
+            const ctx2 = document.getElementById('Chart2');
+            //ctx.options.responsive = true
+            //ctx2.options.responsive = true
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                  labels: listList[0],
+                  datasets: [{
+                      backgroundColor: '#5a6fe6',
+                    label: 'Total Percentage',
+                    data: listList[1],
+                    borderWidth: 1
+                  }]
+                },
+                options: {
+                  scales: {
+                    y: {
+                      beginAtZero: true
+                    },
+                    x: {
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 75,
+                            minRotation: 75,
+                        },
+                    }
+                  }
+                }
+            });
+            new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                  labels: listList[0],
+                  datasets: [{
+                      backgroundColor: '#5a6fe6',
+                    label: 'Average Percentage',
+                    data: listList[3],
+                    borderWidth: 1
+                  }]
+                },
+                options: {
+                  scales: {
+                    y: {
+                      beginAtZero: false
+                    },
+                    x: {
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 75,
+                            minRotation: 75,
+                        },
+                    }
+                  }
+                }
+            });
+        </script>
+        <!--
         <div style="display: flex">
             <div style="flex: 25%">
                 <textarea id="textarea3" style="overflow: auto; resize: none; width: 90%; height: 627px; margin-top: 47px"></textarea>
@@ -26,82 +101,126 @@
                 <textarea id="textarea2" readonly rows = 20 style="overflow: auto; resize: none; width: 99.65%;">Solution Domain&#10</textarea>
             </div>
         </div>
-        {{ patternListJSON|json_script:"patternListJSON" }}
-        {{ patternCategoryListJSON|json_script:"patternCategoryListJSON" }}
-        {{ patternCatalogListJSON|json_script:"patternCatalogListJSON" }}
+        -->
+        <!--
+        {% for t in data %}
+        <p>{{t}}</p>
+        {% endfor %}
+        -->
+        {{ algorithmList|json_script:"algorithmList" }}
+        {{ categoryList|json_script:"categoryList" }}
+        {{ algorithmPatternList|json_script:"algorithmPatternList" }}
+        {{ category|json_script:"category" }}
         <script>
-            /*
-            let patternList = JSON.parse(JSON.parse(document.getElementById('patternListJSON').textContent));
-            let patternCategoryList = JSON.parse(JSON.parse(document.getElementById('patternCategoryListJSON').textContent));
-            let patternCatalogList = JSON.parse(JSON.parse(document.getElementById('patternCatalogListJSON').textContent));
-            let pList = [];
-            let ulList = [];
-            let liList = [];
-            let buttonList = [];
+            let algorithmList = JSON.parse(document.getElementById('algorithmList').textContent);
+            let algorithmPatternList = JSON.parse(document.getElementById('algorithmPatternList').textContent);
+            let categoryList = JSON.parse(document.getElementById('categoryList').textContent);
+            let category = JSON.parse(document.getElementById("category").textContent)
+            let buttonList1 = []
+            let pList1 = []
+            let buttonList2 = []
+            let pList2 = []
             function run(){
-                clearList(pList)
-                clearList(ulList)
-                clearList(liList)
-                clearList(buttonList)
-                clearText()
-                //console.log(patternList)
-                //console.log(patternCategoryList)
-                //console.log(patternCatalogList)
-
-                generateCategories(parseInt(document.getElementById("list1").value))
+                clearList(buttonList1)
+                clearList(pList1)
+                clearList(buttonList2)
+                clearList(pList2)
+                generateAlgorithms()
+                buttonList1[1].click()
             }
-            function generateCategories(catalog){
-                for(const x in patternCategoryList){
-                    if(patternCategoryList[x].fields.catalog === catalog){
-                        const p = document.createElement('p')
-                        p.id = 'p' + patternCategoryList[x].pk
-                        p.textContent = patternCategoryList[x].fields.name
-                        pList[pList.length] = p
-                        const ul = document.createElement('ul')
-                        ul.id = 'ul' + patternCategoryList[x].pk
-                        ulList[ulList.length] = ul
-                        document.getElementById("div1").append(p)
-                        document.getElementById("div1").append(ul)
-                        generateButtons(patternCategoryList[x].pk)
-                    }
+            function recommendedCategory(){}
+            function generateAlgorithms(){
+                const btn = document.createElement("BUTTON")
+                btn.textContent = "Algorithms"
+                btn.style.width = "90%"
+                buttonList1[buttonList1.length] = btn
+                document.getElementById("div1").append(btn)
+                const p = document.createElement('p')
+                pList1[pList1.length] = p
+                document.getElementById("div1").append(p)
+                for(const x in algorithmList){
+                    const btn = document.createElement("BUTTON")
+                    btn.onclick = function(){
+                            autoOnClick1(x);
+                    };
+                    btn.textContent = algorithmList[x]
+                    btn.style.width = "90%"
+                    buttonList1[buttonList1.length] = btn
+                    const p = document.createElement('br')
+                    pList1[pList1.length] = p
+                    document.getElementById("div1").append(btn)
+                    document.getElementById("div1").append(p)
                 }
             }
-            function generateButtons(category){
-                for (const x in patternList) {
-                    if(patternList[x].fields.category === category){
-                        const btn = document.createElement("BUTTON");
-                        btn.textContent = patternList[x].fields.name;
-                        btn.onclick = function(){
-                            autoOnClick(patternList[x]);
-                        };
-                        btn.id = 'btn' + patternList[x].pk
-                        buttonList[buttonList.length] = btn
-                        const li = document.createElement('li')
-                        liList[liList.length] = li
-                        li.append(btn)
-                        document.getElementById("ul" + patternList[x].fields.category).appendChild(li)
-                    }
+            function autoOnClick1(index){
+                clearList(buttonList2)
+                clearList(pList2)
+                const btn = document.createElement("BUTTON")
+                btn.textContent = algorithmList[index]
+                btn.style.width = "90%"
+                buttonList2[buttonList2.length] = btn
+                const p = document.createElement('br')
+                pList2[pList2.length] = p
+                document.getElementById("div2").append(btn)
+                document.getElementById("div2").append(p)
+                const p2 = document.createElement('p')
+                pList2[pList2.length] = p2
+                document.getElementById("div2").append(p2)
+                for(const x in algorithmPatternList[index]){
+                    const btn = document.createElement("BUTTON")
+                    btn.onclick = function(){
+                            autoOnClick2(x);
+                    };
+                    btn.textContent = algorithmPatternList[index][x]
+                    btn.style.width = "90%"
+                    buttonList2[buttonList2.length] = btn
+                    const p = document.createElement('br')
+                    pList2[pList2.length] = p
+                    document.getElementById("div2").append(btn)
+                    document.getElementById("div2").append(p)
                 }
+                const btn4 = document.createElement("BUTTON")
+                btn4.textContent = "Recommended Category"
+                btn4.style.width = "90%"
+                buttonList2[buttonList2.length] = btn4
+                document.getElementById("div3").append(btn4)
+                const p4 = document.createElement('p')
+                pList2[pList2.length] = p4
+                document.getElementById("div3").append(p4)
+                const btn5 = document.createElement("BUTTON")
+                btn5.textContent = category
+                btn5.style.width = "90%"
+                buttonList2[buttonList2.length] = btn5
+                document.getElementById("div3").append(btn5)
+                const p6 = document.createElement('p')
+                pList2[pList2.length] = p6
+                document.getElementById("div3").append(p6)
+                const p7 = document.createElement('br')
+                pList2[pList2.length] = p7
+                document.getElementById("div3").append(p7)
+                const btn2 = document.createElement("BUTTON")
+                btn2.textContent = "Algorithm Category"
+                btn2.style.width = "90%"
+                buttonList2[buttonList2.length] = btn2
+                document.getElementById("div3").append(btn2)
+                const p3 = document.createElement('p')
+                pList2[pList2.length] = p3
+                document.getElementById("div3").append(p3)
+                const btn3 = document.createElement("BUTTON")
+                btn3.textContent = categoryList[index]
+                btn3.style.width = "90%"
+                buttonList2[buttonList2.length] = btn3
+                document.getElementById("div3").append(btn3)
             }
-            function autoOnClick(pattern){
-                document.getElementById("output1").innerText = pattern.fields.name;
-                document.getElementById("textarea1").innerText = "Problem Domain" + pattern.fields.intent + pattern.fields.applicability + pattern.fields.motivation;
-                document.getElementById("textarea2").innerText = "Solution Domain" + pattern.fields.structure + pattern.fields.participant_collaborations + pattern.fields.consequences + pattern.fields.implementation + pattern.fields.related_patterns;
-            }
+            function autoOnClick2(index){}
             function clearList(list){
                 for(const x in list){
                     list[x].remove()
                 }
             }
-            function clearText(){
-                document.getElementById("output1").innerText = "Design Pattern";
-                document.getElementById("textarea1").innerText = "Problem Domain";
-                document.getElementById("textarea2").innerText = "Solution Domain";
-            }
-            window.onload = function(){
+            window.onload = function() {
                 run()
             }
-            */
         </script>
     </section>
 </body>

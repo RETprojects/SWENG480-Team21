@@ -19,15 +19,13 @@ CREATE TABLE pattern
 (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   category_id INT(10) NOT NULL,
-  name VARCHAR(150) NOT NULL,
-  intent VARCHAR(150) NOT NULL,
-  motivation VARCHAR(150) NOT NULL,
-  applicability VARCHAR(150) NOT NULL,
-  structure MEDIUMBLOB NOT NULL,
-  participant_collaborations VARCHAR(150) NOT NULL,
-  consequences VARCHAR(150) NOT NULL,
-  implementation VARCHAR(150) NOT NULL,
-  related_patterns VARCHAR(150) NOT NULL,
+  name VARCHAR(150),
+  intent VARCHAR(150),
+  problem VARCHAR(150),
+  discussion VARCHAR(150),
+  structure MEDIUMBLOB,
+  miscellaneous VARCHAR(1500),
+  link VARCHAR(150),
   FOREIGN KEY (category_id) REFERENCES pattern_category(id)
 );
 

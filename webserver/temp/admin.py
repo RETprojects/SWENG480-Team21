@@ -7,3 +7,5 @@ admin.site.register(Pattern)
 admin.site.register(PatternCatalog)
 admin.site.register(PatternCategory)
 admin.site.register(Problem)
+
+
