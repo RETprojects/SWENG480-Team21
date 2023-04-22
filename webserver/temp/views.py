@@ -1,15 +1,16 @@
 import os
+import re
 import sys
 
-from django.contrib import messages
+import predict
+import requests
+from bs4 import BeautifulSoup
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 
-import predict
-
-from .forms import CollectPatternForm, SubmitPatternForm, ModifyCollectPatternForm
+from .forms import CollectPatternForm, ModifyCollectPatternForm, SubmitPatternForm
 from .models import Pattern, PatternCatalog, PatternCategory
 
 sys.path.append(os.path.split(os.path.split(os.path.dirname(__file__))[0])[0])
@@ -102,30 +103,13 @@ def collect_pattern(request):
     if request.method == "POST" and "run_script" in request.POST:
         form = CollectPatternForm(request.POST)
         if form.is_valid():
-            from crawler.tutorial.tutorial.spiders.automated_scraping import run
-
-            run(form.cleaned_data["urlContent"], form.cleaned_data["sectionContent"])
-            os.chdir(os.path.split(os.path.dirname(__file__))[0])
-            # print(os.path.join(os.path.split(os.path.split(os.path.split(os.path.abspath(__file__))[0])[0])[0], "crawler", "tutorial", "tutorial", "spiders", "automated_scraping_output.txt"))
-            path = os.path.join(
-                os.path.split(
-                    os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
-                )[0],
-                "crawler",
-                "tutorial",
-                "tutorial",
-                "spiders",
-                "automated_scraping_output.txt",
+            req = requests.get(form.cleaned_data["urlContent"])
+            text_content = BeautifulSoup(req.text, "html.parser").get_text()
+            (start_substr, end_substr) = form.cleaned_data["sectionContent"].split(
+                ":+_:"
             )
-            file = open(path, "r")
-            fileData = file.read()
-            if fileData == "":
-                return render(
-                    request,
-                    "collectpattern.html",
-                    {"form": form, "message": "Error crawling URL"},
-                )
-            print(fileData)
+            result = re.search(f"{start_substr}(.*){end_substr}", text_content).group(1)
+            fileData = start_substr + result + end_substr
 
             temp = predict.main(fileData)
             categoryList = []

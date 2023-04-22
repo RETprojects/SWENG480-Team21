@@ -6,3 +6,5 @@ pandas
 scikit-learn
 scikit-learn-extra
 whitenoise
+requests
+bs4
