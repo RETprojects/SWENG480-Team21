@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.shortcuts import render, redirect
 
+import predict
+
 from .forms import CollectPatternForm, SubmitPatternForm, ModifyCollectPatternForm
 from .models import Pattern, PatternCatalog, PatternCategory
 
@@ -43,7 +45,7 @@ def browse_pattern(request):
 
 
 def recommend_pattern(request):
-    temp = request.session.get('temp')
+    temp = request.session.get("temp")
     algorithmList = []
     categoryList = []
     algorithmPatternList = []
@@ -57,7 +59,7 @@ def recommend_pattern(request):
             algorithmPatternList.append(copyPatternList)
             singlePatternList.clear()
         if i[1].find("pattern") > 0:
-            singlePatternList.append(temp[i[0]][temp[i[0]].find("pattern") + 9:])
+            singlePatternList.append(temp[i[0]][temp[i[0]].find("pattern") + 9 :])
     copyPatternList = singlePatternList[:]
     algorithmPatternList.append(copyPatternList)
     singlePatternList.clear()
@@ -85,11 +87,10 @@ def submit_pattern(request):
     if request.method == "POST" and "run_script" in request.POST:
         form = SubmitPatternForm(request.POST)
         if form.is_valid():
-            from ml.predict import main
             content = form.cleaned_data["content"]
             content = content.replace("\t", "").replace("\r", "").replace("\n", " ")
-            temp = main(content)
-            request.session['temp'] = temp
+            temp = predict.main(content)
+            request.session["temp"] = temp
             return redirect("/temp/recommendpattern/")
             # return render(request, "submitpattern.html", {"form": form, "data": temp})
     return render(request, "submitpattern.html", {"form": form})
@@ -102,26 +103,39 @@ def collect_pattern(request):
         form = CollectPatternForm(request.POST)
         if form.is_valid():
             from crawler.tutorial.tutorial.spiders.automated_scraping import run
+
             run(form.cleaned_data["urlContent"], form.cleaned_data["sectionContent"])
             os.chdir(os.path.split(os.path.dirname(__file__))[0])
             # print(os.path.join(os.path.split(os.path.split(os.path.split(os.path.abspath(__file__))[0])[0])[0], "crawler", "tutorial", "tutorial", "spiders", "automated_scraping_output.txt"))
-            path = os.path.join(os.path.split(os.path.split(os.path.split(os.path.abspath(__file__))[0])[0])[0],
-                                "crawler", "tutorial", "tutorial", "spiders", "automated_scraping_output.txt")
-            file = open(path, 'r')
+            path = os.path.join(
+                os.path.split(
+                    os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
+                )[0],
+                "crawler",
+                "tutorial",
+                "tutorial",
+                "spiders",
+                "automated_scraping_output.txt",
+            )
+            file = open(path, "r")
             fileData = file.read()
             if fileData == "":
-                return render(request, "collectpattern.html", {"form": form, "message": "Error crawling URL"})
+                return render(
+                    request,
+                    "collectpattern.html",
+                    {"form": form, "message": "Error crawling URL"},
+                )
             print(fileData)
-            from ml.predict import main
-            temp = main(fileData)
+
+            temp = predict.main(fileData)
             categoryList = []
             for i in enumerate(temp):
                 temp[i[0]] = " ".join(temp[i[0]].split())
                 if i[1].find("--------------------------------------------") == 0:
                     categoryList.append(temp[i[0] + 1])
-            request.session['category'] = determineCategory(categoryList)
-            request.session['fileData'] = fileData
-            request.session['link'] = form.cleaned_data["urlContent"]
+            request.session["category"] = determineCategory(categoryList)
+            request.session["fileData"] = fileData
+            request.session["link"] = form.cleaned_data["urlContent"]
             return redirect("/temp/collectpatternmanage/")
             # return render(request, "collectpattern.html", {"form": form})
 
@@ -131,9 +145,9 @@ def collect_pattern(request):
 @login_required(login_url="/admin/login/")
 def collect_pattern_manage(request):
     form = ModifyCollectPatternForm()
-    category = request.session.get('category')
-    fileData = request.session.get('fileData')
-    link = request.session.get('link')
+    category = request.session.get("category")
+    fileData = request.session.get("fileData")
+    link = request.session.get("link")
     if request.method == "POST" and "run_script" in request.POST:
         form = ModifyCollectPatternForm(request.POST)
         if form.is_valid():
@@ -144,7 +158,11 @@ def collect_pattern_manage(request):
             pattern.link = link
             pattern.save()
             return redirect("/temp/home/")
-    return render(request, "collectpatternmanage.html", {"form": form, "category": category, "fileData": fileData})
+    return render(
+        request,
+        "collectpatternmanage.html",
+        {"form": form, "category": category, "fileData": fileData},
+    )
 
 
 @login_required(login_url="/admin/login/")
@@ -163,6 +181,7 @@ def determineCategory(categoryList):
     categoryList[:] = [i.split()[-1] for i in categoryList]
     return max(set(categoryList), key=categoryList.count)
 
+
 def determinePattern(algorithmPatternList):
     newList = []
     newList2 = []
@@ -170,7 +189,7 @@ def determinePattern(algorithmPatternList):
     for i in algorithmPatternList:
         for j in i:
             newList.append(j)
-            newList2.append(j.split()[-1].replace('%', ''))
+            newList2.append(j.split()[-1].replace("%", ""))
             newList3.append(j.split(j.split()[-1])[0])
     setList = set(newList3)
     setListValues = [0] * len(setList)
@@ -182,7 +201,7 @@ def determinePattern(algorithmPatternList):
                 setListValues[j[0]] += int(newList2[int(i[0])])
                 setListOccurrence[j[0]] += 1
     for i in enumerate(setList):
-        setListDiv[i[0]] = setListValues[i[0]]/setListOccurrence[i[0]]
+        setListDiv[i[0]] = setListValues[i[0]] / setListOccurrence[i[0]]
     # print(setList)
     # print(setListValues)
     # print(setListOccurrence)
