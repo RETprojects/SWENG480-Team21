@@ -215,6 +215,10 @@ def main(design_problem: str = ""):
             .copy()
         )
 
+        # The design problem is alone in its cluster
+        if df_problem_cluster.empty:
+            continue
+
         # Calculate cosine similarity for all patterns in the cluster vs. design problem
         df_problem_cluster["match"] = cosine_similarity(
             X[df_problem_cluster.index], X[-1]

@@ -57,7 +57,13 @@ def recommend_pattern(request):
         temp[i[0]] = " ".join(temp[i[0]].split())
         if i[1].find("--------------------------------------------") == 0:
             algorithmList.append(temp[i[0] - 1])
-            categoryList.append(temp[i[0] + 1].split()[-1])
+
+            # Check if input is alone in its cluster
+            if temp[i[0] + 1].startswith("Category"):
+                categoryList.append(temp[i[0] + 1].split()[-1])
+            else:
+                categoryList.append("None")
+
             copyPatternList = singlePatternList[:]
             algorithmPatternList.append(copyPatternList)
             singlePatternList.clear()
