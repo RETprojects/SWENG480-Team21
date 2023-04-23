@@ -150,6 +150,23 @@ def ordinal(n: int) -> str:
     return str(n) + suffix
 
 
+# Calculates three different percent match metrics between a design problem and a design pattern
+# Written by Akash
+def CalculatePercent(predictedPattern, clusterWeight, cosSimWeight, times_clustered):
+    totalPercent = 0
+    clusterPercent = 0
+    cosSimPercent = 0
+
+    clusterPercent = int((predictedPattern.timesPredicted / times_clustered) * 100)
+    cosSimPercent = predictedPattern.cosineSimPercent
+    totalPercent = int(
+        (((clusterPercent * clusterWeight) + (cosSimPercent * cosSimWeight)) / 2)
+        + ((2 - clusterWeight - cosSimWeight) * 70)
+    )
+
+    return clusterPercent, cosSimPercent, totalPercent
+
+
 def main(design_problem: str = ""):
     # Reset output
     output.clear()
@@ -225,6 +242,8 @@ def main(design_problem: str = ""):
         do_output(f"Category is most likely {predicted_category}\n")
 
         # Display the matching patterns by match % in descending order
+        # TODO: Integrate Akash's work on the three percent match metrics from
+        #       PatternKMeans7 into this program.
         for index, (name, percent) in enumerate(
             sorted(
                 zip(df_problem_cluster["name"], df_problem_cluster["match"]),
