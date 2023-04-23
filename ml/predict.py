@@ -28,20 +28,20 @@ algorithms = [
     "kmeans",
     "fuzzy_cmeans",
     "agglomerative",
-    "bi_kmeans_inertia",
-    "bi_kmeans_lg_cluster",
-    "pam_euclidean",
-    "pam_manhattan",
+    # "bi_kmeans_inertia",
+    # "bi_kmeans_lg_cluster",
+    # "pam_euclidean",
+    # "pam_manhattan",
 ]
 
 algorithms_pretty = [
     "K-means",
     "Fuzzy c-means",
     "Agglomerative",
-    "Bisecting k-means (biggest inertia strategy)",
-    "Bisecting k-means (largest cluster strategy)",
-    "K-medoids/PAM (Euclidean distance)",
-    "K-medoids/PAM (Manhattan distance)",
+    # "Bisecting k-means (biggest inertia strategy)",
+    # "Bisecting k-means (largest cluster strategy)",
+    # "K-medoids/PAM (Euclidean distance)",
+    # "K-medoids/PAM (Manhattan distance)",
 ]
 
 stemmer = PorterStemmer()
@@ -76,37 +76,40 @@ def preprocess(series: pd.Series) -> pd.Series:
     return series
 
 
-def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
+def do_cluster(df_weighted: pd.DataFrame, algo: str) -> pd.DataFrame:
     # This is the DataFrame we will return that contains all the labels.
     df = pd.DataFrame()
 
-    # Agglomerative (hierarchical)
-    agg = AgglomerativeClustering(n_clusters=3)
-    df["agglomerative"] = agg.fit_predict(df_weighted)
+    if algo == "agglomerative":
+        # Agglomerative (hierarchical)
+        agg = AgglomerativeClustering(n_clusters=3)
+        df["agglomerative"] = agg.fit_predict(df_weighted)
+    elif algo == "fuzzy_cmeans":
+        # Fuzzy c-means
+        final_df_np = df_weighted.to_numpy()
+        fcm = FCM(n_clusters=3)
+        fcm.fit(final_df_np)
+        df["fuzzy_cmeans"] = fcm.predict(final_df_np)
+    elif algo == "kmeans":
+        # K-means
+        km = cluster.KMeans(n_clusters=3, n_init="auto")
+        df["kmeans"] = km.fit_predict(df_weighted)
+    else:
+        print("ERROR: Invalid algorithm!")
 
-    # Bisecting k-means
-    bisect_inertia = BisectingKMeans(n_clusters=3)
-    bisect_lg_cluster = BisectingKMeans(
-        n_clusters=3, bisecting_strategy="largest_cluster"
-    )
-    df["bi_kmeans_inertia"] = bisect_inertia.fit_predict(df_weighted)
-    df["bi_kmeans_lg_cluster"] = bisect_lg_cluster.fit_predict(df_weighted)
+    # # Bisecting k-means
+    # bisect_inertia = BisectingKMeans(n_clusters=3)
+    # bisect_lg_cluster = BisectingKMeans(
+    #     n_clusters=3, bisecting_strategy="largest_cluster"
+    # )
+    # df["bi_kmeans_inertia"] = bisect_inertia.fit_predict(df_weighted)
+    # df["bi_kmeans_lg_cluster"] = bisect_lg_cluster.fit_predict(df_weighted)
 
-    # Fuzzy c-means
-    final_df_np = df_weighted.to_numpy()
-    fcm = FCM(n_clusters=3, random_state=9)
-    fcm.fit(final_df_np)
-    df["fuzzy_cmeans"] = fcm.predict(final_df_np)
-
-    # K-means
-    km = cluster.KMeans(n_clusters=3, n_init=10, random_state=9)
-    df["kmeans"] = km.fit_predict(df_weighted)
-
-    # K-medoids
-    kmed_euclidean = KMedoids(n_clusters=3)
-    kmed_manhattan = KMedoids(n_clusters=3, metric="manhattan")
-    df["pam_euclidean"] = kmed_euclidean.fit_predict(df_weighted)
-    df["pam_manhattan"] = kmed_manhattan.fit_predict(df_weighted)
+    # # K-medoids
+    # kmed_euclidean = KMedoids(n_clusters=3)
+    # kmed_manhattan = KMedoids(n_clusters=3, metric="manhattan")
+    # df["pam_euclidean"] = kmed_euclidean.fit_predict(df_weighted)
+    # df["pam_manhattan"] = kmed_manhattan.fit_predict(df_weighted)
 
     return df
 
@@ -150,6 +153,39 @@ def ordinal(n: int) -> str:
     return str(n) + suffix
 
 
+# Source: https://danielcaraway.github.io/html/sklearn_cosine_similarity.html
+def cosine_sim(df, df_col, class_no, pos_to_last, predicted_labels):
+    unigram_count = CountVectorizer(encoding="latin-1", binary=False)
+    unigram_count_stop_remove = CountVectorizer(
+        encoding="latin-1", binary=False, stop_words="english"
+    )
+
+    # get the list of candidate patterns
+    txts = df_col.loc[predicted_labels == class_no]  # where label == class_no
+    vecs = unigram_count.fit_transform(txts)
+
+    cos_sim = cosine_similarity(vecs[-pos_to_last], vecs)
+
+    return cos_sim, txts
+
+
+# Written by Akash
+class PredictedPattern:
+    allPatternsPredicted = []
+    # "Stores name and reccurence "
+
+    def __init__(self, name, timesPredicted, cosineSimPercent):
+        self.name = name
+        self.timesPredicted = timesPredicted
+        self.cosineSimPercent = cosineSimPercent
+        self.clusterPercent = 0
+        self.totalPercent = 0
+
+    def assignPercentages(self, clusterPercent, totalPercent):
+        self.clusterPercent = clusterPercent
+        self.totalPercent = totalPercent
+
+
 # Calculates three different percent match metrics between a design problem and a design pattern
 # Written by Akash
 def CalculatePercent(predictedPattern, clusterWeight, cosSimWeight, times_clustered):
@@ -168,6 +204,10 @@ def CalculatePercent(predictedPattern, clusterWeight, cosSimWeight, times_cluste
 
 
 def main(design_problem: str = ""):
+    num_of_times_clustered = 10
+    clusterWeight = 0.9
+    cossimWeight = 0.8
+
     # Reset output
     output.clear()
 
@@ -198,63 +238,94 @@ def main(design_problem: str = ""):
     # Create a dense tfidf matrix
     tfidf_matrix = do_weighting("Tfidf", cleaned_text)
     # Perform clustering
-    df_labels = do_cluster(tfidf_matrix)
-    # Append (horizontally) the cluster labels to the original DF
-    df = pd.concat([df, df_labels], axis=1)
+    for a, algo in enumerate(algorithms):
+        predictedPatterns = []
+        finalPatternsPredicted = []
+        PredictedPattern.allPatternsPredicted.clear()
+        print(PredictedPattern.allPatternsPredicted)
+        for j in range(num_of_times_clustered):
+            df_labels = do_cluster(tfidf_matrix, algo)
+            # Append (horizontally) the cluster labels to the original DF
+            # df = pd.concat([df, df_labels], axis=1)
+            df[algo] = df_labels
 
-    # Used for cosine similarity
-    vectorizer = CountVectorizer()
-    X = vectorizer.fit_transform(df["overview"])
-
-    # Used for output formatting
-    max_len_pattern = df["name"].str.len().max()
-    max_len = len(max(algorithms_pretty, key=len))
-
-    do_output()
-    for i, algorithm in enumerate(algorithms):
-        do_output(f"{algorithms_pretty[i]}")
-        do_output("-" * max_len)
-
-        # Get the cluster number of the design problem
-        predicted_cluster = df[algorithm].iloc[-1]
-
-        """
-        1. Filter all rows where the cluster number matches
-        2. Select the name, category, and `algorithm` rows
-        3. Remove the design problem row
-        4. Make a copy to make the logic more clear
-        """
-        df_problem_cluster = (
-            df.loc[df[algorithm] == predicted_cluster][["name", "category", algorithm]]
-            .iloc[:-1]
-            .copy()
-        )
-
-        # Calculate cosine similarity for all patterns in the cluster vs. design problem
-        df_problem_cluster["match"] = cosine_similarity(
-            X[df_problem_cluster.index], X[-1]
-        ).flatten()
-
-        # Calculate the most likely category
-        predicted_category = (
-            df_problem_cluster.groupby("category")["match"].mean().idxmax()
-        )
-        do_output(f"Category is most likely {predicted_category}\n")
-
-        # Display the matching patterns by match % in descending order
-        # TODO: Integrate Akash's work on the three percent match metrics from
-        #       PatternKMeans7 into this program.
-        for index, (name, percent) in enumerate(
-            sorted(
-                zip(df_problem_cluster["name"], df_problem_cluster["match"]),
-                key=lambda x: x[1],
-                reverse=True,
+            """
+            1. Filter all rows where the cluster number matches
+            2. Select the name, category, and `algorithm` rows
+            3. Remove the design problem row
+            4. Make a copy to make the logic more clear
+            """
+            cos_sim, txts = cosine_sim(
+                df, df["overview"], df[algo].iloc[df.index[-1]], 1, df[algo]
             )
-        ):
-            do_output(
-                f"{ordinal(index + 1).ljust(4)} pattern: {name.ljust(max_len_pattern)} {percent:.0%}"
+
+            # get problem row
+            n = df.index[-1]
+            problemRow = df.iloc[[n]]
+
+            sim_sorted_doc_idx = cos_sim.argsort()
+
+            # loop patterns of the same cluster as the design problem
+            for i in range(len(txts) - 1):
+                # pattern predicted description
+                patternDesc = txts.iloc[sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]
+                # pattern name matching the description
+                patternName = (df["name"][(df["overview"] == patternDesc)]).to_string(
+                    index=False
+                )
+
+                # percent cos sim match
+                percentMatch = int(
+                    (cos_sim[0][sim_sorted_doc_idx[-1][len(txts) - (i + 2)]]) * 100
+                )
+
+                # add the clustering by running it multiple times
+                if patternName in PredictedPattern.allPatternsPredicted:
+                    # print(patternName)
+                    patternIndex = PredictedPattern.allPatternsPredicted.index(
+                        patternName
+                    )
+                    # print(predictedPatterns[patternIndex].timesPredicted)
+
+                    # print(patternIndex)
+                    predictedPatterns[patternIndex].timesPredicted = (
+                        predictedPatterns[patternIndex].timesPredicted + 1
+                    )
+                else:
+                    predictedPatterns.append(
+                        PredictedPattern(patternName, 1, percentMatch)
+                    )
+                    PredictedPattern.allPatternsPredicted.append(patternName)
+
+        print("\n", algo, "\n")
+        for predictedPattern in predictedPatterns:
+            clusterPercent, cosSimPercent, totalPercent = CalculatePercent(
+                predictedPattern,
+                clusterWeight,
+                cossimWeight,
+                num_of_times_clustered,
             )
-        do_output()
+            predictedPattern.assignPercentages(clusterPercent, totalPercent)
+        predictedPatterns = sorted(
+            predictedPatterns, key=lambda x: x.totalPercent, reverse=True
+        )
+        k = 0
+        for predictedPattern in predictedPatterns:
+            k += 1
+            print(
+                "{}th pattern:  {:<25}{}%  CosSim match {}% Clustering Match {}% Total Match".format(
+                    k,
+                    predictedPattern.name,
+                    predictedPattern.cosineSimPercent,
+                    predictedPattern.clusterPercent,
+                    predictedPattern.totalPercent,
+                )
+            )
+
+        # clean up
+        # Using drop() function to delete last row
+        df.drop(index=n, axis=0, inplace=True)
+        df.drop([algo], axis=1)
 
     return output
 
