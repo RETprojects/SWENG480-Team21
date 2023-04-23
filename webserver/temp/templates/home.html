@@ -1,31 +1,35 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{% static 'temp/common.css' %}">
 </head>
 <header>
     <div class="topnav">
-        <section> <img src="{% static 'temp/Penn_State_Behrend_logo.svg.png'%}", width="50px"> </section>
+        <section> <img src="{% static 'temp/Penn_State_Behrend_logo.svg.png'%}" , width="50px"> </section>
         <a class="active" href="/temp/home">Home</a>
         <a class="" href="/temp/browsepattern">Browse Pattern</a>
         <a class="" href="/temp/submitpattern">Recommend a Pattern</a>
         {% if user.is_superuser %}
-            <a class="" href="/temp/collectpattern">Collect Patterns</a>
-            <a class="right" href="/temp/logout">Sign Out</a>
+        <a class="" href="/temp/collectpattern">Collect Patterns</a>
+        <a class="right" href="/temp/logout">Sign Out</a>
         {% else %}
-            <a class="right" href="/temp/login">Sign In</a>
+        <a class="right" href="/temp/login">Sign In</a>
         {% endif %}
     </div>
 </header>
+
 <body style="text-align: left;background-color: #d9d9d9">
     <section style="margin-left: 50px;margin-right: 50px;">
         <p style=" font-size: 25px">Design Pattern Recommendation System</p>
-        <p style="line-height: 20px; font-size: 15px">Welcome to this tool from the School of Engineering! We aim to help software designers and developers find the right design patterns for their software needs. Please choose one of the options below.</p>
+        <p style="line-height: 20px; font-size: 15px">Welcome to this tool from the School of Engineering! We aim to
+            help software designers and developers find the right design patterns for their software needs. Please
+            choose one of the options below.</p>
         <a href="/temp/browsepattern">Browse Patterns</a>
         <br>
-        <a href="/temp/recommendpattern">Recommend a Pattern</a>
+        <a href="/temp/submitpattern">Recommend a Pattern</a>
 
         <!--
         <section style="padding-top: 30px"><button type="button">Browse Patterns</button></section>
@@ -33,4 +37,5 @@
         -->
     </section>
 </body>
+
 </html>

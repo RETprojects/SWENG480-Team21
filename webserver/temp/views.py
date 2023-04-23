@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
+from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
 from django.shortcuts import redirect, render
 
 from .forms import CollectPatternForm, ModifyCollectPatternForm, SubmitPatternForm
@@ -103,8 +105,23 @@ def collect_pattern(request):
     if request.method == "POST" and "run_script" in request.POST:
         form = CollectPatternForm(request.POST)
         if form.is_valid():
-            req = requests.get(form.cleaned_data["urlContent"])
-            text_content = BeautifulSoup(req.text, "html.parser").get_text()
+            url = form.cleaned_data["urlContent"]
+            try:
+                URLValidator()(url)
+            except ValidationError as err:
+                return render(
+                    request,
+                    "collectpattern.html",
+                    {
+                        "form": form,
+                        "message": "Invalid URL specified. Please try again.",
+                    },
+                )
+
+            req = requests.get(url)
+            text_content = re.sub(
+                r"\s+", " ", BeautifulSoup(req.text, "html.parser").get_text()
+            )
             (start_substr, end_substr) = form.cleaned_data["sectionContent"].split(
                 ":+_:"
             )
@@ -119,7 +136,7 @@ def collect_pattern(request):
                     categoryList.append(temp[i[0] + 1])
             request.session["category"] = determineCategory(categoryList)
             request.session["fileData"] = fileData
-            request.session["link"] = form.cleaned_data["urlContent"]
+            request.session["link"] = url
             return redirect("/temp/collectpatternmanage/")
             # return render(request, "collectpattern.html", {"form": form})
 
