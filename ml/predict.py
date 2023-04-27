@@ -7,7 +7,7 @@ import nltk
 import numpy as np
 import pandas as pd
 from fcmeans import FCM
-from nltk import PorterStemmer
+from nltk import PorterStemmer, word_tokenize
 from nltk.corpus import stopwords
 from nltk.tag import pos_tag
 from sklearn import cluster
@@ -15,6 +15,8 @@ from sklearn.cluster import AgglomerativeClustering, BisectingKMeans
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn_extra.cluster import KMedoids
+from unidecode import unidecode
+import re
 
 try:
     nltk.find("corpora/stopwords")
@@ -28,20 +30,20 @@ algorithms = [
     "kmeans",
     "fuzzy_cmeans",
     "agglomerative",
-    # "bi_kmeans_inertia",
-    # "bi_kmeans_lg_cluster",
-    # "pam_euclidean",
-    # "pam_manhattan",
+    "bi_kmeans_inertia",
+    "bi_kmeans_lg_cluster",
+    "pam_euclidean",
+    "pam_manhattan",
 ]
 
 algorithms_pretty = [
     "K-means",
     "Fuzzy c-means",
     "Agglomerative",
-    # "Bisecting k-means (biggest inertia strategy)",
-    # "Bisecting k-means (largest cluster strategy)",
-    # "K-medoids/PAM (Euclidean distance)",
-    # "K-medoids/PAM (Manhattan distance)",
+    "Bisecting k-means (biggest inertia strategy)",
+    "Bisecting k-means (largest cluster strategy)",
+    "K-medoids/PAM (Euclidean distance)",
+    "K-medoids/PAM (Manhattan distance)",
 ]
 
 stemmer = PorterStemmer()
@@ -87,35 +89,101 @@ def do_cluster(df_weighted: pd.DataFrame, algo: str) -> pd.DataFrame:
     elif algo == "fuzzy_cmeans":
         # Fuzzy c-means
         final_df_np = df_weighted.to_numpy()
-        fcm = FCM(n_clusters=3)
+        fcm = FCM(n_clusters=3, m=1.67, max_iter=270)
         fcm.fit(final_df_np)
         df["fuzzy_cmeans"] = fcm.predict(final_df_np)
     elif algo == "kmeans":
         # K-means
         km = cluster.KMeans(n_clusters=3, n_init="auto")
         df["kmeans"] = km.fit_predict(df_weighted)
+    elif algo == "bi_kmeans_inertia":
+        # Bisecting k-means (inertia)
+        bisect_inertia = BisectingKMeans(n_clusters=3)
+        df["bi_kmeans_inertia"] = bisect_inertia.fit_predict(df_weighted)
+    elif algo == "bi_kmeans_lg_cluster":
+        # Bisecting k-means (largest cluster)
+        bisect_lg_cluster = BisectingKMeans(
+            n_clusters=3, bisecting_strategy="largest_cluster"
+        )
+        df["bi_kmeans_lg_cluster"] = bisect_lg_cluster.fit_predict(df_weighted)
+    elif algo == "pam_euclidean":
+        # K-medoids (Euclidean distance)
+        kmed_euclidean = KMedoids(n_clusters=3)
+        df["pam_euclidean"] = kmed_euclidean.fit_predict(df_weighted)
+    elif algo == "pam_manhattan":
+        # K-medoids (Manhattan distance)
+        kmed_manhattan = KMedoids(n_clusters=3, metric="manhattan")
+        df["pam_manhattan"] = kmed_manhattan.fit_predict(df_weighted)
     else:
         print("ERROR: Invalid algorithm!")
-
-    # # Bisecting k-means
-    # bisect_inertia = BisectingKMeans(n_clusters=3)
-    # bisect_lg_cluster = BisectingKMeans(
-    #     n_clusters=3, bisecting_strategy="largest_cluster"
-    # )
-    # df["bi_kmeans_inertia"] = bisect_inertia.fit_predict(df_weighted)
-    # df["bi_kmeans_lg_cluster"] = bisect_lg_cluster.fit_predict(df_weighted)
-
-    # # K-medoids
-    # kmed_euclidean = KMedoids(n_clusters=3)
-    # kmed_manhattan = KMedoids(n_clusters=3, metric="manhattan")
-    # df["pam_euclidean"] = kmed_euclidean.fit_predict(df_weighted)
-    # df["pam_manhattan"] = kmed_manhattan.fit_predict(df_weighted)
 
     return df
 
 
 # Better for this to be an enum, but the syntax is a bit tricky.
 weighting_methods = {"Binary", "Count", "Tfidf"}
+
+# removes a list of words (ie. stopwords) from a tokenized list.
+def removeWords(listOfTokens, listOfWords):
+    return [token for token in listOfTokens if token not in listOfWords]
+
+
+# applies stemming to a list of tokenized words
+def applyStemming(listOfTokens, stemmer):
+    return [stemmer.stem(token) for token in listOfTokens]
+
+
+# applied lemmatization to a list of tokenized words
+def applyLemmatization(listOfTokens, lemmatizer):
+    return [lemmatizer.lemmatize(token) for token in listOfTokens]
+
+
+# removes any words composed of less than 2 or more than 21 letters
+def twoLetters(listOfTokens):
+    twoLetterWord = []
+    for token in listOfTokens:
+        if len(token) <= 2 or len(token) >= 21:
+            twoLetterWord.append(token)
+    return twoLetterWord
+
+
+def processCorpus(corpus, language, stemmer):
+    stopwords = nltk.corpus.stopwords.words(language)
+    param_stemmer = stemmer
+
+    for document in corpus:
+        index = corpus.index(document)
+        corpus[index] = str(corpus[index]).replace(
+            "\ufffd", "8"
+        )  # Replaces the ASCII '�' symbol with '8'
+        corpus[index] = corpus[index].replace(",", "")  # Removes commas
+        corpus[index] = corpus[index].rstrip("\n")  # Removes line breaks
+        corpus[index] = corpus[index].casefold()  # Makes all letters lowercase
+
+        corpus[index] = re.sub(
+            "\W_", " ", corpus[index]
+        )  # removes specials characters and leaves only words
+        corpus[index] = re.sub(
+            "\S*\d\S*", " ", corpus[index]
+        )  # removes numbers and words concatenated with numbers IE h4ck3r. Removes road names such as BR-381.
+        corpus[index] = re.sub(
+            "\S*@\S*\s?", " ", corpus[index]
+        )  # removes emails and mentions (words with @)
+        corpus[index] = re.sub(r"http\S+", "", corpus[index])  # removes URLs with http
+        corpus[index] = re.sub(r"www\S+", "", corpus[index])  # removes URLs with www
+
+        listOfTokens = word_tokenize(corpus[index])
+        twoLetterWord = twoLetters(listOfTokens)
+
+        listOfTokens = removeWords(listOfTokens, stopwords)
+        listOfTokens = removeWords(listOfTokens, twoLetterWord)
+
+        listOfTokens = applyStemming(listOfTokens, param_stemmer)
+
+        corpus[index] = " ".join(listOfTokens)
+        corpus[index] = unidecode(corpus[index])
+
+    return corpus
 
 
 # Output: DataFrame with dense values
@@ -125,7 +193,7 @@ def do_weighting(method: str, series: pd.Series) -> pd.DataFrame:
     elif method == "Count":
         vectorizer = CountVectorizer()
     elif method == "Tfidf":
-        vectorizer = TfidfVectorizer()
+        vectorizer = TfidfVectorizer(sublinear_tf=True)
     else:
         print("Error. Did not pass valid weighting method")
         return
@@ -233,28 +301,30 @@ def main(design_problem: str = ""):
     )
     df = pd.concat([df, new_row.to_frame().T], ignore_index=True)
 
-    # Preprocess
-    cleaned_text = preprocess(df["overview"])
-    # Create a dense tfidf matrix
-    tfidf_matrix = do_weighting("Tfidf", cleaned_text)
+    # # Preprocess
+    # cleaned_text = preprocess(df["overview"])
+    # # Create a dense tfidf matrix
+    # tfidf_matrix = do_weighting("Tfidf", cleaned_text)
+
+    # pre process
+    corpus = df["overview"].tolist()
+    corpus = processCorpus(corpus, language="english", stemmer=stemmer)
+
+    # vectorize data
+    vectorizer = TfidfVectorizer(sublinear_tf=True)
+    X = vectorizer.fit_transform(corpus)
+    tfidf_matrix = pd.DataFrame(
+        data=X.toarray(), columns=vectorizer.get_feature_names_out()
+    )
     # Perform clustering
     for a, algo in enumerate(algorithms):
         predictedPatterns = []
-        finalPatternsPredicted = []
         PredictedPattern.allPatternsPredicted.clear()
-        print(PredictedPattern.allPatternsPredicted)
+
         for j in range(num_of_times_clustered):
             df_labels = do_cluster(tfidf_matrix, algo)
-            # Append (horizontally) the cluster labels to the original DF
-            # df = pd.concat([df, df_labels], axis=1)
             df[algo] = df_labels
 
-            """
-            1. Filter all rows where the cluster number matches
-            2. Select the name, category, and `algorithm` rows
-            3. Remove the design problem row
-            4. Make a copy to make the logic more clear
-            """
             cos_sim, txts = cosine_sim(
                 df, df["overview"], df[algo].iloc[df.index[-1]], 1, df[algo]
             )
@@ -322,10 +392,10 @@ def main(design_problem: str = ""):
                 )
             )
 
-        # clean up
-        # Using drop() function to delete last row
-        df.drop(index=n, axis=0, inplace=True)
-        df.drop([algo], axis=1)
+    # clean up
+    # Using drop() function to delete last row
+    df.drop(index=n, axis=0, inplace=True)
+    df = df.drop([str(algo)], axis=1)
 
     return output
 
