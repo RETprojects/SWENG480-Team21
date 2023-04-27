@@ -16,6 +16,8 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn_extra.cluster import KMedoids
 
+from wordcloud import WordCloud
+
 try:
     nltk.find("corpora/stopwords")
 except LookupError:
@@ -55,6 +57,32 @@ def do_output(text: str = "") -> None:
     print(text)
 
 
+# from PatternKMeans (last edited Jan 2, 2023)
+# Transforms a centroids dataframe into a dictionary to be used on a WordCloud.
+def centroidsDict(centroids, index):
+    a = centroids.T[index].sort_values(ascending=False).reset_index().values
+    centroid_dict = dict()
+
+    for i in range(0, len(a)):
+        centroid_dict.update({a[i, 0]: a[i, 1]})
+
+    return centroid_dict
+
+
+# Generates a word cloud of the most frequent and influential words in a cluster.
+def generateWordClouds(centroids):
+    wordcloud = WordCloud(max_font_size=100, background_color="white")
+    for i in range(0, len(centroids)):
+        centroid_dict = centroidsDict(centroids, i)
+        wordcloud.generate_from_frequencies(centroid_dict)
+
+        plt.figure()
+        plt.title("Cluster {}".format(i))
+        plt.imshow(wordcloud)
+        plt.axis("off")
+        plt.show()
+
+
 def preprocess(series: pd.Series) -> pd.Series:
     # Lowercase
     series = series.str.lower()
@@ -76,6 +104,9 @@ def preprocess(series: pd.Series) -> pd.Series:
     return series
 
 
+# TODO: After clustering the patterns, automatically label each cluster.
+#       Each cluster can have a word cloud, and the clusters can be labeled
+#       using the most important words in each cluster as a guide.
 def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
     # This is the DataFrame we will return that contains all the labels.
     df = pd.DataFrame()
