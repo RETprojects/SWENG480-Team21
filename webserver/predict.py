@@ -19,9 +19,15 @@ from unidecode import unidecode
 import re
 
 try:
+    nltk.find("averaged_perceptron_tagger")
     nltk.find("corpora/stopwords")
+    nltk.find("universal_tagset")
+    nltk.find("punkt")
 except LookupError:
+    nltk.download("averaged_perceptron_tagger")
     nltk.download("stopwords")
+    nltk.download("universal_tagset")
+    nltk.download("punkt")
 
 stop_words = set(stopwords.words("english"))
 
@@ -122,6 +128,7 @@ def do_cluster(df_weighted: pd.DataFrame, algo: str) -> pd.DataFrame:
 
 # Better for this to be an enum, but the syntax is a bit tricky.
 weighting_methods = {"Binary", "Count", "Tfidf"}
+
 
 # removes a list of words (ie. stopwords) from a tokenized list.
 def removeWords(listOfTokens, listOfWords):

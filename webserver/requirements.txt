@@ -8,3 +8,4 @@ scikit-learn-extra
 whitenoise
 requests
 bs4
+unidecode
