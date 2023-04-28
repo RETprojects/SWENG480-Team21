@@ -1,6 +1,7 @@
 # Command line usage: `python predict.py "Insert design problem here."`
 
 import os
+import re
 import sys
 
 import nltk
@@ -9,7 +10,7 @@ import pandas as pd
 from fcmeans import FCM
 from matplotlib import pyplot as plt
 from matplotlib import cm as cm
-from nltk import PorterStemmer
+from nltk import PorterStemmer, word_tokenize
 from nltk.corpus import stopwords
 from nltk.tag import pos_tag
 from sklearn import cluster
@@ -18,6 +19,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn_extra.cluster import KMedoids
 from sklearn.metrics import silhouette_samples, silhouette_score
+from unidecode import unidecode
 from wordcloud import WordCloud
 
 try:
@@ -85,6 +87,83 @@ def centroidsDict(centroids, index):
 #         plt.axis("off")
 #         plt.show()
 
+# removes a list of words (ie. stopwords) from a tokenized list.
+def removeWords(listOfTokens, listOfWords):
+    return [token for token in listOfTokens if token not in listOfWords]
+
+
+# applies stemming to a list of tokenized words
+def applyStemming(listOfTokens, stemmer):
+    return [stemmer.stem(token) for token in listOfTokens]
+
+
+# applied lemmatization to a list of tokenized words
+def applyLemmatization(listOfTokens, lemmatizer):
+    return [lemmatizer.lemmatize(token) for token in listOfTokens]
+
+
+# removes any words composed of less than 2 or more than 21 letters
+def twoLetters(listOfTokens):
+    twoLetterWord = []
+    for token in listOfTokens:
+        if len(token) <= 2 or len(token) >= 21:
+            twoLetterWord.append(token)
+    return twoLetterWord
+
+
+# removes any words that aren't verbs
+def notVerbs(listOfTokens):
+    notVerb = []
+    for token in listOfTokens:
+        if (
+            pos_tag(word_tokenize(token), tagset="universal")[0][1] != "VERB"
+            and pos_tag(word_tokenize(token), tagset="universal")[0][1] != "ADJ"
+        ):
+            notVerb.append(token)
+    return notVerb
+
+
+def processCorpus(corpus, language, stemmer):
+    stopwords = nltk.corpus.stopwords.words(language)
+    param_stemmer = stemmer
+
+    for document in corpus:
+        index = corpus.index(document)
+        corpus[index] = str(corpus[index]).replace(
+            "\ufffd", "8"
+        )  # Replaces the ASCII '�' symbol with '8'
+        corpus[index] = corpus[index].replace(",", "")  # Removes commas
+        corpus[index] = corpus[index].rstrip("\n")  # Removes line breaks
+        corpus[index] = corpus[index].casefold()  # Makes all letters lowercase
+
+        corpus[index] = re.sub(
+            "\W_", " ", corpus[index]
+        )  # removes specials characters and leaves only words
+        corpus[index] = re.sub(
+            "\S*\d\S*", " ", corpus[index]
+        )  # removes numbers and words concatenated with numbers IE h4ck3r. Removes road names such as BR-381.
+        corpus[index] = re.sub(
+            "\S*@\S*\s?", " ", corpus[index]
+        )  # removes emails and mentions (words with @)
+        corpus[index] = re.sub(r"http\S+", "", corpus[index])  # removes URLs with http
+        corpus[index] = re.sub(r"www\S+", "", corpus[index])  # removes URLs with www
+
+        listOfTokens = word_tokenize(corpus[index])
+        twoLetterWord = twoLetters(listOfTokens)
+        notVerb = notVerbs(listOfTokens)
+
+        listOfTokens = removeWords(listOfTokens, stopwords)
+        listOfTokens = removeWords(listOfTokens, twoLetterWord)
+        listOfTokens = removeWords(listOfTokens, notVerb)
+
+        listOfTokens = applyStemming(listOfTokens, param_stemmer)
+        # listOfTokens = applyLemmatization(listOfTokens, lemmatizer)
+
+        corpus[index] = " ".join(listOfTokens)
+        corpus[index] = unidecode(corpus[index])
+
+    return corpus
+
 
 # Generates a word cloud of the most frequent and influential words in a cluster. Returns a list of figure objects
 def generateWordClouds(df, df_labels, cleaned_text):
@@ -95,7 +174,9 @@ def generateWordClouds(df, df_labels, cleaned_text):
     # ex: 0     provid creat relat depend specifi consid suppo...
     wordcloud = WordCloud(max_font_size=100, background_color="white")
     list_plots = []
+    cleaned_text = pd.Series(cleaned_text)
     list_keywords = cleaned_text.str.split()
+    # list_keywords = cleaned_text
     # For each algo:
     for a, algo in enumerate(algorithms):
         # For each cluster c:
@@ -354,10 +435,19 @@ def main(design_problem: str = ""):
     )
     df = pd.concat([df, new_row.to_frame().T], ignore_index=True)
 
-    # Preprocess
-    cleaned_text = preprocess(df["overview"])
-    # Create a dense tfidf matrix
-    tfidf_matrix = do_weighting("Tfidf", cleaned_text)
+    # # Preprocess
+    # cleaned_text = preprocess(df["overview"])
+    # # Create a dense tfidf matrix
+    # tfidf_matrix = do_weighting("Tfidf", cleaned_text)
+    # pre process
+    corpus = df["overview"].tolist()
+    corpus = processCorpus(corpus, language="english", stemmer=stemmer)
+    # vectorize data
+    vectorizer = TfidfVectorizer(sublinear_tf=True)
+    X = vectorizer.fit_transform(corpus)
+    tfidf_matrix = pd.DataFrame(
+        data=X.toarray(), columns=vectorizer.get_feature_names_out()
+    )
     # Perform clustering
     df_labels = do_cluster(tfidf_matrix)
     # Append (horizontally) the cluster labels to the original DF
@@ -372,10 +462,10 @@ def main(design_problem: str = ""):
     max_len = len(max(algorithms_pretty, key=len))
 
     # Generate word clouds for each clustering algorithm
-    plots = generateWordClouds(df, df_labels, cleaned_text)
+    plots = generateWordClouds(df, df_labels, corpus)
     for cloud in plots:
         cloud.show()
-        # breakpoint()
+        breakpoint()
 
     do_output()
     for i, algorithm in enumerate(algorithms):
