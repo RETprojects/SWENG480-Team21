@@ -7,6 +7,8 @@ import nltk
 import numpy as np
 import pandas as pd
 from fcmeans import FCM
+from matplotlib import pyplot as plt
+from matplotlib import cm as cm
 from nltk import PorterStemmer
 from nltk.corpus import stopwords
 from nltk.tag import pos_tag
@@ -15,6 +17,8 @@ from sklearn.cluster import AgglomerativeClustering, BisectingKMeans
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn_extra.cluster import KMedoids
+from sklearn.metrics import silhouette_samples, silhouette_score
+from wordcloud import WordCloud
 
 try:
     nltk.find("corpora/stopwords")
@@ -55,6 +59,177 @@ def do_output(text: str = "") -> None:
     print(text)
 
 
+# from PatternKMeans (last edited Jan 2, 2023)
+# Transforms a centroids dataframe into a dictionary to be used on a WordCloud.
+def centroidsDict(centroids, index):
+    a = centroids.T[index].sort_values(ascending=False).reset_index().values
+    centroid_dict = dict()
+
+    for i in range(0, len(a)):
+        centroid_dict.update({a[i, 0]: a[i, 1]})
+
+    return centroid_dict
+
+
+# # Generates a word cloud of the most frequent and influential words in a cluster.
+# # Takes in a dataframe and generates a plot. Returns nothing.
+# def generateWordClouds(centroids):  # centroids is a dataframe
+#     wordcloud = WordCloud(max_font_size=100, background_color="white")
+#     for i in range(0, len(centroids)):
+#         centroid_dict = centroidsDict(centroids, i)
+#         wordcloud.generate_from_frequencies(centroid_dict)
+#
+#         plt.figure()
+#         plt.title("Cluster {}".format(i))
+#         plt.imshow(wordcloud)
+#         plt.axis("off")
+#         plt.show()
+
+
+# Generates a word cloud of the most frequent and influential words in a cluster. Returns a list of figure objects
+def generateWordClouds(df, df_labels, cleaned_text):
+    # df_labels: patterns vs [0,1,2] cluster each algo classified as. bottom row is input text
+    #   agglomerative  bi_kmeans_inertia  bi_kmeans_lg_cluster  fuzzy_cmeans  kmeans  pam_euclidean  pam_manhattan
+    #   0               1                  0                     0             0       1              1              0
+    # cleaned_text: patterns vs top keywords. bottom row is input text
+    # ex: 0     provid creat relat depend specifi consid suppo...
+    wordcloud = WordCloud(max_font_size=100, background_color="white")
+    list_plots = []
+    list_keywords = cleaned_text.str.split()
+    # For each algo:
+    for a, algo in enumerate(algorithms):
+        # For each cluster c:
+        for c in range(3):
+            # From df_labels, get the patterns w/ value c under the current algo
+            df_cluster = df.loc[df_labels[algo] == c][["name", "category", algo]].copy()
+            # cluster_keywords = {"word": {"score": 3+4+5, "count": 3}} so
+            # that we can take the avg score and make a word cloud with that
+            cluster_keywords = {}
+            # For each of these patterns:
+            for p, pattern in enumerate(df_cluster.iloc[:, 0]):
+                # From cleaned_text, get the keywords as a list
+                list_keywords_pattern = list_keywords[p]
+                # Append keywords
+                for w, keywords in enumerate(list_keywords):
+                    for i, word in enumerate(keywords):
+                        if word in cluster_keywords:
+                            cluster_keywords[word][
+                                "score"
+                            ] += i  # closer to the beginning is higher priority
+                            cluster_keywords[word][
+                                "count"
+                            ] += 1  # increment count so that can take the avg later
+                        else:
+                            cluster_keywords[word] = {"score": w, "count": 1}
+            # Take the average score for each word, then normalize it into a number between 0 and 1
+            # Remember, lower scores are higher frequency
+            word_cloud_input = {}
+            for word in cluster_keywords:
+                word_cloud_input[word] = 1 - (
+                    float(
+                        int(cluster_keywords[word]["score"])
+                        / int(cluster_keywords[word]["count"])
+                    )
+                    / 100
+                )
+            # Plot!
+            wordcloud.generate_from_frequencies(word_cloud_input)
+            fig = plt.figure()
+            plt.suptitle(f"Cluster {a}, Algo {algo}")
+            plt.imshow(wordcloud)
+            plt.axis("off")
+            # Append fig to list of plots
+            list_plots.append(fig)
+    # Return list of plots
+    return list_plots
+
+
+# TODO: Adapt the code for using k-means for silhouette, word clouds, etc for
+#       all clustering algorithms in use. Call/merge into do_cluster()?
+def run_KMeans(max_k, data):
+    max_k += 1
+    kmeans_results = dict()
+    for k in range(2, max_k):
+        kmeans = cluster.KMeans(
+            n_clusters=k,
+            init="k-means++",
+            n_init=10,
+            tol=0.0001
+            # , n_jobs = -1
+            ,
+            random_state=1,
+            algorithm="full",
+        )
+
+        kmeans_results.update({k: kmeans.fit(data)})
+
+    return kmeans_results
+
+
+def printAvg(avg_dict):
+    for avg in sorted(avg_dict.keys(), reverse=True):
+        print("Avg: {}\tK:{}".format(avg.round(4), avg_dict[avg]))
+
+
+def plotSilhouette(df, n_clusters, kmeans_labels, silhouette_avg):
+    fig, ax1 = plt.subplots(1)
+    fig.set_size_inches(8, 6)
+    ax1.set_xlim([-0.2, 1])
+    ax1.set_ylim([0, len(df) + (n_clusters + 1) * 10])
+
+    ax1.axvline(
+        x=silhouette_avg, color="red", linestyle="--"
+    )  # The vertical line for average silhouette score of all the values
+    ax1.set_yticks([])  # Clear the yaxis labels / ticks
+    ax1.set_xticks([-0.2, 0, 0.2, 0.4, 0.6, 0.8, 1])
+    plt.title(
+        ("Silhouette analysis for K = %d" % n_clusters), fontsize=10, fontweight="bold"
+    )
+
+    y_lower = 10
+    sample_silhouette_values = silhouette_samples(
+        df, kmeans_labels
+    )  # Compute the silhouette scores for each sample
+    for i in range(n_clusters):
+        ith_cluster_silhouette_values = sample_silhouette_values[kmeans_labels == i]
+        ith_cluster_silhouette_values.sort()
+
+        size_cluster_i = ith_cluster_silhouette_values.shape[0]
+        y_upper = y_lower + size_cluster_i
+
+        color = cm.nipy_spectral(float(i) / n_clusters)
+        ax1.fill_betweenx(
+            np.arange(y_lower, y_upper),
+            0,
+            ith_cluster_silhouette_values,
+            facecolor=color,
+            edgecolor=color,
+            alpha=0.7,
+        )
+
+        ax1.text(
+            -0.05, y_lower + 0.5 * size_cluster_i, str(i)
+        )  # Label the silhouette plots with their cluster numbers at the middle
+        y_lower = (
+            y_upper + 10
+        )  # Compute the new y_lower for next plot. 10 for the 0 samples
+    plt.show()
+
+
+def silhouette(kmeans_dict, df, plot=False):
+    df = df.to_numpy()
+    avg_dict = dict()
+    for n_clusters, kmeans in kmeans_dict.items():
+        kmeans_labels = kmeans.predict(df)
+        silhouette_avg = silhouette_score(
+            df, kmeans_labels
+        )  # Average Score for all Samples
+        avg_dict.update({silhouette_avg: n_clusters})
+
+        if plot:
+            plotSilhouette(df, n_clusters, kmeans_labels, silhouette_avg)
+
+
 def preprocess(series: pd.Series) -> pd.Series:
     # Lowercase
     series = series.str.lower()
@@ -76,6 +251,9 @@ def preprocess(series: pd.Series) -> pd.Series:
     return series
 
 
+# TODO: After clustering the patterns, automatically label each cluster.
+#       Each cluster can have a word cloud, and the clusters can be labeled
+#       using the most important words in each cluster as a guide.
 def do_cluster(df_weighted: pd.DataFrame) -> pd.DataFrame:
     # This is the DataFrame we will return that contains all the labels.
     df = pd.DataFrame()
@@ -192,6 +370,12 @@ def main(design_problem: str = ""):
     # Used for output formatting
     max_len_pattern = df["name"].str.len().max()
     max_len = len(max(algorithms_pretty, key=len))
+
+    # Generate word clouds for each clustering algorithm
+    plots = generateWordClouds(df, df_labels, cleaned_text)
+    for cloud in plots:
+        cloud.show()
+        # breakpoint()
 
     do_output()
     for i, algorithm in enumerate(algorithms):
