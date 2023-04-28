@@ -71,19 +71,19 @@ def centroidsDict(centroids, index):
     return centroid_dict
 
 
-# Generates a word cloud of the most frequent and influential words in a cluster.
-# Takes in a dataframe and generates a plot. Returns nothing.
-def generateWordClouds(centroids):  # centroids is a dataframe
-    wordcloud = WordCloud(max_font_size=100, background_color="white")
-    for i in range(0, len(centroids)):
-        centroid_dict = centroidsDict(centroids, i)
-        wordcloud.generate_from_frequencies(centroid_dict)
-
-        plt.figure()
-        plt.title("Cluster {}".format(i))
-        plt.imshow(wordcloud)
-        plt.axis("off")
-        plt.show()
+# # Generates a word cloud of the most frequent and influential words in a cluster.
+# # Takes in a dataframe and generates a plot. Returns nothing.
+# def generateWordClouds(centroids):  # centroids is a dataframe
+#     wordcloud = WordCloud(max_font_size=100, background_color="white")
+#     for i in range(0, len(centroids)):
+#         centroid_dict = centroidsDict(centroids, i)
+#         wordcloud.generate_from_frequencies(centroid_dict)
+#
+#         plt.figure()
+#         plt.title("Cluster {}".format(i))
+#         plt.imshow(wordcloud)
+#         plt.axis("off")
+#         plt.show()
 
 
 # Generates a word cloud of the most frequent and influential words in a cluster. Returns a list of figure objects
@@ -94,8 +94,8 @@ def generateWordClouds(df, df_labels, cleaned_text):
     # cleaned_text: patterns vs top keywords. bottom row is input text
     # ex: 0     provid creat relat depend specifi consid suppo...
     wordcloud = WordCloud(max_font_size=100, background_color="white")
-
     list_plots = []
+    list_keywords = cleaned_text.str.split()
     # For each algo:
     for a, algo in enumerate(algorithms):
         # For each cluster c:
@@ -106,18 +106,16 @@ def generateWordClouds(df, df_labels, cleaned_text):
             # that we can take the avg score and make a word cloud with that
             cluster_keywords = {}
             # For each of these patterns:
-            for pattern in df_cluster:
+            for p, pattern in enumerate(df_cluster.iloc[:, 0]):
                 # From cleaned_text, get the keywords as a list
-                list_keywords = cleaned_text.str.split()
+                list_keywords_pattern = list_keywords[p]
                 # Append keywords
-                print(list_keywords)
                 for w, keywords in enumerate(list_keywords):
-                    for word in keywords:
-                        print(word)
+                    for i, word in enumerate(keywords):
                         if word in cluster_keywords:
                             cluster_keywords[word][
                                 "score"
-                            ] += w  # closer to the beginning is higher priority
+                            ] += i  # closer to the beginning is higher priority
                             cluster_keywords[word][
                                 "count"
                             ] += 1  # increment count so that can take the avg later
@@ -127,13 +125,19 @@ def generateWordClouds(df, df_labels, cleaned_text):
             # Remember, lower scores are higher frequency
             word_cloud_input = {}
             for word in cluster_keywords:
-                word_cloud_input[word] = 1 - (float(int(word[0]) / int(word[1])) / 100)
+                word_cloud_input[word] = 1 - (
+                    float(
+                        int(cluster_keywords[word]["score"])
+                        / int(cluster_keywords[word]["count"])
+                    )
+                    / 100
+                )
             # Plot!
             wordcloud.generate_from_frequencies(word_cloud_input)
             fig = plt.figure()
-            fig.title(f"Cluster {a}, Algo {algo}")
-            fig.imshow(wordcloud)
-            fig.axis("off")
+            plt.suptitle(f"Cluster {a}, Algo {algo}")
+            plt.imshow(wordcloud)
+            plt.axis("off")
             # Append fig to list of plots
             list_plots.append(fig)
     # Return list of plots
@@ -368,7 +372,10 @@ def main(design_problem: str = ""):
     max_len = len(max(algorithms_pretty, key=len))
 
     # Generate word clouds for each clustering algorithm
-    generateWordClouds(df, df_labels, cleaned_text)
+    plots = generateWordClouds(df, df_labels, cleaned_text)
+    for cloud in plots:
+        cloud.show()
+        # breakpoint()
 
     do_output()
     for i, algorithm in enumerate(algorithms):
