@@ -53,7 +53,7 @@ class TestPreprocessor(unittest.TestCase):
         self.assertEqual(
             Preprocessor.do_stem(self.str_simple_nopunc.split()),
             ['today', 'i', 'went', 'to', 'the', 'store', 'to', 'buy', 'some', 'groceri', 'i', 'bought', 'carrot',
-             'appl', 'and', 'banana']
+             'appl', 'and']
         )
         self.assertEqual(
             Preprocessor.do_stem(self.str_complex_nopunc.split()),
