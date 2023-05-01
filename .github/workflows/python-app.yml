@@ -29,4 +29,5 @@ jobs:
     - name: Test
       run: |
         pipenv install
+        pipenv run python -m nltk.downloader all
         pipenv run python -m unittest -v shared/tests/test_preprocessor.py
