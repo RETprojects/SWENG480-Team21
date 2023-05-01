@@ -29,4 +29,5 @@ jobs:
         pipenv install
     - name: Test
       run: |
+        pipenv install
         python -m unittest -v shared/tests/test_preprocessor.py
