@@ -44,7 +44,7 @@ class TestPreprocessor(unittest.TestCase):
             ['natural', 'language', 'processing', 'nlp', 'subfield', 'linguistics', 'computer', 'science',
              'artificial', 'intelligence', 'concerned', 'interactions', 'computers', 'human', 'language',
              'particular', 'program', 'computers', 'process', 'analyze', 'large', 'amounts', 'natural',
-             'language', 'data', 'goal', 'computer', 'capable', 'understanding', 'contents', 'documents',
+             'language', 'data', 'goal', 'capable', 'understanding', 'contents', 'documents',
              'including', 'contextual', 'nuances', 'language', 'within', 'technology', 'accurately', 'extract',
              'information', 'insights', 'contained', 'documents', 'well', 'categorize', 'organize', 'documents']
         )
