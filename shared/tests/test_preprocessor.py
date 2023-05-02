@@ -37,7 +37,7 @@ class TestPreprocessor(unittest.TestCase):
     def test_remove_stop_words(self):
         self.assertEqual(
             Preprocessor.remove_stop_words(self.str_simple_nopunc),
-            ['today', 'went', 'store', 'buy', 'groceries', 'bought', 'carrots', 'apples']
+            ['today', 'went', 'store', 'buy', 'groceries', 'bought', 'carrots', 'apples', 'bananas']
         )
         self.assertEqual(
             Preprocessor.remove_stop_words(self.str_complex_nopunc),
